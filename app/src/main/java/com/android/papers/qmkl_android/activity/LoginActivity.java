@@ -1,6 +1,7 @@
 package com.android.papers.qmkl_android.activity;
 
 import android.annotation.TargetApi;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -19,6 +20,8 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAarithmetic;
+import com.zyao89.view.zloading.ZLoadingDialog;
+import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.Objects;
 
@@ -151,6 +154,15 @@ public class LoginActivity extends BaseActivity {
     private void doLogin(String username,String password) {
         String SHApassword = SHAarithmetic.encode(password);
         LoginRequest req = new LoginRequest(username,SHApassword);
-        RetrofitUtils.postLogin(this, req);
+        RetrofitUtils ru = new RetrofitUtils();
+
+        ru.postLogin(this, req);
+
+        //使用com.zyao89:zloading:1.1.2引用別人的加载动画
+        ZLoadingDialog dialog = new ZLoadingDialog(this);
+        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                .setHintText("Login...")
+                .show();
     }
 }

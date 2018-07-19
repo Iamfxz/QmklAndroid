@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -12,6 +13,9 @@ import android.view.WindowManager;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
+import com.zyao89.view.zloading.ZLoadingDialog;
+import com.zyao89.view.zloading.ZLoadingView;
+import com.zyao89.view.zloading.Z_TYPE;
 
 public class SplashActivity extends Activity {
 
@@ -34,8 +38,6 @@ public class SplashActivity extends Activity {
 
 
         RetrofitUtils.postAd(this);
-
-
         nextActivity(LoginActivity.class);
     }
     private void nextActivity(Class clazz) {

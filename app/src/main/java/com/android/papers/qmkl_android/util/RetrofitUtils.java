@@ -11,6 +11,8 @@ import com.android.papers.qmkl_android.model.AdData;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 
+import java.io.IOException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,8 +22,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitUtils {
 
+     public String token = null;
+
     //登录调用
-    public static void postLogin(Context context, LoginRequest r){
+    public void postLogin(Context context, LoginRequest r){
+
+
         //创建Retrofit对象
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
@@ -39,14 +45,13 @@ public class RetrofitUtils {
             //请求成功时回调
             @Override
             public void onResponse(Call<ResponseInfo> call, Response<ResponseInfo> response) {
-
-                Log.d("123成功","登录token"+response.body().getData());
-
+                token = response.body().getData().toString();
+                //接下来进入登录界面
             }
             //请求失败时回调
             @Override
             public void onFailure(Call<ResponseInfo> call, Throwable t) {
-                Log.d("123失败","失败");
+                Log.d("失败！！","登录网络请求失败");
             }
         });
     }
