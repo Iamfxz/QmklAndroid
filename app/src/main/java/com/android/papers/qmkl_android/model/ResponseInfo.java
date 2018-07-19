@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName;
 public class ResponseInfo<T> {
     //json数据里的code等同于java对象里的Result
     @SerializedName("code")
-    int resultCode;
+    private int resultCode;
     @SerializedName("data")
-    T token;//登录标记，用于自动登录
+    private T token;//登录标记，用于自动登录
 
-    String msg;//"操作成功"
+    private String msg;//"操作成功"
 
 
     public int getResultCode() {

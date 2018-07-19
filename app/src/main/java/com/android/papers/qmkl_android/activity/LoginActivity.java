@@ -25,7 +25,7 @@ public class LoginActivity extends BaseActivity {
     private static final String TAG = "LoginActivity";
 
     @BindView(R.id.back)
-    ImageView back;
+    ImageView back;//返回
     @BindView(R.id.user_phone_num)
     TextInputLayout userPhoneNum;
     @BindView(R.id.user_psw)
