@@ -2,6 +2,7 @@ package com.android.papers.qmkl_android.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -29,11 +30,36 @@ public class SplashActivity extends Activity {
         PermissionUtils.requestPermission(this, PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
         RetrofitUtils.postLogin(null);
 
+        nextActivity(LoginActivity.class);
+    }
+    private void nextActivity(Class clazz) {
+        final Intent intent = new Intent(SplashActivity.this, clazz);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(intent);
+                        finish();
+                    }
+                });
 
-
-
+            }
+        }).start();
     }
 
+    public void onResume() {
+        super.onResume();
+    }
+    public void onPause() {
+        super.onPause();
+    }
 }

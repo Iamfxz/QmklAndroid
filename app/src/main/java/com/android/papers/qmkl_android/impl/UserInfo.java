@@ -3,6 +3,7 @@ package com.android.papers.qmkl_android.impl;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 
 import retrofit2.Call;
+import retrofit2.http.Field;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -12,5 +13,5 @@ import retrofit2.http.Query;
  */
 public interface UserInfo {
     @POST("user/info")
-    Call<ResponseInfo> getCall(@Query("token") String token);
+    Call<ResponseInfo> getCall(@Field("token") String token);
 }
