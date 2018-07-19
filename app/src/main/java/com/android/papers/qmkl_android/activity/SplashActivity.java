@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.android.papers.qmkl_android.R;
-import com.android.papers.qmkl_android.requestModel.Request;
 import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 
