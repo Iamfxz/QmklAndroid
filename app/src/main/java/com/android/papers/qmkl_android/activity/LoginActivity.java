@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 
+import java.util.Objects;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -50,7 +52,7 @@ public class LoginActivity extends BaseActivity {
         forgetPsw.getPaint().setAntiAlias(true);//抗锯齿
 
         //帐号密码都不为空时,登录按钮变色
-        userPhoneNum.getEditText().addTextChangedListener(new TextWatcher() {
+        Objects.requireNonNull(userPhoneNum.getEditText()).addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -63,15 +65,18 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if ((userPhoneNum.getEditText().getText().toString().length()>0) && (userPsw.getEditText().getText().toString().length()>0)){
+                if ((userPhoneNum.getEditText().getText().toString().length()>0) &&
+                        (Objects.requireNonNull(userPsw.getEditText()).getText().toString().length()>0))
+                {
                     loginBtn.setBackgroundColor(getResources().getColor(R.color.blue));
-                }else{
+                }
+                else {
                     loginBtn.setBackgroundColor(getResources().getColor(R.color.btn_unable));
                 }
             }
         });
 
-        userPsw.getEditText().addTextChangedListener(new TextWatcher() {
+        Objects.requireNonNull(userPsw.getEditText()).addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -84,7 +89,8 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if ((userPhoneNum.getEditText().getText().toString().length()>0) && (userPsw.getEditText().getText().toString().length()>0)){
+                if ((userPhoneNum.getEditText().getText().toString().length()>0) &&
+                        (userPsw.getEditText().getText().toString().length()>0)){
                     loginBtn.setBackgroundColor(getResources().getColor(R.color.blue));
                 }else{
                     loginBtn.setBackgroundColor(getResources().getColor(R.color.btn_unable));
@@ -121,9 +127,10 @@ public class LoginActivity extends BaseActivity {
                 userPsw.setErrorEnabled(false);
                 break;
             case R.id.login_btn:
-                if (userPhoneNum.getEditText().getText().toString().length() != 11) {
+                if (Objects.requireNonNull(userPhoneNum.getEditText()).getText().toString().length() != 11) {
                     Toast.makeText(getApplicationContext(),"手机号不正确",Toast.LENGTH_SHORT).show();
-                } else if ((userPsw.getEditText().getText().toString().length() < 6) && (userPsw.getEditText().getText().toString().length()>16)) {
+                } else if ((Objects.requireNonNull(userPsw.getEditText()).getText().toString().length() < 6) &&
+                        (userPsw.getEditText().getText().toString().length()>16)) {
                     Toast.makeText(getApplicationContext(),"密码要 6至16 位",Toast.LENGTH_SHORT).show();
                 } else {
                     doLogin();
