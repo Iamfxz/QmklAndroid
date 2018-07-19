@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="base_url">http://120.77.32.233/qmkl0.0.1/</string>
+    <string name="user_login">user/login</string>
+</resources>
