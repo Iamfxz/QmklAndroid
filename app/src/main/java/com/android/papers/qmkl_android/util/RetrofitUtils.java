@@ -21,7 +21,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitUtils {
     public static void postLogin(Request r){
-        Context context=null;
         //创建Retrofit对象
 //        Log.d("123",context.getString(R.string.base_url));
         Retrofit retrofit = new Retrofit.Builder()
