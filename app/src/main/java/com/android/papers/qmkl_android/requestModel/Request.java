@@ -1,4 +1,4 @@
-package com.android.papers.qmkl_android.model;
+package com.android.papers.qmkl_android.requestModel;
 
 public class Request {
     String username;

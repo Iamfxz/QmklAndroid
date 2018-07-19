@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.requestModel.Request;
 import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 
@@ -27,7 +28,13 @@ public class SplashActivity extends Activity {
          * 如果用户选择授予该权限，则下次启动时才会自主从网络下载广告资源
          * */
         PermissionUtils.requestPermission(this, PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
-        RetrofitUtils.postLogin(null);
+//        测试登录
+//        Request request=new Request("13157694909","f9e84102d063cf5887093255b7ad7bc64758975f");
+//        RetrofitUtils.postLogin(this,request);
+
+
+        RetrofitUtils.postAd(this);
+
 
 
 
