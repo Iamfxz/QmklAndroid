@@ -51,24 +51,24 @@ public class SplashActivity extends Activity {
             public void onResponse(Call<ResponseInfo<AdData>> call, Response<ResponseInfo<AdData>> response) {
                 //广告页当前不可用
                 if(response.body().getData().isEnabled()){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    nextActivity(LoginActivity.class);   //不显示广告,跳入mainactivity
-                                }
-                            });
-                        }
-                    }).start();
-                    Log.d(TAG, "已缓存");
-                    return;
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            try {
+//                                Thread.sleep(2000);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    nextActivity(LoginActivity.class);   //不显示广告,跳入mainactivity
+//                                }
+//                            });
+//                        }
+//                    }).start();
+//                    Log.d(TAG, "已缓存");
+//                    return;
                 }
                 //广告页当前可用
 
