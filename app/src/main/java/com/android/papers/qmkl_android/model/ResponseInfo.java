@@ -4,9 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class ResponseInfo<T> {
 
-    String code;
-    T data;
-    String msg;
+    private String code;
+    private T data;
+    private String msg;
+
 
     public String getCode() {
         return code;
