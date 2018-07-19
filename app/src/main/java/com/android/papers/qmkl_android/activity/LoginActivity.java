@@ -16,6 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.requestModel.LoginRequest;
+import com.android.papers.qmkl_android.util.RetrofitUtils;
+import com.android.papers.qmkl_android.util.SHAarithmetic;
 
 import java.util.Objects;
 
@@ -133,7 +136,8 @@ public class LoginActivity extends BaseActivity {
                         (userPsw.getEditText().getText().toString().length()>16)) {
                     Toast.makeText(getApplicationContext(),"密码要 6至16 位",Toast.LENGTH_SHORT).show();
                 } else {
-                    doLogin();
+                    doLogin(Objects.requireNonNull(userPhoneNum.getEditText()).getText().toString(),
+                            Objects.requireNonNull(userPsw.getEditText()).getText().toString());
                 }
                 break;
             case R.id.user_info:
@@ -144,8 +148,9 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private void doLogin() {
+    private void doLogin(String username,String password) {
+        String SHApassword = SHAarithmetic.encode(password);
+        LoginRequest req = new LoginRequest(username,SHApassword);
+        RetrofitUtils.postLogin(this, req);
     }
-
-
 }
