@@ -18,7 +18,9 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
-
+import com.android.papers.qmkl_android.util.SHAarithmetic;
+import com.zyao89.view.zloading.ZLoadingDialog;
+import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.Objects;
 
@@ -132,8 +134,8 @@ public class LoginActivity extends BaseActivity {
                         (userPsw.getEditText().getText().toString().length()>16)) {
                     Toast.makeText(getApplicationContext(),"密码要 6至16 位",Toast.LENGTH_SHORT).show();
                 } else {
-//                    doLogin(Objects.requireNonNull(userPhoneNum.getEditText()).getText().toString(),
-//                            Objects.requireNonNull(userPsw.getEditText()).getText().toString());
+                    doLogin(Objects.requireNonNull(userPhoneNum.getEditText()).getText().toString(),
+                            Objects.requireNonNull(userPsw.getEditText()).getText().toString());
                 }
                 break;
             case R.id.user_info:
@@ -144,18 +146,19 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-//    private void doLogin(String username,String password) {
-//        String SHApassword = SHAarithmetic.encode(password);//密码加密
-//        LoginRequest req = new LoginRequest(username,SHApassword);//账号密码封装
-//        postLogin(this, req);//发送登录请求验证
-//
-//        //使用com.zyao89:zloading:1.1.2引用別人的加载动画
-//        ZLoadingDialog dialog = new ZLoadingDialog(this);
-//        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-//                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-//                .setHintText("Login...")
-//                .show();
-//    }
+    private void doLogin(String username,String password) {
+        String SHApassword = SHAarithmetic.encode(password);//密码加密
+        LoginRequest req = new LoginRequest(username,SHApassword);//账号密码封装
+        postLogin(this, req);//发送登录请求验证
+
+        //使用com.zyao89:zloading:1.1.2引用別人的加载动画
+        ZLoadingDialog dialog = new ZLoadingDialog(this);
+        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                .setHintText("Login...")
+                .show();
+    }
+
 
     //登录调用
     public void postLogin(Context context, LoginRequest r){

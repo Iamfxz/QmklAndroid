@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.android.papers.qmkl_android.model.AdData;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
+
 import com.android.papers.qmkl_android.util.SDCardUtils;
 
 import java.io.File;
@@ -22,6 +24,11 @@ import java.io.File;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import com.zyao89.view.zloading.ZLoadingDialog;
+import com.zyao89.view.zloading.ZLoadingView;
+import com.zyao89.view.zloading.Z_TYPE;
+
 
 public class SplashActivity extends Activity {
 
@@ -41,6 +48,7 @@ public class SplashActivity extends Activity {
 //        测试登录
 //        Request request=new Request("13157694909","f9e84102d063cf5887093255b7ad7bc64758975f");
 //        RetrofitUtils.postLogin(this,request);
+
 
 
         Call<ResponseInfo<AdData>> call=RetrofitUtils.postAd(this);
@@ -80,6 +88,9 @@ public class SplashActivity extends Activity {
                 Log.d("123失败","失败");
             }
         });
+
+
+        RetrofitUtils.postAd(this);
 
         nextActivity(LoginActivity.class);
     }
