@@ -13,4 +13,5 @@
     <string name="title_activity_op">OpActivity</string>
     <string name="title_activity_web_activity_test">WebActivityTest</string>
     <string name="title_activity_ads">AdsActivity</string>
+    <string name="companyName">©趣考网络</string>
 </resources>
