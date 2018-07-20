@@ -149,7 +149,6 @@ public class LoginActivity extends BaseActivity {
     private void doLogin(String username,String password) {
         String SHApassword = SHAarithmetic.encode(password);//密码加密
         LoginRequest req = new LoginRequest(username,SHApassword);//账号密码封装
-        postLogin(this, req);//发送登录请求验证
 
         //使用com.zyao89:zloading:1.1.2引用別人的加载动画
         ZLoadingDialog dialog = new ZLoadingDialog(this);
@@ -157,11 +156,13 @@ public class LoginActivity extends BaseActivity {
                 .setLoadingColor(getResources().getColor(R.color.blue))//颜色
                 .setHintText("Login...")
                 .show();
+
+        postLogin(this, req,dialog);//发送登录请求验证
     }
 
 
-    //登录调用
-    public void postLogin(Context context, LoginRequest r){
+    //登录调用API发送登录数据给服务器
+    public void postLogin(Context context, LoginRequest r, final ZLoadingDialog dialog){
 
         //创建Retrofit对象
         Retrofit retrofit = new Retrofit.Builder()
@@ -184,12 +185,14 @@ public class LoginActivity extends BaseActivity {
                 System.out.println(resultCode);
                 if(resultCode == errorCode){
                     Toast.makeText(getApplicationContext(),"请检查账号密码是否准确",Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
                 }else if (resultCode == successCode){
                     String token = Objects.requireNonNull(response.body()).getData().toString();
                     //TODO
                     //接下来进入登录界面
                 }else{
                     Toast.makeText(getApplicationContext(),"发生未知错误,请反馈给开发者",Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
                 }
             }
             //请求失败时回调
