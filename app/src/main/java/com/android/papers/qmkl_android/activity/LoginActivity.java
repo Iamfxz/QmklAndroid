@@ -159,7 +159,7 @@ public class LoginActivity extends BaseActivity {
                 .show();
     }
 
-    //登录调用
+    //登录调用API发送登录数据给服务器
     public void postLogin(Context context, LoginRequest r){
 
         //创建Retrofit对象
