@@ -75,7 +75,7 @@ public class SplashActivity extends Activity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    nextActivity(LoginActivity.class);   //不显示广告,跳入mainactivity
+                                    nextActivity(next());   //不显示广告,跳入mainactivity
                                 }
                             });
                         }
@@ -87,6 +87,8 @@ public class SplashActivity extends Activity {
                 oldAdName = SharedPreferencesUtils.getStoredMessage(getBaseContext(), "AdName");
                 newAdName = response.body().getData().getUpdatedAt();
                 adPath = response.body().getData().getUrl();
+                SharedPreferencesUtils.setStoredMessage(getBaseContext(),"fallback",
+                        response.body().getData().getFallback());
                 //此前尚未缓存过广告数据、广告数据已更新、广告数据被删除，重新缓存
                 if (oldAdName == null || !oldAdName.equals(newAdName) || !checkLocalADImage()) {
                     SharedPreferencesUtils.setStoredMessage(getBaseContext(), "AdName", newAdName);
@@ -106,6 +108,7 @@ public class SplashActivity extends Activity {
                                 nextActivity(AdsActivity.class);
                             } catch (Exception e) {
                                 //缓存失败，进入登录界面或者主界面
+                                Toast.makeText(getApplicationContext(),"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
                                 e.printStackTrace();
                                 nextActivity(next());
                             }
@@ -122,7 +125,7 @@ public class SplashActivity extends Activity {
 
             @Override
             public void onFailure(Call<ResponseInfo<AdData>> call, Throwable t) {
-                Log.d("123失败", "失败");
+                Toast.makeText(getApplicationContext(),"服务器请求失败",Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -170,19 +173,13 @@ public class SplashActivity extends Activity {
 
     /**
      *
-     * 获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在,若存在则显示广告页,不存在跳至主页
+     * 获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在
      *
      */
     private boolean checkLocalADImage() {
-
         Log.d(TAG, "检测本地广告图像是否存在");
-
         File adImageFile = new File(SDCardUtils.getADImage(newAdName));
         return adImageFile.exists();
-//        Class clazz = adImageFile.exists() ? AdsActivity.class : LoginActivity.class;    //本地图片不存在, 跳转至mainactivity
-//        nextActivity(clazz);
-//        if(adImageFile.exists())Log.d(TAG, "本地广告图像存在");
-//        else Log.d(TAG, "本地广告图像不存在");
     }
 
     //判断当前token是否可以登录

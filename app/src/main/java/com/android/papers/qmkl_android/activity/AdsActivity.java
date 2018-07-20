@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.android.papers.qmkl_android.R;
@@ -19,9 +23,13 @@ import butterknife.ButterKnife;
 //第二启动页 (放广告的页面 缺省)
 public class AdsActivity extends Activity {
 
+    private static final String TAG = "AdsActivity";
     String newAdName;
+    boolean isClicked=false,isSkip=false;
     @BindView(R.id.iv_ad)
     ImageView ivAd;
+    @BindView(R.id.skip)
+    Button skip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +42,7 @@ public class AdsActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         newAdName = SharedPreferencesUtils.getStoredMessage(getBaseContext(), "AdName");
+
         File adImageFile = new File(SDCardUtils.getADImage(newAdName));
 
         if (adImageFile.exists()) {
@@ -42,11 +51,28 @@ public class AdsActivity extends Activity {
             getSharedPreferences("AppConfig", MODE_PRIVATE).edit().putInt("ad_version", 0);
         }
 
+        ivAd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isClicked=true;
+                Intent intent=new Intent(AdsActivity.this,AdsDetailsActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
+        skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isSkip=true;
+                Intent intent=new Intent(AdsActivity.this,LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         new Thread(new Runnable() {
             @Override
             public void run() {
-
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
@@ -55,9 +81,11 @@ public class AdsActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        if(isClicked==false && isSkip==false){
+                            startActivity(new Intent(AdsActivity.this, LoginActivity.class));
+                            finish();
+                        }
 
-                        startActivity(new Intent(AdsActivity.this, LoginActivity.class));
-                        finish();
 
                     }
                 });
