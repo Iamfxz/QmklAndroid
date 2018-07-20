@@ -11,7 +11,7 @@ import retrofit2.http.Query;
  * 使用token登录
  * 即自动登录
  */
-public interface UserInfo {
+public interface PostUserInfo {
     @POST("user/info")
     Call<ResponseInfo> getCall(@Field("token") String token);
 }

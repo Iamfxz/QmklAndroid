@@ -159,6 +159,7 @@ public class LoginActivity extends BaseActivity {
                 .show();
     }
 
+
     //登录调用API发送登录数据给服务器
     public void postLogin(Context context, LoginRequest r){
 
@@ -188,7 +189,7 @@ public class LoginActivity extends BaseActivity {
                     //TODO
                     //接下来进入登录界面
                 }else{
-                Toast.makeText(getApplicationContext(),"发生未知错误,请反馈给开发者",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"发生未知错误,请反馈给开发者",Toast.LENGTH_SHORT).show();
                 }
             }
             //请求失败时回调
