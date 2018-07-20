@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.util.CountDownTimer;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
@@ -61,6 +62,7 @@ public class AdsActivity extends Activity {
             }
         });
 
+        new Thread(new CountDownTimer(3,skip)).start();
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
