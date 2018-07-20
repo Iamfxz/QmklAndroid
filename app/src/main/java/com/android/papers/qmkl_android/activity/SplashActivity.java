@@ -62,8 +62,8 @@ public class SplashActivity extends Activity {
             @Override
             public void onResponse(Call<ResponseInfo<AdData>> call, Response<ResponseInfo<AdData>> response) {
                 //广告页当前不可用
-                if (!response.body().getData().isEnabled()||
-                        Integer.parseInt(response.body().getCode())!=successCode) {
+                if (Integer.parseInt(Objects.requireNonNull(response.body()).getCode())!=successCode||
+                        !Objects.requireNonNull(response.body()).getData().isEnabled()) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
