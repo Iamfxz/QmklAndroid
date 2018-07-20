@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.util.SDCardUtils;
+import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
 import java.io.File;
 
@@ -18,6 +19,7 @@ import butterknife.ButterKnife;
 //第二启动页 (放广告的页面 缺省)
 public class AdsActivity extends Activity {
 
+    String newAdName;
     @BindView(R.id.iv_ad)
     ImageView ivAd;
 
@@ -31,7 +33,8 @@ public class AdsActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        File adImageFile = new File(SDCardUtils.getADImage());
+        newAdName = SharedPreferencesUtils.getStoredMessage(getBaseContext(), "AdName");
+        File adImageFile = new File(SDCardUtils.getADImage(newAdName));
 
         if (adImageFile.exists()) {
             ivAd.setImageURI(Uri.fromFile(adImageFile));

@@ -97,8 +97,8 @@ public class SDCardUtils {
         return adImagePath;
     }
 
-    public static String getADImage() {
-        return getADImagePath() + "ad.png";
+    public static String getADImage(String picName) {
+        return getADImagePath() + picName+ ".png";
     }
 
     /**

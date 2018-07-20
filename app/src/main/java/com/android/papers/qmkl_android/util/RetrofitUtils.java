@@ -3,6 +3,7 @@ package com.android.papers.qmkl_android.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,6 +26,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class RetrofitUtils {
+
+
+
 
     //获取广告
     public static Call postAd(final Context context){

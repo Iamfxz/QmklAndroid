@@ -3,7 +3,7 @@ package com.android.papers.qmkl_android.model;
 public class AdData {
     String createdAt;
     boolean enabled;
-    String fallback,id,pic,remark,updatedAturl,views;
+    String fallback,id,pic,remark,updatedAt,url,views;
 
     public String getCreatedAt() {
         return createdAt;
@@ -53,12 +53,20 @@ public class AdData {
         this.remark = remark;
     }
 
-    public String getUpdatedAturl() {
-        return updatedAturl;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdatedAturl(String updatedAturl) {
-        this.updatedAturl = updatedAturl;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getViews() {
