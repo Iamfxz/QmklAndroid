@@ -27,6 +27,13 @@
         <activity android:name=".activity.AdsActivity"/>
         <activity android:name=".activity.AdsDetailsActivity"/>
         <activity android:name=".activity.MainActivity"/>
+<<<<<<< HEAD
+=======
+        <activity android:name=".activity.WebViewActivity"/>
+        <activity android:name=".activity.FileDetailActivity"/>
+        <activity android:name=".activity.FileFolderActivity"/>
+
+>>>>>>> 7ed9bc4888b29d0ca310b2085a943d5cd39e367e
     </application>
 
 </manifest>

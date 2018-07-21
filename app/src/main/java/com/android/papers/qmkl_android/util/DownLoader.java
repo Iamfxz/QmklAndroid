@@ -46,6 +46,14 @@ public class DownLoader {
         return file;
     }
 
+    /**
+     * 下载文件的线程
+     *
+     * @param url 下载地址url
+     * @param destination 下载目的地
+     * @param callback
+     * @return
+     */
     public static Thread downloadPaperFile(final String url, final String destination, final DownloadTaskCallback callback) {
         return new Thread(new Runnable() {
             @Override
@@ -152,8 +160,9 @@ public class DownLoader {
     /**
      * 为下载文件适当添加后缀以确定下载文件的储存名唯一
      *
-     * @param name
-     * @return
+     * @param name 文件名
+     * @param suffix 后缀：第几个同名文件
+     * @return 文件名+（后缀名）
      */
     public static String addSuffix(String name, int suffix) {
         StringBuffer buffer = new StringBuffer(name);

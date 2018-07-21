@@ -1,6 +1,7 @@
 package com.android.papers.qmkl_android.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,8 +20,12 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
+<<<<<<< HEAD
 import com.android.papers.qmkl_android.util.SHAarithmetic;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
+=======
+import com.android.papers.qmkl_android.util.SHAArithmetic;
+>>>>>>> 7ed9bc4888b29d0ca310b2085a943d5cd39e367e
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -147,13 +152,13 @@ public class LoginActivity extends BaseActivity {
             case R.id.user_info:
                 break;
             case R.id.forget_psw:
-//                startActivity(new Intent(LoginActivity.this,WebViewActivity.class));  //忘记密码 进入短信验证并找回
+                startActivity(new Intent(LoginActivity.this,WebViewActivity.class));  //忘记密码 进入短信验证并找回
                 break;
         }
     }
 
     private void doLogin(String username,String password) {
-        String SHApassword = SHAarithmetic.encode(password);//密码加密
+        String SHApassword = SHAArithmetic.encode(password);//密码加密
         LoginRequest req = new LoginRequest(username,SHApassword);//账号密码封装
 
         //使用com.zyao89:zloading:1.1.2引用別人的加载动画
@@ -172,7 +177,7 @@ public class LoginActivity extends BaseActivity {
 
         //创建Retrofit对象
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
+                .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
                 .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
                 .build();
 
@@ -193,10 +198,18 @@ public class LoginActivity extends BaseActivity {
                     Toast.makeText(getApplicationContext(),"请检查账号密码是否准确",Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }else if (resultCode == successCode){
+                    dialog.dismiss();;
                     String token = Objects.requireNonNull(response.body()).getData().toString();
+<<<<<<< HEAD
                     //接下来进入登录界面
                     SharedPreferencesUtils.setStoredMessage(getBaseContext(),"token",token);
                     Log.d(TAG, "已保存正确token值");
+=======
+                    //TODO
+                    //token记得存储到本地
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    startActivity(intent);
+>>>>>>> 7ed9bc4888b29d0ca310b2085a943d5cd39e367e
                 }else{
                     Toast.makeText(getApplicationContext(),"发生未知错误,请反馈给开发者",Toast.LENGTH_SHORT).show();
                     dialog.dismiss();

@@ -22,6 +22,10 @@ import android.view.WindowManager;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+/**
+ * 设置透明状态栏
+ *      这种方法有点老，目前应该还有更好的方法，待改
+ */
 public class SystemBarTintManager {
     /**
      * The default system bar tint color value.
@@ -43,7 +47,10 @@ public class SystemBarTintManager {
     static {
         Method methodGetter = null;
         try {
+            //可能不支持所有的API
+            @SuppressLint("PrivateApi")
             Class<?> sysClass = Class.forName("android.os.SystemProperties");
+
             methodGetter = sysClass.getDeclaredMethod("get", String.class);
             sIsMiuiV6 = "V6".equals((String) methodGetter.invoke(sysClass, "ro.miui.ui.version.name"));
             sIsMiuiV7 = "V7".equals((String) methodGetter.invoke(sysClass, "ro.miui.ui.version.name"));
