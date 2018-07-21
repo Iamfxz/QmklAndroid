@@ -5,9 +5,8 @@ import android.os.Parcelable;
 
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 
-
 /**
- * Created by Administrator on 16/4/23.
+ *
  */
 public class PaperFile implements Parcelable {
 

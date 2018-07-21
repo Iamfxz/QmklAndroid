@@ -7,12 +7,18 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.ui.DiscoveryFragment;
+import com.android.papers.qmkl_android.ui.DownloadedFragment;
 import com.android.papers.qmkl_android.ui.ResourceFragment;
+import com.android.papers.qmkl_android.ui.StudentsCircleFragment;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
 
 import java.util.Timer;
@@ -27,22 +33,21 @@ public class MainActivity extends FragmentActivity {
     //4个切换的页面的fragment.
     private Class mFragmentArray[] = {
             ResourceFragment.class,
-//            DownloadedFragment.class,
-//            StudentsCircleFragment.class,
-//            DiscoveryFragment.class
+            DownloadedFragment.class,
+            StudentsCircleFragment.class,
+            DiscoveryFragment.class
     };
 
     //tab栏图标
     private int mImageArray[] = {
             R.drawable.tab_resource,
-//            R.drawable.tab_downloaded,
-//            R.drawable.tab_students,
-//            R.drawable.tab_discovery
+            R.drawable.tab_downloaded,
+            R.drawable.tab_students,
+            R.drawable.tab_discovery
     };
 
     //tab栏的字
     private String mTextArray[] = { "资源", "已下载", "学生圈", "发现"};
-
     private static Boolean isExit = false; //是否退出
 
     @Override
@@ -95,21 +100,21 @@ public class MainActivity extends FragmentActivity {
         mTabHost.setup(this, getSupportFragmentManager(), R.id.real_tab_content);
         mTabHost.getTabWidget().setShowDividers(0);
 
-//        int count = mFragmentArray.length;
-//        for (int i = 0; i < count; i++) {
-//            TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTextArray[i])
-//                    .setIndicator(getTabItemView(i));
-//            mTabHost.addTab(tabSpec, mFragmentArray[i], null);
-//            mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_background);
-//        }
+        int count = mFragmentArray.length;
+        for (int i = 0; i < count; i++) {
+            TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTextArray[i])
+                    .setIndicator(getTabItemView(i));
+            mTabHost.addTab(tabSpec, mFragmentArray[i], null);
+            mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_background);
+        }
     }
 
-//    private View getTabItemView(int index) {
-//        View view = mLayoutInflater.inflate(R.layout.tab_item_view, null);
-//        ImageView imageView = (ImageView) view.findViewById(R.id.imageview);
-//        imageView.setImageResource(mImageArray[index]);
-//        return view;
-//    }
+    private View getTabItemView(int index) {
+        View view = mLayoutInflater.inflate(R.layout.tab_item_view, null);
+        ImageView imageView = view.findViewById(R.id.imageview);
+        imageView.setImageResource(mImageArray[index]);
+        return view;
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

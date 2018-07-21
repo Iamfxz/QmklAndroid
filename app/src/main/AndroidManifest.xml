@@ -26,6 +26,11 @@
         <activity android:name=".activity.LoginActivity"/>
         <activity android:name=".activity.AdsActivity"/>
         <activity android:name=".activity.AdsDetailsActivity"/>
+        <activity android:name=".activity.MainActivity"/>
+        <activity android:name=".activity.WebViewActivity"/>
+        <activity android:name=".activity.FileDetailActivity"/>
+        <activity android:name=".activity.FileFolderActivity"/>
+
     </application>
 
 </manifest>

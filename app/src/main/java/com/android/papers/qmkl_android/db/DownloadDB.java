@@ -20,14 +20,14 @@ public class DownloadDB extends SQLiteOpenHelper {
 
     private SQLiteDatabase db;
 
-    public static final String TABLE_NAME = "download_info";
-    public static final String ID = "id";
-    public static final String NAME = "name";
-    public static final String COURSE = "course";
-    public static final String SIZE = "size";
-    public static final String TYPE = "type";
-    public static final String URL = "url";
-    public static final String TIME = "time";
+    private static final String TABLE_NAME = "download_info";
+    private static final String ID = "id";
+    private static final String NAME = "name";
+    private static final String COURSE = "course";
+    private static final String SIZE = "size";
+    private static final String TYPE = "type";
+    private static final String URL = "url";
+    private static final String TIME = "time";
 
     private static final String QUERY_DOWNLOADED = "SELECT * FROM " + TABLE_NAME
             + " WHERE " + URL + " = ?";
@@ -101,7 +101,9 @@ public class DownloadDB extends SQLiteOpenHelper {
 
     public boolean isEmpty() {
         Cursor cursor = db.rawQuery(GET_DOWNLOADED, null);
-        return !cursor.moveToFirst();
+        boolean result = !cursor.moveToFirst();
+        cursor.close();
+        return result;
     }
 
     public List<DownloadedFile> getDownloadedFiles() {
