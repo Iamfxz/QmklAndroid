@@ -26,6 +26,7 @@
         <activity android:name=".activity.LoginActivity"/>
         <activity android:name=".activity.AdsActivity"/>
         <activity android:name=".activity.AdsDetailsActivity"/>
+        <activity android:name=".activity.MainActivity"/>
     </application>
 
 </manifest>

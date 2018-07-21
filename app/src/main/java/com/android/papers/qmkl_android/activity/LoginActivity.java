@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.util.SHAarithmetic;
+import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -81,9 +83,11 @@ public class LoginActivity extends BaseActivity {
                         (Objects.requireNonNull(userPsw.getEditText()).getText().toString().length()>0))
                 {
                     loginBtn.setBackgroundColor(getResources().getColor(R.color.blue));
+                    loginBtn.setEnabled(true);
                 }
                 else {
                     loginBtn.setBackgroundColor(getResources().getColor(R.color.btn_unable));
+                    loginBtn.setEnabled(false);
                 }
             }
         });
@@ -104,8 +108,10 @@ public class LoginActivity extends BaseActivity {
                 if ((userPhoneNum.getEditText().getText().toString().length()>0) &&
                         (userPsw.getEditText().getText().toString().length()>0)){
                     loginBtn.setBackgroundColor(getResources().getColor(R.color.blue));
+                    loginBtn.setEnabled(true);
                 }else{
                     loginBtn.setBackgroundColor(getResources().getColor(R.color.btn_unable));
+                    loginBtn.setEnabled(false);
                 }
             }
         });
@@ -188,8 +194,9 @@ public class LoginActivity extends BaseActivity {
                     dialog.dismiss();
                 }else if (resultCode == successCode){
                     String token = Objects.requireNonNull(response.body()).getData().toString();
-                    //TODO
                     //接下来进入登录界面
+                    SharedPreferencesUtils.setStoredMessage(getBaseContext(),"token",token);
+                    Log.d(TAG, "已保存正确token值");
                 }else{
                     Toast.makeText(getApplicationContext(),"发生未知错误,请反馈给开发者",Toast.LENGTH_SHORT).show();
                     dialog.dismiss();

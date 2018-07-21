@@ -24,7 +24,6 @@ public class CountDownTimer implements Runnable{
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    skip.setClickable(false);
                     skip.setText("跳过(" + time + "秒)");
                 }
             });
