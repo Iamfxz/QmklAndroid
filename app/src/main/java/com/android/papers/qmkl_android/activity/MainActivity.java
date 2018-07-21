@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.ui.ResourceFragment;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
 
 import java.util.Timer;
@@ -23,21 +24,21 @@ public class MainActivity extends FragmentActivity {
     private FragmentTabHost mTabHost;
     private LayoutInflater mLayoutInflater;
 
- /*   //4个切换的页面的fragment.
+    //4个切换的页面的fragment.
     private Class mFragmentArray[] = {
             ResourceFragment.class,
-            DownloadedFragment.class,
-            StudentsCircleFragment.class,
-            DiscoveryFragment.class
+//            DownloadedFragment.class,
+//            StudentsCircleFragment.class,
+//            DiscoveryFragment.class
     };
 
     //tab栏图标
     private int mImageArray[] = {
             R.drawable.tab_resource,
-            R.drawable.tab_downloaded,
-            R.drawable.tab_students,
-            R.drawable.tab_discovery
-    };*/
+//            R.drawable.tab_downloaded,
+//            R.drawable.tab_students,
+//            R.drawable.tab_discovery
+    };
 
     //tab栏的字
     private String mTextArray[] = { "资源", "已下载", "学生圈", "发现"};
@@ -90,7 +91,7 @@ public class MainActivity extends FragmentActivity {
 
     private void initView() {
         mLayoutInflater = LayoutInflater.from(this);
-        mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+        mTabHost = findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.real_tab_content);
         mTabHost.getTabWidget().setShowDividers(0);
 
