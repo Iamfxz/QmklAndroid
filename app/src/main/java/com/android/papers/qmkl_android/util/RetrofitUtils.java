@@ -27,9 +27,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitUtils {
 
-
-
-
     //获取广告
     public static Call postAd(final Context context){
         //创建Retrofit对象
@@ -41,10 +38,9 @@ public class RetrofitUtils {
         //创建 网络请求接口 的实例
         PostAds request = retrofit.create(PostAds.class);
 
-        //对 发送请求 进行封装(广告地址)
-        Call<ResponseInfo<AdData>> call = request.getCall();
+        //返回广告地址
 
-        return call;
+        return request.getCall();
 
     }
 }

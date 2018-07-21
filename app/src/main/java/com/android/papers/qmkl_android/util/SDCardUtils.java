@@ -13,14 +13,14 @@ public class SDCardUtils {
 
     private SDCardUtils()
     {
-        /** cannot be instantiated **/
+        /* cannot be instantiated */
         throw new UnsupportedOperationException("不能实例化");
     }
 
     /**
      * 判断SDCard是否可用
      *
-     * @return
+     * @return 是否可用
      */
     public static boolean isSDCardEnable()
     {
@@ -32,7 +32,7 @@ public class SDCardUtils {
     /**
      * 获取SD卡路径
      *
-     * @return
+     * @return SD卡绝对路径路径+分隔符
      */
     public static String getSDCardPath()
     {
@@ -40,6 +40,11 @@ public class SDCardUtils {
                 + File.separator;
     }
 
+    /**
+     * 检查路径是否存在
+     *
+     * @param path SD卡路径
+     */
     private static void checkPath(String path) {
         File file = new File(path);
         if (!file.exists()) {
@@ -50,7 +55,7 @@ public class SDCardUtils {
     /**
      * 获取App文件目录
      *
-     * @return
+     * @return {SDCardPath}/PapersApp/
      */
     public static String getAppPath() {
         String appPath = getSDCardPath() + "PapersApp" + File.separator;
@@ -61,10 +66,10 @@ public class SDCardUtils {
     /**
      * 获取下载目录
      *
-     * @return
+     * @return {AppPath}/download/
      */
     public static String getDownloadPath() {
-        String downloadPath = getAppPath() + "donwload" + File.separator;
+        String downloadPath = getAppPath() + "download" + File.separator;
         checkPath(downloadPath);
         return downloadPath;
     }
@@ -72,7 +77,7 @@ public class SDCardUtils {
     /**
      * 获取缓存目录
      *
-     * @return
+     * @return {AppPath}/cache/
      */
     public static String getCachePath() {
         String cachePath = getAppPath() + "cache" + File.separator;
@@ -83,7 +88,7 @@ public class SDCardUtils {
     /**
      * 获取数据库文件目录
      *
-     * @return
+     * @return {AppPath}/database/
      */
     public static String getDBPath() {
         String dbPath = getAppPath() + "database" + File.separator;
@@ -91,12 +96,23 @@ public class SDCardUtils {
         return dbPath;
     }
 
+    /**
+     * 获取广告图片地址
+     *
+     * @return {AppPath}/ad/
+     */
     public static String getADImagePath() {
         String adImagePath = getAppPath() + "ad" + File.separator;
         checkPath(adImagePath);
         return adImagePath;
     }
 
+    /**
+     * 获取本地广告图片路径
+     *
+     * @param picName 广告名字
+     * @return 广告图片路径
+     */
     public static String getADImage(String picName) {
         return getADImagePath() + picName+ ".png";
     }
@@ -104,7 +120,7 @@ public class SDCardUtils {
     /**
      * 获取SD卡的剩余容量 单位byte
      *
-     * @return
+     * @return SD卡的剩余容量
      */
     public static long getSDCardAllSize()
     {
@@ -112,9 +128,9 @@ public class SDCardUtils {
         {
             StatFs stat = new StatFs(getSDCardPath());
             // 获取空闲的数据块的数量
-            long availableBlocks = (long) stat.getAvailableBlocks() - 4;
+            long availableBlocks = stat.getAvailableBlocksLong() - 4;
             // 获取单个数据块的大小（byte）
-            long freeBlocks = stat.getAvailableBlocks();
+            long freeBlocks = stat.getAvailableBlocksLong();
             return freeBlocks * availableBlocks;
         }
         return 0;
@@ -123,7 +139,7 @@ public class SDCardUtils {
     /**
      * 获取指定路径所在空间的剩余可用容量字节数，单位byte
      *
-     * @param filePath
+     * @param filePath 指定路径
      * @return 容量字节 SDCard可用空间，内部存储可用空间
      */
     public static long getFreeBytes(String filePath)
@@ -137,17 +153,18 @@ public class SDCardUtils {
             filePath = Environment.getDataDirectory().getAbsolutePath();
         }
         StatFs stat = new StatFs(filePath);
-        long availableBlocks = (long) stat.getAvailableBlocks() - 4;
-        return stat.getBlockSize() * availableBlocks;
+        long availableBlocks = (long) stat.getAvailableBlocksLong() - 4;
+        return stat.getBlockSizeLong() * availableBlocks;
     }
 
     /**
      * 获取系统存储路径
      *
-     * @return
+     * @return 系统存储路径
      */
     public static String getRootDirectoryPath()
     {
         return Environment.getRootDirectory().getAbsolutePath();
     }
+
 }

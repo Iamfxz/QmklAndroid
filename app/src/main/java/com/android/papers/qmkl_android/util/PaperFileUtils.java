@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -53,6 +54,7 @@ public class PaperFileUtils {
     };
 
     /**
+     * 将字节转换为单位为KB,MB,GB的#.##的双精度十进制数
      *
      * @param size 文件大小 单位 kb
      * @return 转换后的字符串
@@ -75,6 +77,7 @@ public class PaperFileUtils {
     }
 
     /**
+     * 获取文件拓展名
      *
      * @param fileName 文件名
      * @return 文件拓展名
@@ -88,19 +91,24 @@ public class PaperFileUtils {
     /**
      * 文件后缀获得相应资源文件id
      *
-     * @param type
-     * @return
+     * @param type 文件拓展名
+     * @return 文件图标
      */
     public static int parseImageResource(String type) {
         if (types.containsKey(type.toLowerCase())) {
             return (int)types.get(type.toLowerCase());
         } else {
-            return (int)types.get("unknow");
+            return (int)types.get("unknow");//原意unknown
         }
     }
 
+    /**
+     * 获取当前时间，yyyy-MM-dd 默认中国表达方式
+     *
+     * @return 当前时间的字符串
+     */
     public static String getCurrentTime() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         return simpleDateFormat.format(new Date());
     }
 

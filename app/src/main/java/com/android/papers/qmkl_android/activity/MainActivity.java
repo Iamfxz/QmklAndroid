@@ -24,6 +24,9 @@ import com.android.papers.qmkl_android.util.SystemBarTintManager;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * 登录后的主界面
+ */
 public class MainActivity extends FragmentActivity {
 
     //底部的tab控件
@@ -32,10 +35,10 @@ public class MainActivity extends FragmentActivity {
 
     //4个切换的页面的fragment.
     private Class mFragmentArray[] = {
-            ResourceFragment.class,
-            DownloadedFragment.class,
-            StudentsCircleFragment.class,
-            DiscoveryFragment.class
+            ResourceFragment.class,//资源页面
+            DownloadedFragment.class,//已下载页面
+            StudentsCircleFragment.class,//学生圈界面
+            DiscoveryFragment.class//发现界面
     };
 
     //tab栏图标
@@ -87,15 +90,21 @@ public class MainActivity extends FragmentActivity {
     }
     public void onResume() {
         super.onResume();
-//        MobclickAgent.onResume(this);
+//        MobclickAgent.onResume(this);原本是友盟的接口，现在已废弃
     }
     public void onPause() {
         super.onPause();
 //        MobclickAgent.onPause(this);
     }
 
+    /**
+     * 初始化主界面的视图
+     */
     private void initView() {
+        //
         mLayoutInflater = LayoutInflater.from(this);
+
+        //设置底部tab控件
         mTabHost = findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.real_tab_content);
         mTabHost.getTabWidget().setShowDividers(0);

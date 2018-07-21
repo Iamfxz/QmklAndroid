@@ -41,7 +41,13 @@ public class LogUtils {
             if (isDebug)
                 Log.v(TAG, msg);
         }
-        // 下面是传入自定义tag的函数
+
+        /**
+         *  下面是四个传入自定义tag的函数
+         *
+         *  @prame tag 标记，一般为代码所在文件名
+         *  @prame msg 日志信息
+         */
         public static void i(String tag, String msg)
         {
             if (isDebug)
