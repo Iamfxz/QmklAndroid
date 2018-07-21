@@ -6,6 +6,7 @@ import android.widget.Toast;
 /**
  * Created by 凌子文 on 15/7/22.
  * Content Toast相关工具
+ *      用于弹出各种提示的综合管理
  */
 public class ToastUtils {
 
@@ -19,8 +20,8 @@ public class ToastUtils {
     /**
      * 短时间显示Toast
      *
-     * @param context
-     * @param message
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
      */
     public static void showShort(Context context, CharSequence message)
     {
@@ -31,8 +32,8 @@ public class ToastUtils {
     /**
      * 短时间显示Toast
      *
-     * @param context
-     * @param message
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
      */
     public static void showShort(Context context, int message)
     {
@@ -42,8 +43,8 @@ public class ToastUtils {
     /**
      * 长时间显示Toast
      *
-     * @param context
-     * @param message
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
      */
     public static void showLong(Context context, CharSequence message)
     {
@@ -54,8 +55,8 @@ public class ToastUtils {
     /**
      * 长时间显示Toast
      *
-     * @param context
-     * @param message
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
      */
     public static void showLong(Context context, int message)
     {
@@ -65,9 +66,9 @@ public class ToastUtils {
     /**
      * 自定义显示Toast时间
      *
-     * @param context
-     * @param message
-     * @param duration
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
+     * @param duration 持续的时间
      */
     public static void show(Context context, CharSequence message, int duration)
     {
@@ -78,9 +79,9 @@ public class ToastUtils {
     /**
      * 自定义显示Toast时间
      *
-     * @param context
-     * @param message
-     * @param duration
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
+     * @param duration 持续的时间
      */
     public static void show(Context context, int message, int duration)
     {

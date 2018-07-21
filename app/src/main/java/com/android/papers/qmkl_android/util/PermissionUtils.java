@@ -152,6 +152,7 @@ public class PermissionUtils {
 
     /**
      * 一次申请多个权限
+     *
      */
     public static void requestMultiPermissions(final Activity activity, PermissionGrant grant) {
 

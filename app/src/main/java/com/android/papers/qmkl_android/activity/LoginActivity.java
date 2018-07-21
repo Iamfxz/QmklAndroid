@@ -19,7 +19,7 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
-import com.android.papers.qmkl_android.util.SHAarithmetic;
+import com.android.papers.qmkl_android.util.SHAArithmetic;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -148,7 +148,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void doLogin(String username,String password) {
-        String SHApassword = SHAarithmetic.encode(password);//密码加密
+        String SHApassword = SHAArithmetic.encode(password);//密码加密
         LoginRequest req = new LoginRequest(username,SHApassword);//账号密码封装
 
         //使用com.zyao89:zloading:1.1.2引用別人的加载动画
