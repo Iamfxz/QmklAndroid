@@ -72,7 +72,7 @@ public class FileFolderActivity extends BaseActivity {
 
         downloadDB = DownloadDB.getInstance(getApplicationContext());
 
-        baocuo = (TextView) findViewById(R.id.uploadImg_course);
+        baocuo = findViewById(R.id.uploadImg_course);
         baocuo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -2,6 +2,7 @@ package com.android.papers.qmkl_android.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +22,7 @@ import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
+import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -193,10 +195,10 @@ public class LoginActivity extends BaseActivity {
                     Toast.makeText(getApplicationContext(),"请检查账号密码是否准确",Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }else if (resultCode == successCode){
-                    dialog.dismiss();;
+                    dialog.dismiss();
+                    //token存储到本地
                     String token = Objects.requireNonNull(response.body()).getData().toString();
-                    //TODO
-                    //token记得存储到本地
+                    SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"token",token);
                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                     startActivity(intent);
                 }else{
