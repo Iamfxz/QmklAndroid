@@ -1,14 +1,20 @@
 package com.android.papers.qmkl_android.activity;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.impl.PostLogin;
@@ -16,6 +22,7 @@ import com.android.papers.qmkl_android.requestModel.TokenLoginRequest;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -28,13 +35,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AdsDetailsActivity extends Activity {
 
-    private static final int errorCode=404;
-    private static final int successCode = 200;
     private static final String TAG = "AdsDetailsActivity";
-    private boolean isLogin =false;
     private String adUrl;
     @BindView(R.id.ads_webview)
     WebView ads_webview;
+    @BindView((R.id.xtfy_activity_back_iv))
+    ImageView back_iv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,19 @@ public class AdsDetailsActivity extends Activity {
 
         ads_webview.getSettings().setJavaScriptEnabled(true);
         ads_webview.loadUrl(adUrl);
+
+        back_iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                    nextActivity(LoginActivity.class);
+                }
+                else {
+                    nextActivity(MainActivity.class);
+                }
+            }
+        });
+
         /*网页*/
         ads_webview.setWebViewClient(new WebViewClient() {
             @Override
@@ -54,10 +73,17 @@ public class AdsDetailsActivity extends Activity {
                     view.loadUrl(url);
                     return false;
                 }else{
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    startActivity(intent);
+                    try{
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(intent);
+
+                    }catch (ActivityNotFoundException e){
+                        e.printStackTrace();
+                        Log.d(TAG, "没有匹配");
+                    }
                     return true;
                 }
+
             }
         });
     }
@@ -65,8 +91,15 @@ public class AdsDetailsActivity extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        postLogin(getApplication(),SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
+        if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+            nextActivity(LoginActivity.class);
+        }
+        else {
+            nextActivity(MainActivity.class);
+        }
     }
+
+
 
 
     public void nextActivity(Class clazz) {
@@ -75,48 +108,6 @@ public class AdsDetailsActivity extends Activity {
         finish();
     }
 
-    //判断当前token是否可以登录并启动下一启动活动
-    public void postLogin(final Context context, String token){
-        if(token!=null){
-            //创建Retrofit对象
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
-                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                    .build();
-
-            //创建 网络请求接口 的实例
-            PostLogin request = retrofit.create(PostLogin.class);
-
-            //对 发送请求 进行封装(账号和密码)
-            Call<ResponseInfo> call = request.getTokenCall(new TokenLoginRequest(token));
-
-            //发送网络请求(异步)
-            call.enqueue(new Callback<ResponseInfo>() {
-                //请求成功时回调
-                @Override
-                public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println(resultCode);
-                    if(resultCode == errorCode){
-                        nextActivity(LoginActivity.class);
-                    }else if (resultCode == successCode){
-                        SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"token",response.body().getData().toString());
-                        nextActivity(MainActivity.class);
-                    }else{
-                        nextActivity(LoginActivity.class);
-                    }
-                }
-                //请求失败时回调
-                @Override
-                public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
-                    nextActivity(LoginActivity.class);
-                }
-            });
-        }
-        else{
-            nextActivity(LoginActivity.class);
-        }
-    }
 
     public void onResume() {
         super.onResume();

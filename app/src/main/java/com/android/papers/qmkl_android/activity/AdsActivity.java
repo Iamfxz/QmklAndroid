@@ -22,6 +22,7 @@ import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -72,7 +73,12 @@ public class AdsActivity extends Activity {
             public void onClick(View v) {
                 isClicked=true;
                 Log.d(TAG, "点击广告");
-                nextActivity(AdsDetailsActivity.class);
+                Intent intent=new Intent(AdsActivity.this,AdsDetailsActivity.class);
+//                nextActivity(AdsDetailsActivity.class);
+                intent.putExtra("url",SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback"));
+                intent.putExtra("title","广告");
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -82,7 +88,12 @@ public class AdsActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "点击跳过");
                 isSkip=true;
-                postLogin(getApplication(),SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
+                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                    nextActivity(LoginActivity.class);
+                }
+                else {
+                    nextActivity(MainActivity.class);
+                }
             }
         });
         new Thread(new Runnable() {
@@ -96,11 +107,13 @@ public class AdsActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(isClicked==false && isSkip==false){
-                            postLogin(getApplication(),SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
-                        }
-
-
+                        if(isSkip==false && isClicked==false){
+                            if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                                nextActivity(LoginActivity.class);
+                            }
+                            else {
+                                nextActivity(MainActivity.class);
+                            }                        }
                     }
                 });
             }
@@ -123,49 +136,6 @@ public class AdsActivity extends Activity {
                 });
             }
         }).start();
-    }
-
-    //判断当前token是否可以登录并启动下一启动活动
-    public void postLogin(final Context context, String token){
-        if(token!=null){
-            //创建Retrofit对象
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
-                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                    .build();
-
-            //创建 网络请求接口 的实例
-            PostLogin request = retrofit.create(PostLogin.class);
-
-            //对 发送请求 进行封装(账号和密码)
-            Call<ResponseInfo> call = request.getTokenCall(new TokenLoginRequest(token));
-
-            //发送网络请求(异步)
-            call.enqueue(new Callback<ResponseInfo>() {
-                //请求成功时回调
-                @Override
-                public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println(resultCode);
-                    if(resultCode == errorCode){
-                        nextActivity(LoginActivity.class);
-                    }else if (resultCode == successCode){
-                        SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"token",response.body().getData().toString());
-                        nextActivity(MainActivity.class);
-                    }else{
-                        nextActivity(LoginActivity.class);
-                    }
-                }
-                //请求失败时回调
-                @Override
-                public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
-                    nextActivity(LoginActivity.class);
-                }
-            });
-        }
-        else{
-            nextActivity(LoginActivity.class);
-        }
     }
 
     public void onResume() {

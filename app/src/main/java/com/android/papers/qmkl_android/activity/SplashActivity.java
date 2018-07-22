@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -37,7 +39,7 @@ public class SplashActivity extends Activity {
     private static final int successCode = 200;
     private static final String TAG = "SplashActivity";
     private String oldAdName,newAdName,adPath;
-    private boolean isLogin =false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,9 +52,7 @@ public class SplashActivity extends Activity {
          * */
         PermissionUtils.requestPermission(this, PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
 
-//        测试登录
-//        Request request=new Request("13157694909","f9e84102d063cf5887093255b7ad7bc64758975f");
-//        postLogin(this,"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzI3NjE0MDksImlhdCI6MTUzMjE1NjYwOSwidXNlcm5hbWUiOiIxMzE1NzY5NDkwOSJ9.yK9Y7CiIMYmoz6bJfWdXjk4gzzmidCCZwY70348R5sg");
+        postLogin(getApplication(),SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
 
         Call<ResponseInfo<AdData>> call=RetrofitUtils.postAd(this);
         //发送网络请求(异步)
@@ -74,7 +74,12 @@ public class SplashActivity extends Activity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    postLogin(getApplication(),SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
+                                    if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                                        nextActivity(LoginActivity.class);
+                                    }
+                                    else {
+                                        nextActivity(MainActivity.class);
+                                    }
                                 }
                             });
                         }
@@ -109,7 +114,6 @@ public class SplashActivity extends Activity {
                                 //缓存失败，进入登录界面或者主界面
                                 Toast.makeText(getApplicationContext(),"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
                                 e.printStackTrace();
-                                postLogin(getApplication(),SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
                             }
                         }
                     }).start();
@@ -163,7 +167,7 @@ public class SplashActivity extends Activity {
         return adImageFile.exists();
     }
 
-    //判断当前token是否可以登录并启动下一启动活动
+    //判断当前token是否可以登录
     public void postLogin(final Context context, String token){
         if(token!=null){
             //创建Retrofit对象
@@ -186,24 +190,24 @@ public class SplashActivity extends Activity {
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                     System.out.println(resultCode);
                     if(resultCode == errorCode){
-                        nextActivity(LoginActivity.class);
+                        SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"hasLogin","false");
                     }else if (resultCode == successCode){
                         SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"token",response.body().getData().toString());
-                        nextActivity(MainActivity.class);
+                        SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"hasLogin","true");
                     }else{
-                        nextActivity(LoginActivity.class);
+                        SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"hasLogin","false");
                     }
                 }
                 //请求失败时回调
                 @Override
                 public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
                     Log.d(TAG, "请求失败");
-                    nextActivity(LoginActivity.class);
+                    SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"hasLogin","false");
                 }
             });
         }
         else{
-            nextActivity(LoginActivity.class);
+            SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"hasLogin","false");
         }
     }
 
