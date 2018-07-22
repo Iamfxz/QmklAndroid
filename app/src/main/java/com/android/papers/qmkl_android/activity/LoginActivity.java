@@ -22,6 +22,7 @@ import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
+import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
@@ -166,65 +167,7 @@ public class LoginActivity extends BaseActivity {
                 .setHintText("Login...")
                 .show();
 
-        postLogin(this, req,dialog);//发送登录请求验证
+        RetrofitUtils.postLogin(LoginActivity.this,getApplicationContext(), req,dialog);//发送登录请求验证
     }
 
-
-    //登录调用API发送登录数据给服务器
-    public void postLogin(Context context, LoginRequest r, final ZLoadingDialog dialog){
-
-        //创建Retrofit对象
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
-                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                .build();
-
-        //创建 网络请求接口 的实例
-        PostLogin request = retrofit.create(PostLogin.class);
-
-        //对 发送请求 进行封装(账号和密码)
-        Call<ResponseInfo> call = request.getCall(r);
-
-        //发送网络请求(异步)
-        call.enqueue(new Callback<ResponseInfo>() {
-            //请求成功时回调
-            @Override
-            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                System.out.println(resultCode);
-                if(resultCode == errorCode){
-                    Toast.makeText(getApplicationContext(),"请检查账号密码是否准确",Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                }else if (resultCode == successCode){
-                    dialog.dismiss();
-                    //token存储到本地
-                    String token = Objects.requireNonNull(response.body()).getData().toString();
-<<<<<<< HEAD
-
-                    //接下来进入登录界面
-                    SharedPreferencesUtils.setStoredMessage(getBaseContext(),"token",token);
-                    Log.d(TAG, "已保存正确token值");
-
-                    //TODO
-                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                    startActivity(intent);
-                    finish();
-
-=======
-                    SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"token",token);
-                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                    startActivity(intent);
->>>>>>> debeeb615ebcc5b8301677d5d8537fb244029326
-                }else{
-                    Toast.makeText(getApplicationContext(),"发生未知错误,请反馈给开发者",Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                }
-            }
-            //请求失败时回调
-            @Override
-            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
-                Toast.makeText(getApplicationContext(),"服务器请求失败",Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 }

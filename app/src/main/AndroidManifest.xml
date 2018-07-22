@@ -27,10 +27,6 @@
         <activity android:name=".activity.AdsActivity"/>
         <activity android:name=".activity.AdsDetailsActivity"/>
         <activity android:name=".activity.MainActivity"/>
-<<<<<<< HEAD
-
-=======
->>>>>>> debeeb615ebcc5b8301677d5d8537fb244029326
         <activity android:name=".activity.WebViewActivity"/>
         <activity android:name=".activity.FileDetailActivity"/>
         <activity android:name=".activity.FileFolderActivity"/>
