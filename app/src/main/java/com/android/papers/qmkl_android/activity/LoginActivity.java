@@ -2,6 +2,7 @@ package com.android.papers.qmkl_android.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -195,8 +196,10 @@ public class LoginActivity extends BaseActivity {
                     Toast.makeText(getApplicationContext(),"请检查账号密码是否准确",Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }else if (resultCode == successCode){
-                    dialog.dismiss();;
+                    dialog.dismiss();
+                    //token存储到本地
                     String token = Objects.requireNonNull(response.body()).getData().toString();
+<<<<<<< HEAD
 
                     //接下来进入登录界面
                     SharedPreferencesUtils.setStoredMessage(getBaseContext(),"token",token);
@@ -207,6 +210,11 @@ public class LoginActivity extends BaseActivity {
                     startActivity(intent);
                     finish();
 
+=======
+                    SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"token",token);
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    startActivity(intent);
+>>>>>>> debeeb615ebcc5b8301677d5d8537fb244029326
                 }else{
                     Toast.makeText(getApplicationContext(),"发生未知错误,请反馈给开发者",Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
