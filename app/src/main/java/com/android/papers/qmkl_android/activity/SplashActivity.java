@@ -12,8 +12,8 @@ import android.widget.Toast;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.AdData;
+import com.android.papers.qmkl_android.requestModel.TokenLoginRequest;
 import com.android.papers.qmkl_android.model.ResponseInfo;
-import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
@@ -49,11 +49,10 @@ public class SplashActivity extends Activity {
          * 如果用户选择授予该权限，则下次启动时才会自主从网络下载广告资源
          * */
         PermissionUtils.requestPermission(this, PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
+
 //        测试登录
 //        Request request=new Request("13157694909","f9e84102d063cf5887093255b7ad7bc64758975f");
-//        RetrofitUtils.postLogin(this,request);
-
-
+//        postLogin(this,"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzI3NjE0MDksImlhdCI6MTUzMjE1NjYwOSwidXNlcm5hbWUiOiIxMzE1NzY5NDkwOSJ9.yK9Y7CiIMYmoz6bJfWdXjk4gzzmidCCZwY70348R5sg");
 
         Call<ResponseInfo<AdData>> call=RetrofitUtils.postAd(this);
         //发送网络请求(异步)
@@ -75,7 +74,7 @@ public class SplashActivity extends Activity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    nextActivity(next());   //不显示广告,跳入mainactivity
+                                    postLogin(getApplication(),SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
                                 }
                             });
                         }
@@ -84,14 +83,14 @@ public class SplashActivity extends Activity {
                     return;
                 }
                 //广告页当前可用
-                oldAdName = SharedPreferencesUtils.getStoredMessage(getBaseContext(), "AdName");
+                oldAdName = SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "AdName");
                 newAdName = response.body().getData().getUpdatedAt();
                 adPath = response.body().getData().getUrl();
-                SharedPreferencesUtils.setStoredMessage(getBaseContext(),"fallback",
+                SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"fallback",
                         response.body().getData().getFallback());
                 //此前尚未缓存过广告数据、广告数据已更新、广告数据被删除，重新缓存
                 if (oldAdName == null || !oldAdName.equals(newAdName) || !checkLocalADImage()) {
-                    SharedPreferencesUtils.setStoredMessage(getBaseContext(), "AdName", newAdName);
+                    SharedPreferencesUtils.setStoredMessage(getApplicationContext(), "AdName", newAdName);
                     Log.d(TAG, "此前尚未缓存过广告数据或者广告数据已更新，重新缓存");
                     //下载广告页
                     new Thread(new Runnable() {
@@ -110,7 +109,7 @@ public class SplashActivity extends Activity {
                                 //缓存失败，进入登录界面或者主界面
                                 Toast.makeText(getApplicationContext(),"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
                                 e.printStackTrace();
-                                nextActivity(next());
+                                postLogin(getApplication(),SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
                             }
                         }
                     }).start();
@@ -130,30 +129,12 @@ public class SplashActivity extends Activity {
         });
     }
 
-    /**
-     * 判断当前用户信息是否存在或失效，存在且有效进入主界面，失效则进入登录界面
-     * @return 下一活动的Class
-     */
-    public Class next(){
-        String token=SharedPreferencesUtils.getStoredMessage(getBaseContext(), "token");
-        if(token!=null){
-            //token合法，返回主界面
-            if(postLogin(getBaseContext(),token)){
-                //返回主界面
-            }
-            else{
-                return LoginActivity.class;
-            }
-        }
-        return LoginActivity.class;
-    }
 
     public void nextActivity(Class clazz) {
         final Intent intent = new Intent(SplashActivity.this, clazz);
         new Thread(new Runnable() {
             @Override
             public void run() {
-
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
@@ -182,44 +163,48 @@ public class SplashActivity extends Activity {
         return adImageFile.exists();
     }
 
-    //判断当前token是否可以登录
-    public boolean postLogin(final Context context, String token){
+    //判断当前token是否可以登录并启动下一启动活动
+    public void postLogin(final Context context, String token){
+        if(token!=null){
+            //创建Retrofit对象
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
+                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                    .build();
 
-        //创建Retrofit对象
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
-                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                .build();
+            //创建 网络请求接口 的实例
+            PostLogin request = retrofit.create(PostLogin.class);
 
-        //创建 网络请求接口 的实例
-        PostLogin request = retrofit.create(PostLogin.class);
+            //对 发送请求 进行封装(账号和密码)
+            Call<ResponseInfo> call = request.getTokenCall(new TokenLoginRequest(token));
 
-        //对 发送请求 进行封装(账号和密码)
-        Call<ResponseInfo> call = request.getTokenCall(token);
-
-        //发送网络请求(异步)
-        call.enqueue(new Callback<ResponseInfo>() {
-            //请求成功时回调
-            @Override
-            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                System.out.println(resultCode);
-                if(resultCode == errorCode){
-                    isLogin =false;
-                }else if (resultCode == successCode){
-                    isLogin =true;
-                }else{
-                    isLogin =false;
+            //发送网络请求(异步)
+            call.enqueue(new Callback<ResponseInfo>() {
+                //请求成功时回调
+                @Override
+                public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
+                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    System.out.println(resultCode);
+                    if(resultCode == errorCode){
+                        nextActivity(LoginActivity.class);
+                    }else if (resultCode == successCode){
+                        SharedPreferencesUtils.setStoredMessage(getApplicationContext(),"token",response.body().getData().toString());
+                        nextActivity(MainActivity.class);
+                    }else{
+                        nextActivity(LoginActivity.class);
+                    }
                 }
-            }
-            //请求失败时回调
-            @Override
-            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
-                isLogin =false;
-            }
-        });
-
-        return isLogin;
+                //请求失败时回调
+                @Override
+                public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+                    Log.d(TAG, "请求失败");
+                    nextActivity(LoginActivity.class);
+                }
+            });
+        }
+        else{
+            nextActivity(LoginActivity.class);
+        }
     }
 
 
