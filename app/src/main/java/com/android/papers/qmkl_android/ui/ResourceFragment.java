@@ -104,12 +104,40 @@ public class ResourceFragment extends Fragment {
             }
         });
 
-        StoreHouseHeader header = new StoreHouseHeader(getActivity());
-        header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, PtrLocalDisplay.dp2px(15));
+        //下拉刷新
+        //StoreHouse风格的头部实现
+        final StoreHouseHeader header = new StoreHouseHeader(getActivity());
+        //显示相关工具类，用于获取用户屏幕宽度、高度以及屏幕密度。同时提供了dp和px的转化方法。
+        header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, 0);
         header.initWithString("finalexam.cn");
         header.setTextColor(R.color.black);
+        ptrFrame.setPinContent(true);//刷新时，保持内容不动，仅头部下移,默认,false
         ptrFrame.setHeaderView(header);
         ptrFrame.addPtrUIHandler(header);
+        ptrFrame.setPtrHandler(new PtrHandler() {
+            /**
+             * 检查是否可以执行下来刷新，比如列表为空或者列表第一项在最上面时。
+             */
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                System.out.println("MainActivity.checkCanDoRefresh");
+                // 默认实现，根据实际情况做改动
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
+            }
+
+            //需要加载数据时触发
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                System.out.println("ResourceFragement.onRefreshBegin");
+                ptrFrame.postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        ptrFrame.refreshComplete();
+                        //mPtrFrame.autoRefresh();//自动刷新
+                    }
+                },1000);
+            }
+        });
         /*ptrFrame.setPtrHandler(new PtrHandler() {
             @Override
             public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
