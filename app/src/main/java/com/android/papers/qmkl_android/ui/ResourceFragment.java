@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,7 +18,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.papers.qmkl_android.R;
-import com.android.papers.qmkl_android.activity.FileFolderActivity;
 import com.android.papers.qmkl_android.activity.WebViewActivity;
 import com.android.papers.qmkl_android.impl.PostFile;
 import com.android.papers.qmkl_android.model.FileRes;
@@ -42,6 +40,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Url;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,6 +58,11 @@ public class ResourceFragment extends Fragment {
     private AcademyAdapter mAdapter;
 
     private ImageView uploadImg;
+
+    //地址变化
+    private String Basepath = "/";
+
+    private int index = 0;//1表示主界面，2表示2级界面
 
 
     /**
@@ -90,8 +94,8 @@ public class ResourceFragment extends Fragment {
         ButterKnife.bind(this, view);
 
 
-        //上传资源按钮
-        uploadImg = (ImageView) view.findViewById(R.id.uploadImage_Academy);
+        //TODO 上传资源按钮
+        uploadImg = view.findViewById(R.id.uploadImage_Academy);
         uploadImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,16 +107,25 @@ public class ResourceFragment extends Fragment {
             }
         });
 
-        //适配器的使用，TODO
+        //TODO 点击文件夹后的操作
         mAdapter = new AcademyAdapter();
         lvAcademy.setAdapter(mAdapter);
         lvAcademy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), FileFolderActivity.class);
-                String folder = mData.getData().get(position);
-                intent.putExtra("folder", folder);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), FileFolderActivity.class);
+//                String folder = mData.getData().get(position);
+//                System.out.println("/"+folder+"/");
+//                intent.putExtra("folder", folder);
+//                startActivity(intent);
+                final String folder = mData.getData().get(position);
+                ptrFrame.postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        loadPaperData(folder);//指定文件夹路径
+                        ptrFrame.refreshComplete();
+                    }
+                },1000);
             }
         });
 
@@ -123,7 +136,6 @@ public class ResourceFragment extends Fragment {
         header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, 0);
         header.initWithString("finalExam");
         header.setTextColor(R.color.black);
-        ptrFrame.setPinContent(true);//刷新时，保持内容不动，仅头部下移,默认,false
         ptrFrame.setHeaderView(header);
         ptrFrame.addPtrUIHandler(header);
         ptrFrame.setPtrHandler(new PtrHandler() {
@@ -144,71 +156,12 @@ public class ResourceFragment extends Fragment {
                 ptrFrame.postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        //TODO 在这里使用loadPaperData()函数加载数据
-                        loadPaperData();
+                        loadPaperData( null);//全部文件夹
                         ptrFrame.refreshComplete();
-                        //mPtrFrame.autoRefresh();//自动刷新
                     }
                 },1000);
             }
         });
-        /*ptrFrame.setPtrHandler(new PtrHandler() {
-            @Override
-            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
-                return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
-            }
-            @Override
-            public void onRefreshBegin(final PtrFrameLayout frame) {
-                //loadPaperData();
-
-                OkHttpClientManager.getAsyn(getResources().getString(R.string.data_url),
-                        new OkHttpClientManager.ResultCallback<PaperData>() {
-
-                            @Override
-                            public void onError(Request request, Exception e) {
-                                ToastUtils.showShort(getActivity(), "获取数据失败,请确认网络连接正常");
-
-                                frame.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        frame.refreshComplete();
-                                    }
-                                }, 100);
-                            }
-
-                            @Override
-                            public void onResponse(final PaperData response) {
-
-                                frame.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                        if (response != null) {
-
-                                            if (mData == null || !mData.equals(response)) {
-
-                                                LogUtils.d(Tag, "加载新数据");
-
-                                                mData = response;
-                                                mAdapter.notifyDataSetChanged();
-                                            } else {
-                                                LogUtils.d(Tag, "无最新数据,使用原本数据");
-                                            }
-
-                                        }
-
-                                        if (ptrFrame != null) {
-                                            ptrFrame.refreshComplete();
-                                        }
-
-                                    }
-                                }, 1000);
-
-                            }
-                        });
-
-            }
-        });*/
         ptrFrame.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -220,18 +173,22 @@ public class ResourceFragment extends Fragment {
     }
 
     //加载文件数据
-    private void loadPaperData() {
+    private void loadPaperData(String folder) {
+        if(folder != null){
+            Basepath += folder;
+            Basepath += "/";
+            System.out.println(Basepath);
+        }
         System.out.println("正在加载文件资源");
         String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()),"token");
         System.out.println(token);
-        String path = "/";
         String collegeName = "福州大学";
         final int errorCode = 404;
         final int successCode = 200;
         if(token!=null){
             //创建Retrofit对象
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
+                    .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
                     .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
                     .build();
 
@@ -239,7 +196,7 @@ public class ResourceFragment extends Fragment {
             PostFile request = retrofit.create(PostFile.class);
 
             //对 发送请求 进行封装
-            FileRequest fileRequest = new FileRequest(path,collegeName,token);
+            FileRequest fileRequest = new FileRequest(Basepath,collegeName,token);
             Call<FileRes> call = request.getCall(fileRequest);
 
             //发送网络请求(异步)
@@ -286,7 +243,7 @@ public class ResourceFragment extends Fragment {
         }
 
     };
-    //TODO 重写适配器
+
     private class AcademyAdapter extends BaseAdapter {
 
         @Override
