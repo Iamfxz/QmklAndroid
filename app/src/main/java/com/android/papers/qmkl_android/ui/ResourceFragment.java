@@ -314,7 +314,7 @@ public class ResourceFragment extends Fragment {
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
                 //创建View
-                convertView = View.inflate(getActivity(), R.layout.lv_item_academy, null);
+                convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
                 holder = new ViewHolder(convertView);
                 convertView.setTag(holder);
 
@@ -326,14 +326,14 @@ public class ResourceFragment extends Fragment {
 
             //从Data中取出数据填充到ListView列表项中
             String folderName = mData.getData().get(position);
-            holder.tvAcademyName.setText(folderName);
+            holder.tvFolderName.setText(folderName);
             return convertView;
         }
     }
 
     static class ViewHolder {
-        @BindView(R.id.tv_academy_name)
-        TextView tvAcademyName;
+        @BindView(R.id.tv_folder_name)
+        TextView tvFolderName;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
