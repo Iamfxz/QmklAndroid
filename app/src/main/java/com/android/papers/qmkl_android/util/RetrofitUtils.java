@@ -13,14 +13,18 @@ import com.android.papers.qmkl_android.activity.AdsActivity;
 import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
+import com.android.papers.qmkl_android.impl.PostFile;
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.AdData;
+import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.model.ResponseInfo;
+import com.android.papers.qmkl_android.requestModel.FileRequest;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.requestModel.TokenLoginRequest;
 import com.zyao89.view.zloading.ZLoadingDialog;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -35,6 +39,7 @@ import static android.support.constraint.Constraints.TAG;
 public class RetrofitUtils {
     private static final int errorCode=404;
     private static final int successCode = 200;
+    private static final String TAG = ".RetrofitUtils";
     private static String oldAdName,newAdName,adPath;
     //获取广告
     public static void postAd(final Context context, final Activity startAct){
@@ -318,6 +323,15 @@ public class RetrofitUtils {
     }
 
 
+    /**
+     * 请求文件资源，主要用于主界面的资源页面
+     * @param path "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
+     * @param context 发出请求的上下文
+     * @param token
+     */
+    public static void postFile(final Context context, String token,String path,String colleageName){
+
+    }
     /**
      *
      * 获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在

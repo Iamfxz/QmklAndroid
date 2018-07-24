@@ -150,7 +150,7 @@ public class LoginActivity extends BaseActivity {
                 break;
             case R.id.user_info:
                 break;
-            case R.id.forget_psw:
+            case R.id.forget_psw://TODO 未实现
                 startActivity(new Intent(LoginActivity.this,WebViewActivity.class));  //忘记密码 进入短信验证并找回
                 break;
         }
