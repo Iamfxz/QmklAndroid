@@ -3,10 +3,13 @@ package com.android.papers.qmkl_android.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,22 +21,27 @@ import android.widget.TextView;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileFolderActivity;
 import com.android.papers.qmkl_android.activity.WebViewActivity;
-import com.android.papers.qmkl_android.model.PaperData;
-import com.android.papers.qmkl_android.util.LogUtils;
-import com.android.papers.qmkl_android.util.RetrofitUtils;
+import com.android.papers.qmkl_android.impl.PostFile;
+import com.android.papers.qmkl_android.model.FileRes;
+import com.android.papers.qmkl_android.requestModel.FileRequest;
+
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
-import com.android.papers.qmkl_android.util.ToastUtils;
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
 import in.srain.cube.views.ptr.header.StoreHouseHeader;
 import in.srain.cube.views.ptr.util.PtrLocalDisplay;
-import okhttp3.Request;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,7 +53,7 @@ public class ResourceFragment extends Fragment {
     private static final String Tag = "ResourceActivityTag";
 
     //文件总数据
-    private PaperData mData;
+    private FileRes mData;
 
     //数据适配器
     private AcademyAdapter mAdapter;
@@ -71,6 +79,7 @@ public class ResourceFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("initData");
     }
 
     @Override
@@ -94,16 +103,15 @@ public class ResourceFragment extends Fragment {
             }
         });
 
-        //适配器的使用
+        //适配器的使用，TODO
         mAdapter = new AcademyAdapter();
         lvAcademy.setAdapter(mAdapter);
         lvAcademy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), FileFolderActivity.class);
-                PaperData.Folders folder = mData.getFolders().get(position);
+                String folder = mData.getData().get(position);
                 intent.putExtra("folder", folder);
-                FileFolderActivity.BasePath = mData.getBase();
                 startActivity(intent);
             }
         });
@@ -211,16 +219,73 @@ public class ResourceFragment extends Fragment {
         return view;
     }
 
-
     //加载文件数据
     private void loadPaperData() {
         System.out.println("正在加载文件资源");
-        String token = SharedPreferencesUtils.getStoredMessage(this.getContext(),"token");
+        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()),"token");
         System.out.println(token);
-        RetrofitUtils.postFile(this.getContext(),token,
-                "/","福州大学");
+        String path = "/";
+        String collegeName = "福州大学";
+        final int errorCode = 404;
+        final int successCode = 200;
+        if(token!=null){
+            //创建Retrofit对象
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
+                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                    .build();
+
+            //创建 网络请求接口 的实例
+            PostFile request = retrofit.create(PostFile.class);
+
+            //对 发送请求 进行封装
+            FileRequest fileRequest = new FileRequest(path,collegeName,token);
+            Call<FileRes> call = request.getCall(fileRequest);
+
+            //发送网络请求(异步)
+            call.enqueue(new Callback<FileRes>() {
+                //请求成功时回调
+                @Override
+                public void onResponse(@NonNull Call<FileRes> call, @NonNull Response<FileRes> response) {
+                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    mData = response.body();
+                    if(resultCode == errorCode){
+                        System.out.println("文件请求失败");
+                    }else if (resultCode == successCode){
+                        System.out.println("文件请求成功");
+                        System.out.println(mData.getData().get(0));//文件请求结果测试
+                        handler.sendEmptyMessage(1);
+                    }else{
+                        System.out.println("文件请求发生未知错误");
+                    }
+                }
+                //请求失败时回调
+                @Override
+                public void onFailure(@NonNull Call<FileRes> call, @NonNull Throwable t) {
+                    System.out.println( "文件资源请求失败");
+                }
+            });
+        }
+        else{
+            //TODO 跳转回登陆界面
+            System.out.println("请重新登陆");
+        }
     }
 
+    //handler为线程之间通信的桥梁
+    private Handler handler = new Handler(){
+        public void handleMessage(Message msg) {
+            switch(msg.what){
+                case 1:  //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
+                    mAdapter.notifyDataSetChanged();        //这个方法一旦调用，UI界面就刷新了
+                    break;
+
+                default :
+                    break;
+            }
+        }
+
+    };
     //TODO 重写适配器
     private class AcademyAdapter extends BaseAdapter {
 
@@ -229,12 +294,12 @@ public class ResourceFragment extends Fragment {
             if (mData == null) {
                 return 0;
             }
-            return mData.getFolders().size();
+            return mData.getData().size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mData.getFolders().get(position);
+            return mData.getData().get(position);
         }
 
         @Override
@@ -246,9 +311,9 @@ public class ResourceFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             ViewHolder holder;
-
+            //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
-
+                //创建View
                 convertView = View.inflate(getActivity(), R.layout.lv_item_academy, null);
                 holder = new ViewHolder(convertView);
                 convertView.setTag(holder);
@@ -259,9 +324,9 @@ public class ResourceFragment extends Fragment {
 
             }
 
-            PaperData.Folders folder = mData.getFolders().get(position);
-            holder.tvAcademyName.setText(folder.getName());
-
+            //从Data中取出数据填充到ListView列表项中
+            String folderName = mData.getData().get(position);
+            holder.tvAcademyName.setText(folderName);
             return convertView;
         }
     }

@@ -24,6 +24,7 @@ import com.android.papers.qmkl_android.requestModel.TokenLoginRequest;
 import com.zyao89.view.zloading.ZLoadingDialog;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -329,45 +330,7 @@ public class RetrofitUtils {
      * @param token
      */
     public static void postFile(final Context context, String token,String path,String colleageName){
-        if(token!=null){
-            //创建Retrofit对象
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
-                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                    .build();
 
-            //创建 网络请求接口 的实例
-            PostFile request = retrofit.create(PostFile.class);
-
-            //对 发送请求 进行封装
-            FileRequest fileRequest = new FileRequest(path,colleageName,token);
-            Call<FileRes> call = request.getCall(fileRequest);
-
-            //发送网络请求(异步)
-            call.enqueue(new Callback<FileRes>() {
-                //请求成功时回调
-                @Override
-                public void onResponse(@NonNull Call<FileRes> call, @NonNull Response<FileRes> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    if(resultCode == errorCode){
-                        System.out.println("文件请求失败");
-                    }else if (resultCode == successCode){
-                        System.out.println("文件请求成功");
-                        //TODO 发送文件资源(response.body().getData())给UI界面更新
-                    }else{
-                        System.out.println("文件请求发生未知错误");
-                    }
-                }
-                //请求失败时回调
-                @Override
-                public void onFailure(@NonNull Call<FileRes> call, @NonNull Throwable t) {
-                    System.out.println( "文件资源请求失败");
-                }
-            });
-        }
-        else{
-            SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
-        }
     }
     /**
      *

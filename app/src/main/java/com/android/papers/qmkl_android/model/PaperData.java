@@ -8,16 +8,11 @@ import java.util.List;
 
 /**
  * Created by Administrator on 16/4/20.
+ *      暂时废弃
  */
 public class PaperData implements Parcelable {
 
-
-    private String path;
-    private String base;
-    /**
-     * name : 农村社会学复习.doc
-     * size : 48.0
-     */
+    private String path;//路径，"/"表示全部，"/cad/"表示cad文件的全部
 
     private List<Files> files;
 
@@ -29,14 +24,6 @@ public class PaperData implements Parcelable {
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public String getBase() {
-        return base;
-    }
-
-    public void setBase(String base) {
-        this.base = base;
     }
 
     public List<Files> getFiles() {
@@ -232,17 +219,13 @@ public class PaperData implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.path);
-        dest.writeString(this.base);
         dest.writeList(this.files);
         dest.writeList(this.folders);
     }
 
-    public PaperData() {
-    }
 
     protected PaperData(Parcel in) {
         this.path = in.readString();
-        this.base = in.readString();
         this.files = new ArrayList<Files>();
         in.readList(this.files, Files.class.getClassLoader());
         this.folders = new ArrayList<Folders>();

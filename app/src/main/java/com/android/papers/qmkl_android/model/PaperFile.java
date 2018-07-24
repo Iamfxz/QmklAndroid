@@ -7,6 +7,7 @@ import com.android.papers.qmkl_android.util.PaperFileUtils;
 
 /**
  *
+ *      暂时废弃
  */
 public class PaperFile implements Parcelable {
 
