@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,8 @@ import com.android.papers.qmkl_android.activity.FileFolderActivity;
 import com.android.papers.qmkl_android.activity.WebViewActivity;
 import com.android.papers.qmkl_android.model.PaperData;
 import com.android.papers.qmkl_android.util.LogUtils;
+import com.android.papers.qmkl_android.util.RetrofitUtils;
+import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.ToastUtils;
 
 import butterknife.BindView;
@@ -91,6 +94,7 @@ public class ResourceFragment extends Fragment {
             }
         });
 
+        //适配器的使用
         mAdapter = new AcademyAdapter();
         lvAcademy.setAdapter(mAdapter);
         lvAcademy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -109,7 +113,7 @@ public class ResourceFragment extends Fragment {
         final StoreHouseHeader header = new StoreHouseHeader(getActivity());
         //显示相关工具类，用于获取用户屏幕宽度、高度以及屏幕密度。同时提供了dp和px的转化方法。
         header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, 0);
-        header.initWithString("finalexam.cn");
+        header.initWithString("finalExam");
         header.setTextColor(R.color.black);
         ptrFrame.setPinContent(true);//刷新时，保持内容不动，仅头部下移,默认,false
         ptrFrame.setHeaderView(header);
@@ -132,6 +136,8 @@ public class ResourceFragment extends Fragment {
                 ptrFrame.postDelayed(new Runnable(){
                     @Override
                     public void run(){
+                        //TODO 在这里使用loadPaperData()函数加载数据
+                        loadPaperData();
                         ptrFrame.refreshComplete();
                         //mPtrFrame.autoRefresh();//自动刷新
                     }
@@ -208,18 +214,14 @@ public class ResourceFragment extends Fragment {
 
     //加载文件数据
     private void loadPaperData() {
-
-
-
+        System.out.println("正在加载文件资源");
+        String token = SharedPreferencesUtils.getStoredMessage(this.getContext(),"token");
+        System.out.println(token);
+        RetrofitUtils.postFile(this.getContext(),token,
+                "/","福州大学");
     }
 
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        //解绑？
-    }
-
+    //TODO 重写适配器
     private class AcademyAdapter extends BaseAdapter {
 
         @Override
