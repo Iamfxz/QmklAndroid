@@ -2,6 +2,8 @@ package com.android.papers.qmkl_android.ui;
 
 
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +25,7 @@ import com.android.papers.qmkl_android.impl.PostFile;
 import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
 
+import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
 import java.util.Objects;
@@ -75,6 +78,7 @@ public class ResourceFragment extends Fragment {
     @BindView(R.id.ptr_frame)
     PtrFrameLayout ptrFrame;
 
+
     @OnClick(R.id.uploadImage_Academy)
     public void clickUploadImage() {
         // TODO: 16/5/6 在这里添加打开上传网页
@@ -125,7 +129,7 @@ public class ResourceFragment extends Fragment {
                         loadPaperData(folder);//指定文件夹路径
                         ptrFrame.refreshComplete();
                     }
-                },1000);
+                },100);
             }
         });
 
@@ -156,6 +160,7 @@ public class ResourceFragment extends Fragment {
                 ptrFrame.postDelayed(new Runnable(){
                     @Override
                     public void run(){
+                        Basepath = "/";
                         loadPaperData( null);//全部文件夹
                         ptrFrame.refreshComplete();
                     }
@@ -210,7 +215,6 @@ public class ResourceFragment extends Fragment {
                         System.out.println("文件请求失败");
                     }else if (resultCode == successCode){
                         System.out.println("文件请求成功");
-                        System.out.println(mData.getData().get(0));//文件请求结果测试
                         handler.sendEmptyMessage(1);
                     }else{
                         System.out.println("文件请求发生未知错误");
@@ -268,22 +272,24 @@ public class ResourceFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             ViewHolder holder;
+            String folderName = mData.getData().get(position);
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
-                //创建View
+
                 convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
                 holder = new ViewHolder(convertView);
                 convertView.setTag(holder);
-
             } else {
-
                 holder = (ViewHolder) convertView.getTag();
-
             }
 
             //从Data中取出数据填充到ListView列表项中
-            String folderName = mData.getData().get(position);
+            //创建View
+
+
             holder.tvFolderName.setText(folderName);
+            holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
+
             return convertView;
         }
     }
@@ -291,6 +297,8 @@ public class ResourceFragment extends Fragment {
     static class ViewHolder {
         @BindView(R.id.tv_folder_name)
         TextView tvFolderName;
+        @BindView(R.id.img_folder_icon)
+        ImageView imgFolderIcon;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

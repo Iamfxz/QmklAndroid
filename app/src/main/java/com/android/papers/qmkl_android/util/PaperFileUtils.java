@@ -50,6 +50,9 @@ public class PaperFileUtils {
 
             //unknow
             put("unknow", R.drawable.document_type_unknow);
+
+            //folder
+            put("folder",R.drawable.document_type_folder);
         }
     };
 
@@ -77,15 +80,20 @@ public class PaperFileUtils {
     }
 
     /**
-     * 获取文件拓展名
-     *
-     * @param fileName 文件名
-     * @return 文件拓展名
+     *      通过服务器返回的字符串判断文件类型
+     *      folder--文件夹
+     *      word--文档格式
+     * @param fileName 服务器返回的字符串
+     * @return 文件类型
      */
-    public static String typeWithFileName(String fileName) {
+    static public String typeWithFileName(String fileName){
+        String result;
+        if(fileName.contains("."))
+            result = fileName.substring(fileName.lastIndexOf(".")+1,fileName.length());
+        else
+            result = "folder";
 
-        int index = fileName.lastIndexOf(".");
-        return fileName.substring(index + 1, fileName.length());
+        return result.trim();
     }
 
     /**
