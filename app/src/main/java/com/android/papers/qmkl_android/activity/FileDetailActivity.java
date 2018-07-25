@@ -43,27 +43,27 @@ public class FileDetailActivity extends BaseActivity {
 
     private Thread downloadTask;
 
-    @BindView(R.id.iv_exit)
+    @BindView(R.id.iv_exit)//后退箭头
     ImageView ivExit;
-    @BindView(R.id.tv_delete)
+    @BindView(R.id.tv_delete)//删除文本
     TextView tvDelete;
-    @BindView(R.id.tv_title)
+    @BindView(R.id.tv_title)//标题
     TextView tvTitle;
-    @BindView(R.id.img_file_icon)
+    @BindView(R.id.img_file_icon)//文件图片
     ImageView imgFileIcon;
-    @BindView(R.id.tv_file_name)
+    @BindView(R.id.tv_file_name)//文件名
     TextView tvFileName;
-    @BindView(R.id.btn_download)
+    @BindView(R.id.btn_download)//下载按钮
     Button btnDownload;
-    @BindView(R.id.btn_send)
+    @BindView(R.id.btn_send)//发送到电脑按钮
     Button btnSend;
-    @BindView(R.id.pb_progress)
+    @BindView(R.id.pb_progress)//下载进度条
     ProgressBar pbProgress;
-    @BindView(R.id.tv_progress)
+    @BindView(R.id.tv_progress)///进度条文本
     TextView tvProgress;
-    @BindView(R.id.btn_cancel)
+    @BindView(R.id.btn_cancel)//取消按钮
     ImageButton btnCancel;
-    @BindView(R.id.tv_file_size)
+    @BindView(R.id.tv_file_size)//文件大小文本
     TextView tvFileSize;
 
     @OnClick({R.id.iv_exit, R.id.tv_delete})
@@ -106,8 +106,8 @@ public class FileDetailActivity extends BaseActivity {
         setContentView(R.layout.activity_file_detail);
         ButterKnife.bind(this);
 
-        fileOpenTip = (TextView) findViewById(R.id.fileOpenTip);
-        fileLocalTip = (TextView) findViewById(R.id.fileLocalTip);
+        fileOpenTip = findViewById(R.id.fileOpenTip);//打开提示文本
+        fileLocalTip = findViewById(R.id.fileLocalTip);//文件下载提示
         downloadDB = DownloadDB.getInstance(getApplicationContext());
 
         mFile = getIntent().getParcelableExtra("file");

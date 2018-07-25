@@ -104,9 +104,9 @@ public class PaperFileUtils {
      */
     public static int parseImageResource(String type) {
         if (types.containsKey(type.toLowerCase())) {
-            return (int)types.get(type.toLowerCase());
+            return types.get(type.toLowerCase());
         } else {
-            return (int)types.get("unknow");//原意unknown
+            return types.get("unknow");//原意unknown
         }
     }
 

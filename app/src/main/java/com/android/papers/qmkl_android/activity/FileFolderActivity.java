@@ -105,7 +105,7 @@ public class FileFolderActivity extends BaseActivity {
                     startActivity(intent);
 
                 } else {
-
+                    //TODO 进入文件下载详情页面
                     PaperData.Files file = mFiles.get(position - mFolders.size());
                     PaperFile paperFile = new PaperFile(file, BasePath + mPath, mTitle);
                     paperFile.setDownload(downloadDB.isDownloaded(paperFile.getUrl()));

@@ -12,12 +12,12 @@ import com.android.papers.qmkl_android.util.PaperFileUtils;
 public class PaperFile implements Parcelable {
 
 
-    private String name;
-    private String url;
-    private String type;
-    private String size;
-    private String course;
-    private boolean download;
+    private String name;//文件名
+    private String url;//url
+    private String type;//类型
+    private String size;//大小
+    private String course;//所属课程
+    private boolean download;//是否已经下载
 
 
     public PaperFile() {

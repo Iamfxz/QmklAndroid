@@ -14,11 +14,14 @@ import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
 import com.android.papers.qmkl_android.impl.PostFile;
+import com.android.papers.qmkl_android.impl.PostFileUrl;
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.AdData;
 import com.android.papers.qmkl_android.model.FileRes;
+import com.android.papers.qmkl_android.model.FileUrlRes;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
+import com.android.papers.qmkl_android.requestModel.FileUrlRequest;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.requestModel.TokenLoginRequest;
 import com.zyao89.view.zloading.ZLoadingDialog;
@@ -37,17 +40,18 @@ import static android.support.constraint.Constraints.TAG;
 
 
 public class RetrofitUtils {
+    //实例化Retrofit对象
+    private static Retrofit retrofit  = new Retrofit.Builder()
+            .baseUrl("http://120.77.32.233/qmkl1.0.0/")// 设置 网络请求 Url,1.0.0版本
+            .addConverterFactory(GsonConverterFactory.create())//设置使用Gson解析(记得加入依赖)
+            .build();
     private static final int errorCode=404;
     private static final int successCode = 200;
     private static final String TAG = ".RetrofitUtils";
     private static String oldAdName,newAdName,adPath;
     //获取广告
     public static void postAd(final Context context, final Activity startAct){
-        //创建Retrofit对象
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
-                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                .build();
+
 
         //创建 网络请求接口 的实例
         PostAds request = retrofit.create(PostAds.class);
@@ -227,11 +231,6 @@ public class RetrofitUtils {
     //登录调用API发送登录数据给服务器
     public static void postLogin(final Activity startActivity, final Context context, LoginRequest r, final ZLoadingDialog dialog){
 
-        //创建Retrofit对象
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
-                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                .build();
 
         //创建 网络请求接口 的实例
         PostLogin request = retrofit.create(PostLogin.class);
@@ -258,13 +257,14 @@ public class RetrofitUtils {
                     SharedPreferencesUtils.setStoredMessage(context,"token",token);
                     Log.d(TAG, "已保存正确token值");
 
-                    //TODO
+                    //TODO token每次登陆要刷新
                     Intent intent = new Intent(startActivity,MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                     startActivity.finish();
 
                 }else{
+                    //TODO 子线程更新UI界面
                     Toast.makeText(context,"发生未知错误,请反馈给开发者",Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
@@ -281,11 +281,6 @@ public class RetrofitUtils {
     //判断当前token是否可以登录
     public static void postLogin(final Context context, String token){
         if(token!=null){
-            //创建Retrofit对象
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
-                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                    .build();
 
             //创建 网络请求接口 的实例
             PostLogin request = retrofit.create(PostLogin.class);
@@ -322,15 +317,44 @@ public class RetrofitUtils {
         }
     }
 
+    public static void postFileUrl(final Context context,
+                                   String path, String collegeName){
+        String token = SharedPreferencesUtils.getStoredMessage(context,"token");
+        if(token!=null){
 
-    /**
-     * 请求文件资源，主要用于主界面的资源页面
-     * @param path "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
-     * @param context 发出请求的上下文
-     * @param token
-     */
-    public static void postFile(final Context context, String token,String path,String colleageName){
+            //创建 网络请求接口 的实例
+            PostFileUrl request = retrofit.create(PostFileUrl.class);
 
+            //对 发送请求 进行封装(账号和密码)
+            Call<FileUrlRes> call = request.getCall(new FileUrlRequest(token, path, collegeName));
+
+            //发送网络请求(异步)
+            call.enqueue(new Callback<FileUrlRes>() {
+                //请求成功时回调
+                @Override
+                public void onResponse(@NonNull Call<FileUrlRes> call, @NonNull Response<FileUrlRes> response) {
+                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    System.out.println("文件URL请求结果"+resultCode);
+                    if(resultCode == errorCode){
+                        System.out.println("文件URL请求失败");
+                    }else if (resultCode == successCode){
+                        System.out.println("文件URL是"+Objects.requireNonNull(response.body()).getData().getUrl());
+                    }else{
+                        System.out.println("文件URL请求异常");
+                    }
+                }
+                //请求失败时回调
+                @Override
+                public void onFailure(@NonNull Call<FileUrlRes> call, @NonNull Throwable t) {
+                    Log.d(TAG, "请求失败");
+                    SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
+                }
+            });
+        }
+        else{
+            //TODO 重新登陆
+            SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
+        }
     }
     /**
      *

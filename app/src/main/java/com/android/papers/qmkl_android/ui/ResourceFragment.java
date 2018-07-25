@@ -2,8 +2,6 @@ package com.android.papers.qmkl_android.ui;
 
 
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,6 +24,7 @@ import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
 
 import com.android.papers.qmkl_android.util.PaperFileUtils;
+import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
 import java.util.Objects;
@@ -43,7 +42,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Url;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,7 +61,7 @@ public class ResourceFragment extends Fragment {
     private ImageView uploadImg;
 
     //地址变化
-    private String Basepath = "/";
+    private String BasePath = "/";
 
     private int index = 0;//1表示主界面，2表示2级界面
 
@@ -123,13 +121,21 @@ public class ResourceFragment extends Fragment {
 //                intent.putExtra("folder", folder);
 //                startActivity(intent);
                 final String folder = mData.getData().get(position);
-                ptrFrame.postDelayed(new Runnable(){
-                    @Override
-                    public void run(){
-                        loadPaperData(folder);//指定文件夹路径
-                        ptrFrame.refreshComplete();
-                    }
-                },100);
+                //点击的是文件夹
+                if(PaperFileUtils.typeWithFileName(folder).equals("folder"))
+                {
+                    ptrFrame.postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            loadPaperData(folder);//指定文件夹路径
+                            ptrFrame.refreshComplete();
+                        }
+                    },100);
+                }
+                else {//点击的是具体某个可以下载的文件
+                    loadPaperData(folder);
+                    System.out.println("你点击了："+folder);
+                }
             }
         });
 
@@ -138,7 +144,7 @@ public class ResourceFragment extends Fragment {
         final StoreHouseHeader header = new StoreHouseHeader(getActivity());
         //显示相关工具类，用于获取用户屏幕宽度、高度以及屏幕密度。同时提供了dp和px的转化方法。
         header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, 0);
-        header.initWithString("finalExam");
+        header.initWithString("finalExam");//刷新时候的字样
         header.setTextColor(R.color.black);
         ptrFrame.setHeaderView(header);
         ptrFrame.addPtrUIHandler(header);
@@ -148,7 +154,6 @@ public class ResourceFragment extends Fragment {
              */
             @Override
             public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
-                System.out.println("MainActivity.checkCanDoRefresh");
                 // 默认实现，根据实际情况做改动
                 return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
             }
@@ -156,11 +161,11 @@ public class ResourceFragment extends Fragment {
             //需要加载数据时触发
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
-                System.out.println("ResourceFragement.onRefreshBegin");
+                System.out.println("正在刷新主页面");
                 ptrFrame.postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        Basepath = "/";
+                        BasePath = "/";
                         loadPaperData( null);//全部文件夹
                         ptrFrame.refreshComplete();
                     }
@@ -177,60 +182,73 @@ public class ResourceFragment extends Fragment {
         return view;
     }
 
-    //加载文件数据
+    /**
+     * 请求并加载文件资源，主要用于主界面的资源页面
+     * @param folder "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
+     */
     private void loadPaperData(String folder) {
         if(folder != null){
-            Basepath += folder;
-            Basepath += "/";
-            System.out.println(Basepath);
+            if(!PaperFileUtils.typeWithFileName(folder).equals("folder"))
+            {
+                BasePath += folder;
+            }else{
+                BasePath += folder;
+                BasePath += "/";
+            }
+            System.out.println(BasePath);
         }
-        System.out.println("正在加载文件资源");
-        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()),"token");
-        System.out.println(token);
-        String collegeName = "福州大学";
-        final int errorCode = 404;
-        final int successCode = 200;
-        if(token!=null){
-            //创建Retrofit对象
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
-                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                    .build();
 
-            //创建 网络请求接口 的实例
-            PostFile request = retrofit.create(PostFile.class);
+        if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")){
+            System.out.println("正在加载文件夹资源");
+            String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()),"token");
+            String collegeName = "福州大学";
+            final int errorCode = 404;
+            final int successCode = 200;
+            if(token!=null){
+                //创建Retrofit对象
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
+                        .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                        .build();
 
-            //对 发送请求 进行封装
-            FileRequest fileRequest = new FileRequest(Basepath,collegeName,token);
-            Call<FileRes> call = request.getCall(fileRequest);
+                //创建 网络请求接口 的实例
+                PostFile request = retrofit.create(PostFile.class);
 
-            //发送网络请求(异步)
-            call.enqueue(new Callback<FileRes>() {
-                //请求成功时回调
-                @Override
-                public void onResponse(@NonNull Call<FileRes> call, @NonNull Response<FileRes> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    mData = response.body();
-                    if(resultCode == errorCode){
-                        System.out.println("文件请求失败");
-                    }else if (resultCode == successCode){
-                        System.out.println("文件请求成功");
-                        handler.sendEmptyMessage(1);
-                    }else{
-                        System.out.println("文件请求发生未知错误");
+                //对 发送请求 进行封装
+                FileRequest fileRequest = new FileRequest(BasePath,collegeName,token);
+                Call<FileRes> call = request.getCall(fileRequest);
+
+                //发送网络请求(异步)
+                call.enqueue(new Callback<FileRes>() {
+                    //请求成功时回调
+                    @Override
+                    public void onResponse(@NonNull Call<FileRes> call, @NonNull Response<FileRes> response) {
+                        int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                        mData = response.body();
+                        if(resultCode == errorCode){
+                            System.out.println("文件请求失败");
+                        }else if (resultCode == successCode){
+                            System.out.println("文件请求成功");
+                            handler.sendEmptyMessage(1);
+                        }else{
+                            System.out.println("文件请求发生未知错误");
+                        }
                     }
-                }
-                //请求失败时回调
-                @Override
-                public void onFailure(@NonNull Call<FileRes> call, @NonNull Throwable t) {
-                    System.out.println( "文件资源请求失败");
-                }
-            });
+                    //请求失败时回调
+                    @Override
+                    public void onFailure(@NonNull Call<FileRes> call, @NonNull Throwable t) {
+                        System.out.println( "文件资源请求失败");
+                    }
+                });
+            }
+            else{
+                //TODO 跳转回登陆界面
+                System.out.println("请重新登陆");
+            }
+        }else {//是某个具体文件
+            RetrofitUtils.postFileUrl(this.getContext(),BasePath,"福州大学");
         }
-        else{
-            //TODO 跳转回登陆界面
-            System.out.println("请重新登陆");
-        }
+
     }
 
     //handler为线程之间通信的桥梁

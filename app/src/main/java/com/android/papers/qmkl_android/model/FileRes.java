@@ -11,7 +11,7 @@ import javax.xml.transform.Source;
 /**
  * 作者：方向臻 on 2018/7/24/024 11:08
  * 邮箱：273332683@qq.com
- *      向端口请求文件列表后返回的数据
+ *      向“文件列表”端口请求文件列表后返回的数据
  *      使用Parcelable方法传递数据
  */
 public class FileRes implements Parcelable{
