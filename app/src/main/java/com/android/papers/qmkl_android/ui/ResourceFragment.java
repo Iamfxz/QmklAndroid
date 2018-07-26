@@ -18,13 +18,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.activity.FileDetailActivity;
 import com.android.papers.qmkl_android.activity.WebViewActivity;
 import com.android.papers.qmkl_android.impl.PostFile;
+import com.android.papers.qmkl_android.impl.PostFileDetail;
+import com.android.papers.qmkl_android.impl.PostFileUrl;
+import com.android.papers.qmkl_android.model.FileDetailRes;
 import com.android.papers.qmkl_android.model.FileRes;
+import com.android.papers.qmkl_android.model.FileUrlRes;
+import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
-
 import com.android.papers.qmkl_android.util.PaperFileUtils;
-import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
 import java.util.ArrayList;
@@ -66,6 +70,10 @@ public class ResourceFragment extends Fragment {
     //地址变化
     private String BasePath = "/";
     StringBuffer path;//临时路径
+
+    //请求结果
+    final int errorCode = 404;
+    final int successCode = 200;
 
 
     /**
@@ -190,7 +198,7 @@ public class ResourceFragment extends Fragment {
      * 请求并加载文件资源，主要用于主界面的资源页面
      * @param folder "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
      */
-    private void loadPaperData(String folder) {
+    private void loadPaperData(final String folder) {
         if(folder != null){
             if(!PaperFileUtils.typeWithFileName(folder).equals("folder"))
             {
@@ -209,8 +217,6 @@ public class ResourceFragment extends Fragment {
             System.out.println("正在加载文件夹资源");
             String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()),"token");
             String collegeName = "福州大学";
-            final int errorCode = 404;
-            final int successCode = 200;
             if(token!=null){
                 //创建Retrofit对象
                 Retrofit retrofit = new Retrofit.Builder()
@@ -253,9 +259,10 @@ public class ResourceFragment extends Fragment {
                 System.out.println("请重新登陆");
             }
         }else {//如果是某个具体文件，则应该使用这个请求获得url地址
-            System.out.println(path.toString());
-            RetrofitUtils.postFileDetail(this.getContext(),path.toString(),"福州大学");
-            RetrofitUtils.postFileUrl(this.getContext(),path.toString(),"福州大学");
+            //TODO 进入文件下载详细页面
+            postFileDetail(path.toString(),"福州大学");
+            postFileUrl(path.toString(),"福州大学");
+
         }
 
     }
@@ -275,6 +282,101 @@ public class ResourceFragment extends Fragment {
 
     };
 
+
+    private void postFileDetail(final String path, final String collegeName){
+        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()),"token");
+        if(token != null){
+            //创建Retrofit对象
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
+                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                    .build();
+
+            //创建 网络请求接口 的实例
+            final PostFileDetail request = retrofit.create(PostFileDetail.class);
+
+            //对 发送请求 进行封装(账号和密码)
+            Call<FileDetailRes> call = request.getCall(new FileRequest( path, collegeName, token));
+            //发送网络请求(异步)
+            call.enqueue(new Callback<FileDetailRes>() {
+                //请求成功时回调
+                @Override
+                public void onResponse(@NonNull Call<FileDetailRes> call, @NonNull Response<FileDetailRes> response) {
+                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    System.out.println("文件详细信息请求结果："+resultCode);
+                    if(resultCode == errorCode){
+                        System.out.println(Objects.requireNonNull(response.body()).getMsg());
+                    }else if (resultCode == successCode){
+                        System.out.println("文件详细信息请求成功");
+                        int size = Objects.requireNonNull(response.body()).getData().getSize();
+                        Long updateAt = Objects.requireNonNull(response.body()).getData().getUpdateAt();
+                        Long createAt = Objects.requireNonNull(response.body()).getData().getCreateAt();
+                        PaperFile paperFile = new PaperFile(path, size, updateAt, createAt);
+                        Intent intent = new Intent(getActivity(),FileDetailActivity.class);
+                        intent.putExtra("FileDetail",paperFile);
+                        startActivity(intent);
+                    }else{
+                        System.out.println("文件详细信息请求异常");
+                    }
+                }
+                //请求失败时回调
+                @Override
+                public void onFailure(@NonNull Call<FileDetailRes> call, @NonNull Throwable t) {
+                    SharedPreferencesUtils.setStoredMessage(getContext(),"hasLogin","false");
+                }
+            });
+        }else{
+            //TODO 重新登陆
+            SharedPreferencesUtils.setStoredMessage(getContext(),"hasLogin","false");
+        }
+    }
+
+    private void postFileUrl(final String path,final String collegeName){
+        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()),"token");
+        if(token!=null){
+            //创建Retrofit对象
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
+                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                    .build();
+
+            //创建 网络请求接口 的实例
+            PostFileUrl request = retrofit.create(PostFileUrl.class);
+
+            //对 发送请求 进行封装(账号和密码)
+            Call<FileUrlRes> call = request.getCall(new FileRequest( path, collegeName, token));
+
+            //发送网络请求(异步)
+            call.enqueue(new Callback<FileUrlRes>() {
+                //请求成功时回调
+                @Override
+                public void onResponse(@NonNull Call<FileUrlRes> call, @NonNull Response<FileUrlRes> response) {
+                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    System.out.println("文件URL请求结果"+resultCode);
+                    if(resultCode == errorCode){
+                        System.out.println("文件URL请求失败");
+                    }else if (resultCode == successCode){
+                        String url;
+                        url = Objects.requireNonNull(response.body()).getData().getUrl();
+                        System.out.println("文件URL是"+url);
+                        //存储路径为path的文件的url
+                        SharedPreferencesUtils.setStoredMessage(getContext(),path,url);
+                    }else{
+                        System.out.println("文件URL请求异常");
+                    }
+                }
+                //请求失败时回调
+                @Override
+                public void onFailure(@NonNull Call<FileUrlRes> call, @NonNull Throwable t) {
+                    SharedPreferencesUtils.setStoredMessage(getContext(),"hasLogin","false");
+                }
+            });
+        }
+        else{
+            //TODO 重新登陆
+            SharedPreferencesUtils.setStoredMessage(getContext(),"hasLogin","false");
+        }
+    }
     private class AcademyAdapter extends BaseAdapter {
 
         @Override
@@ -318,11 +420,9 @@ public class ResourceFragment extends Fragment {
             if(!PaperFileUtils.typeWithFileName(folderName).equals("folder")){
                 holder.tvFolderSize.setText(mData.getData().get(folderName));
                 holder.tvFolderSize.setVisibility(View.VISIBLE);
-
                 holder.imgFolderArrow.setVisibility(View.INVISIBLE);
             }else {
                 holder.tvFolderSize.setVisibility(View.INVISIBLE);
-
                 holder.imgFolderArrow.setVisibility(View.VISIBLE);
             }
             return convertView;

@@ -70,13 +70,14 @@ public class PaperFileUtils {
         String result = "";
 
         if (size < 1024) {
-            result = format.format(size) +"KB";
+            result = format.format(size) +"B";
         } else if (size < 1024 * 1024) {
-            result = format.format(size / 1024.0) + "MB";
+            result = format.format(size / 1024.0) + "KB";
         } else if (size < 1024 * 1024 * 1024) {
-            return format.format(size / 1024.0 / 1024.0) + "GB";
+            result = format.format(size / 1024.0 / 1024.0) + "MB";
+        } else if (size < 1024 * 1024 * 1024) {
+            result = format.format(size / 1024.0 / 1024.0 / 1024.0) + "GB";
         }
-
         return result;
     }
 
@@ -97,6 +98,33 @@ public class PaperFileUtils {
         return result.trim();
     }
 
+    /**
+     *      利用路径名字得出文件的名字
+     * @param path 相对路径
+     * @return 文件的名字
+     */
+    static public String nameWithPath(String path){
+        return path.substring(path.lastIndexOf("/")+1,path.length());
+    }
+
+    /**
+     *      获取课程名字
+     * @param path 相对路径
+     * @return 课程名字
+     */
+    static public String courseWithPath(String path){
+        int num = 0;
+        int index2 = path.indexOf("/");
+        for (int i = 0; i < path.length();i++){
+            if(path.charAt(i) == '/' ){
+                num ++;
+            }
+            if(num == 2){
+                index2 = i;
+            }
+        }
+        return path.substring(path.indexOf("/")+1,index2);
+    }
     /**
      * 文件后缀获得相应资源文件id
      *

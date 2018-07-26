@@ -6,8 +6,8 @@ import android.os.Parcelable;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 
 /**
- *
- *      暂时废弃
+ * Alter by fxz on 2018/7/26 19：14
+ *      文件详细信息
  */
 public class PaperFile implements Parcelable {
 
@@ -18,19 +18,39 @@ public class PaperFile implements Parcelable {
     private String size;//大小
     private String course;//所属课程
     private boolean download;//是否已经下载
+    private String path;
+    private Long createAt;//建立时间
+    private Long updateAt;//更新时间
 
+    public PaperFile(){
 
-    public PaperFile() {
     }
 
-    public PaperFile(PaperData.Files file, String urlPath, String course) {
-
-        this.name = file.getName();
-        this.url = urlPath + this.name;
+    public PaperFile(String path, int size, Long updateAt, Long createAt) {
+        this.path = path;
+        this.name = PaperFileUtils.nameWithPath(path);
         this.type = PaperFileUtils.typeWithFileName(this.name);
-        this.size = PaperFileUtils.sizeWithDouble(Double.valueOf(file.getSize()));
-        this.course = course;
+        this.size = PaperFileUtils.sizeWithDouble((double)size);
+        this.course = PaperFileUtils.courseWithPath(path);
         this.download = false;
+        this.createAt = createAt;
+        this.updateAt = updateAt;
+    }
+
+    public Long getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(Long createAt) {
+        this.createAt = createAt;
+    }
+
+    public Long getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(Long updateAt) {
+        this.updateAt = updateAt;
     }
 
     public String getName() {
@@ -81,6 +101,14 @@ public class PaperFile implements Parcelable {
         this.download = download;
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -88,8 +116,8 @@ public class PaperFile implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.path);
         dest.writeString(this.name);
-        dest.writeString(this.url);
         dest.writeString(this.type);
         dest.writeString(this.size);
         dest.writeString(this.course);
@@ -97,8 +125,8 @@ public class PaperFile implements Parcelable {
     }
 
     protected PaperFile(Parcel in) {
+        this.path = in.readString();
         this.name = in.readString();
-        this.url = in.readString();
         this.type = in.readString();
         this.size = in.readString();
         this.course = in.readString();

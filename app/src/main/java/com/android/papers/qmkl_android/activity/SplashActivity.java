@@ -48,7 +48,7 @@ public class SplashActivity extends Activity {
          * 如果用户选择授予该权限，则下次启动时才会自主从网络下载广告资源
          * */
         PermissionUtils.requestPermission(this, PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
-
+        //TODO 如果用户拒绝权限呢？
         RetrofitUtils.postLogin(getApplicationContext(),SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
 
         RetrofitUtils.postAd(this,SplashActivity.this);

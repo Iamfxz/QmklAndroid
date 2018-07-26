@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.activity.AdsActivity;
+import com.android.papers.qmkl_android.activity.FileDetailActivity;
 import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
@@ -17,7 +18,9 @@ import com.android.papers.qmkl_android.impl.PostFileUrl;
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.AdData;
 import com.android.papers.qmkl_android.model.FileDetailRes;
+import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.model.FileUrlRes;
+import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
@@ -163,8 +166,6 @@ public class RetrofitUtils {
                                     }
                                 }).start();
                             } catch (Exception e) {
-                                //缓存失败，进入登录界面或者主界面
-                                Toast.makeText(context,"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
                                 e.printStackTrace();
                             }
                         }
@@ -312,83 +313,6 @@ public class RetrofitUtils {
         }
     }
 
-    public static void postFileUrl(final Context context,
-                                   String path, String collegeName){
-        String token = SharedPreferencesUtils.getStoredMessage(context,"token");
-        if(token!=null){
-
-            //创建 网络请求接口 的实例
-            PostFileUrl request = retrofit.create(PostFileUrl.class);
-
-            //对 发送请求 进行封装(账号和密码)
-            Call<FileUrlRes> call = request.getCall(new FileRequest( path, collegeName, token));
-
-            //发送网络请求(异步)
-            call.enqueue(new Callback<FileUrlRes>() {
-                //请求成功时回调
-                @Override
-                public void onResponse(@NonNull Call<FileUrlRes> call, @NonNull Response<FileUrlRes> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("文件URL请求结果"+resultCode);
-                    if(resultCode == errorCode){
-                        System.out.println("文件URL请求失败");
-                    }else if (resultCode == successCode){
-                        System.out.println("文件URL是"+Objects.requireNonNull(response.body()).getData().getUrl());
-                    }else{
-                        System.out.println("文件URL请求异常");
-                    }
-                }
-                //请求失败时回调
-                @Override
-                public void onFailure(@NonNull Call<FileUrlRes> call, @NonNull Throwable t) {
-                    Log.d(TAG, "请求失败");
-                    SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
-                }
-            });
-        }
-        else{
-            //TODO 重新登陆
-            SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
-        }
-    }
-
-    public static void postFileDetail(final Context context,
-                                      String path, String collegeName){
-        String token = SharedPreferencesUtils.getStoredMessage(context,"token");
-        if(token != null){
-            //创建 网络请求接口 的实例
-            PostFileDetail request = retrofit.create(PostFileDetail.class);
-
-            //对 发送请求 进行封装(账号和密码)
-            Call<FileDetailRes> call = request.getCall(new FileRequest( path, collegeName, token));
-            //发送网络请求(异步)
-            call.enqueue(new Callback<FileDetailRes>() {
-                //请求成功时回调
-                @Override
-                public void onResponse(@NonNull Call<FileDetailRes> call, @NonNull Response<FileDetailRes> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("文件详细信息请求结果："+resultCode);
-                    if(resultCode == errorCode){
-                        System.out.println(Objects.requireNonNull(response.body()).getMsg());
-                    }else if (resultCode == successCode){
-                        System.out.println(PaperFileUtils.ParseTimestamp(Objects.requireNonNull(response.body()).getData().getCreateAt()));
-                        System.out.println(response.body().getData().getMd5());
-                        System.out.println(response.body().getData().getNick());
-                    }else{
-                        System.out.println("文件详细信息请求异常");
-                    }
-                }
-                //请求失败时回调
-                @Override
-                public void onFailure(@NonNull Call<FileDetailRes> call, @NonNull Throwable t) {
-                    Log.d(TAG, "请求失败");
-                    SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
-                }
-            });
-        }else{
-            //TODO 重新登陆
-        }
-    }
     /**
      *
      * 获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在

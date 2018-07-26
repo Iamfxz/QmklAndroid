@@ -106,13 +106,13 @@ public class FileFolderActivity extends BaseActivity {
 
                 } else {
                     //TODO 进入文件下载详情页面
-                    PaperData.Files file = mFiles.get(position - mFolders.size());
-                    PaperFile paperFile = new PaperFile(file, BasePath + mPath, mTitle);
-                    paperFile.setDownload(downloadDB.isDownloaded(paperFile.getUrl()));
-
-                    Intent intent = new Intent(FileFolderActivity.this, FileDetailActivity.class);   //直接进入文件详情
-                    intent.putExtra("file", paperFile);
-                    startActivityForResult(intent, GO_TO_DETAIL);
+//                    PaperData.Files file = mFiles.get(position - mFolders.size());
+//                    PaperFile paperFile = new PaperFile(file, BasePath + mPath, mTitle);
+//                    paperFile.setDownload(downloadDB.isDownloaded(paperFile.getUrl()));
+//
+//                    Intent intent = new Intent(FileFolderActivity.this, FileDetailActivity.class);   //直接进入文件详情
+//                    intent.putExtra("file", paperFile);
+//                    startActivityForResult(intent, GO_TO_DETAIL);
                 }
             }
         });

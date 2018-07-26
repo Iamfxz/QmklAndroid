@@ -20,6 +20,7 @@ import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.LogUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
+import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.ToastUtils;
 import com.android.papers.qmkl_android.util.UrlUnicode;
 
@@ -114,11 +115,12 @@ public class FileDetailActivity extends BaseActivity {
         //获取数据库是的实例
         downloadDB = DownloadDB.getInstance(getApplicationContext());
 
-        mFile = getIntent().getParcelableExtra("file");
+        mFile = getIntent().getParcelableExtra("FileDetail");
+        SharedPreferencesUtils.getStoredMessage(this,mFile.getPath());
 
         tvTitle.setText(mFile.getCourse());
         tvFileName.setText(mFile.getName());
-        tvFileSize.setText(mFile.getSize());
+        tvFileSize.setText(String.valueOf(mFile.getSize()));
 
         imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType()));
 
