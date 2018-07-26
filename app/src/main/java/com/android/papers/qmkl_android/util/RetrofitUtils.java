@@ -8,26 +8,23 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.AdsActivity;
 import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
-import com.android.papers.qmkl_android.impl.PostFile;
+import com.android.papers.qmkl_android.impl.PostFileDetail;
 import com.android.papers.qmkl_android.impl.PostFileUrl;
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.AdData;
-import com.android.papers.qmkl_android.model.FileRes;
+import com.android.papers.qmkl_android.model.FileDetailRes;
 import com.android.papers.qmkl_android.model.FileUrlRes;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
-import com.android.papers.qmkl_android.requestModel.FileUrlRequest;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.requestModel.TokenLoginRequest;
 import com.zyao89.view.zloading.ZLoadingDialog;
 
 import java.io.File;
-import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -35,8 +32,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import static android.support.constraint.Constraints.TAG;
 
 
 public class RetrofitUtils {
@@ -60,7 +55,7 @@ public class RetrofitUtils {
         request.getCall().enqueue(new Callback<ResponseInfo<AdData>>() {
             //请求成功时回调
             @Override
-            public void onResponse(Call<ResponseInfo<AdData>> call, Response<ResponseInfo<AdData>> response) {
+            public void onResponse(@NonNull Call<ResponseInfo<AdData>> call, @NonNull Response<ResponseInfo<AdData>> response) {
                 //广告页当前不可用
                 if (Integer.parseInt(Objects.requireNonNull(response.body()).getCode())!=successCode||
                         !Objects.requireNonNull(response.body()).getData().isEnabled()) {
@@ -128,10 +123,10 @@ public class RetrofitUtils {
                 }
                 //广告页当前可用
                 oldAdName = SharedPreferencesUtils.getStoredMessage(context, "AdName");
-                newAdName = response.body().getData().getUpdatedAt();
-                adPath = response.body().getData().getUrl();
+                newAdName = Objects.requireNonNull(response.body()).getData().getUpdatedAt();
+                adPath = Objects.requireNonNull(response.body()).getData().getUrl();
                 SharedPreferencesUtils.setStoredMessage(context,"fallback",
-                        response.body().getData().getFallback());
+                        Objects.requireNonNull(response.body()).getData().getFallback());
                 //此前尚未缓存过广告数据、广告数据已更新、广告数据被删除，重新缓存
                 if (oldAdName == null || !oldAdName.equals(newAdName) || !checkLocalADImage()) {
                     SharedPreferencesUtils.setStoredMessage(context, "AdName", newAdName);
@@ -202,7 +197,7 @@ public class RetrofitUtils {
             }
 
             @Override
-            public void onFailure(Call<ResponseInfo<AdData>> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseInfo<AdData>> call, @NonNull Throwable t) {
                 Toast.makeText(context,"服务器请求失败",Toast.LENGTH_SHORT).show();
                 new Thread(new Runnable() {
                     @Override
@@ -298,7 +293,7 @@ public class RetrofitUtils {
                     if(resultCode == errorCode){
                         SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
                     }else if (resultCode == successCode){
-                        SharedPreferencesUtils.setStoredMessage(context,"token",response.body().getData().toString());
+                        SharedPreferencesUtils.setStoredMessage(context,"token", Objects.requireNonNull(response.body()).getData().toString());
                         SharedPreferencesUtils.setStoredMessage(context,"hasLogin","true");
                     }else{
                         SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
@@ -326,7 +321,7 @@ public class RetrofitUtils {
             PostFileUrl request = retrofit.create(PostFileUrl.class);
 
             //对 发送请求 进行封装(账号和密码)
-            Call<FileUrlRes> call = request.getCall(new FileUrlRequest(token, path, collegeName));
+            Call<FileUrlRes> call = request.getCall(new FileRequest( path, collegeName, token));
 
             //发送网络请求(异步)
             call.enqueue(new Callback<FileUrlRes>() {
@@ -354,6 +349,44 @@ public class RetrofitUtils {
         else{
             //TODO 重新登陆
             SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
+        }
+    }
+
+    public static void postFileDetail(final Context context,
+                                      String path, String collegeName){
+        String token = SharedPreferencesUtils.getStoredMessage(context,"token");
+        if(token != null){
+            //创建 网络请求接口 的实例
+            PostFileDetail request = retrofit.create(PostFileDetail.class);
+
+            //对 发送请求 进行封装(账号和密码)
+            Call<FileDetailRes> call = request.getCall(new FileRequest( path, collegeName, token));
+            //发送网络请求(异步)
+            call.enqueue(new Callback<FileDetailRes>() {
+                //请求成功时回调
+                @Override
+                public void onResponse(@NonNull Call<FileDetailRes> call, @NonNull Response<FileDetailRes> response) {
+                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    System.out.println("文件详细信息请求结果："+resultCode);
+                    if(resultCode == errorCode){
+                        System.out.println(Objects.requireNonNull(response.body()).getMsg());
+                    }else if (resultCode == successCode){
+                        System.out.println(PaperFileUtils.ParseTimestamp(Objects.requireNonNull(response.body()).getData().getCreateAt()));
+                        System.out.println(response.body().getData().getMd5());
+                        System.out.println(response.body().getData().getNick());
+                    }else{
+                        System.out.println("文件详细信息请求异常");
+                    }
+                }
+                //请求失败时回调
+                @Override
+                public void onFailure(@NonNull Call<FileDetailRes> call, @NonNull Throwable t) {
+                    Log.d(TAG, "请求失败");
+                    SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
+                }
+            });
+        }else{
+            //TODO 重新登陆
         }
     }
     /**

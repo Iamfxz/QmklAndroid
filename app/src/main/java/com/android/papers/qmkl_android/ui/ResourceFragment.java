@@ -91,7 +91,7 @@ public class ResourceFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_resource, container, false);
@@ -252,7 +252,9 @@ public class ResourceFragment extends Fragment {
                 //TODO 跳转回登陆界面
                 System.out.println("请重新登陆");
             }
-        }else {//是某个具体文件
+        }else {//如果是某个具体文件，则应该使用这个请求获得url地址
+            System.out.println(path.toString());
+            RetrofitUtils.postFileDetail(this.getContext(),path.toString(),"福州大学");
             RetrofitUtils.postFileUrl(this.getContext(),path.toString(),"福州大学");
         }
 
@@ -285,7 +287,7 @@ public class ResourceFragment extends Fragment {
 
         @Override
         public Object getItem(int position) {
-            return mData.getData().get(position);
+            return new ArrayList<>(mData.getData().keySet()).get(position);
         }
 
         @Override
@@ -323,7 +325,6 @@ public class ResourceFragment extends Fragment {
 
                 holder.imgFolderArrow.setVisibility(View.VISIBLE);
             }
-            System.out.println(path.toString()+"....."+folderName);
             return convertView;
         }
     }

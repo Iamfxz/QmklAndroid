@@ -1,7 +1,7 @@
 package com.android.papers.qmkl_android.impl;
 
 import com.android.papers.qmkl_android.model.FileUrlRes;
-import com.android.papers.qmkl_android.requestModel.FileUrlRequest;
+import com.android.papers.qmkl_android.requestModel.FileRequest;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -14,5 +14,5 @@ import retrofit2.http.POST;
  */
 public interface PostFileUrl {
     @POST("file/download/url")
-    Call<FileUrlRes> getCall(@Body FileUrlRequest fileDetailRequest);
+    Call<FileUrlRes> getCall(@Body FileRequest fileDetailRequest);
 }

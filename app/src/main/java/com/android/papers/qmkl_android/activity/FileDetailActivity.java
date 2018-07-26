@@ -3,6 +3,7 @@ package com.android.papers.qmkl_android.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -39,7 +40,7 @@ public class FileDetailActivity extends BaseActivity {
     private PaperFile mFile;
     private String fileName = null;
     private boolean isDownloading = false;
-    private TextView fileOpenTip,fileLocalTip;
+    public TextView fileOpenTip,fileLocalTip;
 
     private Thread downloadTask;
 

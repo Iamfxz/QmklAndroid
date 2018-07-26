@@ -27,12 +27,13 @@ public class PaperFileUtils {
             put("ppt", R.drawable.document_type_ppt);
             put("pptx", R.drawable.document_type_ppt);
 
-            //xls
+            //表格
+            put("xls", R.drawable.document_type_xls);
             put("xls", R.drawable.document_type_xls);
             put("xlt", R.drawable.document_type_xls);
             put("et", R.drawable.document_type_xls);
 
-            //txt
+            //文本
             put("txt", R.drawable.document_type_txt);
             put("rtf", R.drawable.document_type_txt);
 
@@ -82,7 +83,7 @@ public class PaperFileUtils {
     /**
      *      通过服务器返回的字符串判断文件类型
      *      folder--文件夹
-     *      word--文档格式
+     *      word--某种文档格式
      * @param fileName 服务器返回的字符串
      * @return 文件类型
      */
@@ -120,4 +121,8 @@ public class PaperFileUtils {
         return simpleDateFormat.format(new Date());
     }
 
+    public static String ParseTimestamp(Long timestamp){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+        return simpleDateFormat.format(timestamp);
+    }
 }
