@@ -106,8 +106,11 @@ public class FileDetailActivity extends BaseActivity {
         setContentView(R.layout.activity_file_detail);
         ButterKnife.bind(this);
 
-        fileOpenTip = findViewById(R.id.fileOpenTip);//打开提示文本
-        fileLocalTip = findViewById(R.id.fileLocalTip);//文件下载提示
+        //打开文件的提示文本
+        fileOpenTip = findViewById(R.id.fileOpenTip);
+        //文件下载的提示
+        fileLocalTip = findViewById(R.id.fileLocalTip);
+        //获取数据库是的实例
         downloadDB = DownloadDB.getInstance(getApplicationContext());
 
         mFile = getIntent().getParcelableExtra("file");

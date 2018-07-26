@@ -27,6 +27,8 @@ import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -54,6 +56,7 @@ public class ResourceFragment extends Fragment {
 
     //文件总数据
     private FileRes mData;
+    private List<String> list;//文件名列表
 
     //数据适配器
     private AcademyAdapter mAdapter;
@@ -62,8 +65,7 @@ public class ResourceFragment extends Fragment {
 
     //地址变化
     private String BasePath = "/";
-
-    private int index = 0;//1表示主界面，2表示2级界面
+    StringBuffer path;//临时路径
 
 
     /**
@@ -120,7 +122,9 @@ public class ResourceFragment extends Fragment {
 //                System.out.println("/"+folder+"/");
 //                intent.putExtra("folder", folder);
 //                startActivity(intent);
-                final String folder = mData.getData().get(position);
+                list = new ArrayList<>(mData.getData().keySet());
+
+                final String folder = list.get(position);
                 //点击的是文件夹
                 if(PaperFileUtils.typeWithFileName(folder).equals("folder"))
                 {
@@ -190,13 +194,16 @@ public class ResourceFragment extends Fragment {
         if(folder != null){
             if(!PaperFileUtils.typeWithFileName(folder).equals("folder"))
             {
-                BasePath += folder;
+                path = new StringBuffer(BasePath + folder);//这是一个具体的文件，不需要以"/"结尾
             }else{
                 BasePath += folder;
                 BasePath += "/";
+                path = new StringBuffer(BasePath);
             }
-            System.out.println(BasePath);
+        }else {
+            path = new StringBuffer(BasePath);
         }
+        System.out.println("当前路径"+path);
 
         if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")){
             System.out.println("正在加载文件夹资源");
@@ -215,7 +222,7 @@ public class ResourceFragment extends Fragment {
                 PostFile request = retrofit.create(PostFile.class);
 
                 //对 发送请求 进行封装
-                FileRequest fileRequest = new FileRequest(BasePath,collegeName,token);
+                FileRequest fileRequest = new FileRequest(path.toString(),collegeName,token);
                 Call<FileRes> call = request.getCall(fileRequest);
 
                 //发送网络请求(异步)
@@ -246,7 +253,7 @@ public class ResourceFragment extends Fragment {
                 System.out.println("请重新登陆");
             }
         }else {//是某个具体文件
-            RetrofitUtils.postFileUrl(this.getContext(),BasePath,"福州大学");
+            RetrofitUtils.postFileUrl(this.getContext(),path.toString(),"福州大学");
         }
 
     }
@@ -273,7 +280,7 @@ public class ResourceFragment extends Fragment {
             if (mData == null) {
                 return 0;
             }
-            return mData.getData().size();
+            return mData.getData().keySet().size();
         }
 
         @Override
@@ -290,7 +297,8 @@ public class ResourceFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             ViewHolder holder;
-            String folderName = mData.getData().get(position);
+            list = new ArrayList<>(mData.getData().keySet());
+            String folderName = list.get(position);
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
 
@@ -303,11 +311,19 @@ public class ResourceFragment extends Fragment {
 
             //从Data中取出数据填充到ListView列表项中
             //创建View
-
-
             holder.tvFolderName.setText(folderName);
             holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
+            if(!PaperFileUtils.typeWithFileName(folderName).equals("folder")){
+                holder.tvFolderSize.setText(mData.getData().get(folderName));
+                holder.tvFolderSize.setVisibility(View.VISIBLE);
 
+                holder.imgFolderArrow.setVisibility(View.INVISIBLE);
+            }else {
+                holder.tvFolderSize.setVisibility(View.INVISIBLE);
+
+                holder.imgFolderArrow.setVisibility(View.VISIBLE);
+            }
+            System.out.println(path.toString()+"....."+folderName);
             return convertView;
         }
     }
@@ -317,6 +333,10 @@ public class ResourceFragment extends Fragment {
         TextView tvFolderName;
         @BindView(R.id.img_folder_icon)
         ImageView imgFolderIcon;
+        @BindView(R.id.tv_folder_size)
+        TextView tvFolderSize;
+        @BindView(R.id.img_folder_arrow)
+        ImageView imgFolderArrow;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

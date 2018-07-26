@@ -30,7 +30,7 @@ public class DownloadDB extends SQLiteOpenHelper {
     private static final String URL = "url";
     private static final String TIME = "time";
 
-    //根据URL查找文件所有i洗脑洗
+    //根据URL查找文件所有信息
     private static final String QUERY_DOWNLOADED = "SELECT * FROM " + TABLE_NAME
             + " WHERE " + URL + " = ?";
     //按照（文件名，课程，大小，类型，URL，时间）插入数据
@@ -41,7 +41,8 @@ public class DownloadDB extends SQLiteOpenHelper {
     //根据URL删除该文件所有信息
     private static final String REMOVE_DOWNLOADED = "DELETE FROM " + TABLE_NAME + " WHERE "
             + URL + " = ?";
-    private static final String EMPTY_QUERY = "SELECT * FROM " + TABLE_NAME;//搜索所有文件
+    //搜索数据库中的所有文件
+    private static final String EMPTY_QUERY = "SELECT * FROM " + TABLE_NAME;
     //降序搜索所有文件
     private static final String GET_DOWNLOADED = EMPTY_QUERY + " ORDER BY "
             + ID + " DESC";
@@ -109,7 +110,7 @@ public class DownloadDB extends SQLiteOpenHelper {
         db.execSQL(REMOVE_DOWNLOADED, new String[] { url });
     }
 
-    //
+    //已下载文件是空的则返回true
     public boolean isEmpty() {
         Cursor cursor = db.rawQuery(GET_DOWNLOADED, null);
         boolean result = !cursor.moveToFirst();
