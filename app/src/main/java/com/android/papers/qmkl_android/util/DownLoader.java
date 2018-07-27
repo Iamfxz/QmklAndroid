@@ -51,8 +51,8 @@ public class DownLoader {
      *
      * @param url 下载地址url
      * @param destination 下载目的地
-     * @param callback
-     * @return
+     * @param callback 回调
+     * @return 线程
      */
     public static Thread downloadPaperFile(final String url, final String destination, final DownloadTaskCallback callback) {
         return new Thread(new Runnable() {
@@ -66,7 +66,7 @@ public class DownLoader {
                 String fileName = null;
                 String mPath = null;
                 try {
-                    URL downloadURL = new URL(UrlUnicode.encode(url));
+                    URL downloadURL = new URL(url);
                     connection = (HttpURLConnection) downloadURL.openConnection();
                     connection.setRequestMethod("GET");
                     connection.setReadTimeout(5000);

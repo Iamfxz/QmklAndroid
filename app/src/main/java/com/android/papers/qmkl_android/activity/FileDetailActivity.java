@@ -37,12 +37,18 @@ import butterknife.OnClick;
  */
 public class FileDetailActivity extends BaseActivity {
     public static final String Tag = "FileDetailActivityTag";
-    private DownloadDB downloadDB;
-    private PaperFile mFile;
-    private String fileName = null;
-    private boolean isDownloading = false;
-    public TextView fileOpenTip,fileLocalTip;
 
+    //下载数据库
+    private DownloadDB downloadDB;
+    //文件详细信息
+    private PaperFile mFile;
+    //文件名？？
+    private String fileName;
+    //是否已经下载
+    private boolean isDownloading = false;
+    //文件提示
+    public TextView fileOpenTip,fileLocalTip;
+    //下载线程
     private Thread downloadTask;
 
     @BindView(R.id.iv_exit)//后退箭头
@@ -68,6 +74,7 @@ public class FileDetailActivity extends BaseActivity {
     @BindView(R.id.tv_file_size)//文件大小文本
     TextView tvFileSize;
 
+    //监听退出和删除按钮
     @OnClick({R.id.iv_exit, R.id.tv_delete})
     public void barItemClicked(View view) {
         switch (view.getId()) {
@@ -80,6 +87,7 @@ public class FileDetailActivity extends BaseActivity {
         }
     }
 
+    //监听下载和发送到我的电脑和取消下载按钮
     @OnClick({R.id.btn_download, R.id.btn_send, R.id.btn_cancel})
     public void btnClicked(View view) {
 
@@ -115,23 +123,28 @@ public class FileDetailActivity extends BaseActivity {
         //获取数据库是的实例
         downloadDB = DownloadDB.getInstance(getApplicationContext());
 
-        mFile = getIntent().getParcelableExtra("FileDetail");
-        SharedPreferencesUtils.getStoredMessage(this,mFile.getPath());
+        //获取文件的详细信息
+        mFile = getIntent().getParcelableExtra("FileDetail");//由于端口设置原因url从下面方式获取
+        mFile.setUrl(SharedPreferencesUtils.getStoredMessage(this,mFile.getPath()));
 
+        //显示文本
         tvTitle.setText(mFile.getCourse());
         tvFileName.setText(mFile.getName());
         tvFileSize.setText(String.valueOf(mFile.getSize()));
 
-        imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType()));
-
-        String type = mFile.getType().toLowerCase();
-
+        //显示图标
+        imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType().toLowerCase()));
+// 测试传递的过来的文件是否准确，准确
+//        System.out.println(mFile.getCourse());
+//        System.out.println(mFile.getName());
+//        System.out.println(mFile.getPath());
+//        System.out.println(mFile.getType());
+//        System.out.println("url:"+mFile.getUrl());
+        //显示按钮
         btnDownload.setText(mFile.isDownload() ? "打开文件" : "下载到手机");
         fileOpenTip.setVisibility(mFile.isDownload()? View.VISIBLE:View.INVISIBLE);
         fileLocalTip.setVisibility(mFile.isDownload()? View.INVISIBLE:View.VISIBLE);
         tvDelete.setVisibility(mFile.isDownload() ? View.VISIBLE : View.INVISIBLE);
-
-
     }
 
     private void deleteDownloadedFile() {
@@ -161,11 +174,16 @@ public class FileDetailActivity extends BaseActivity {
                 }).create().show();
     }
 
+    /**
+     *      开始下载进程
+     */
     private void startDownloadProcess() {
         if (!mFile.isDownload()) {
 
             //未下载 执行下载进程
             setDownloadViewVisiablity();
+            System.out.println("文件资源URL:"+mFile.getUrl());
+            System.out.println("下载路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
             downloadTask = DownLoader.downloadPaperFile(mFile.getUrl(),
                     SDCardUtils.getDownloadPath() + mFile.getName(),
                     new DownLoader.DownloadTaskCallback() {
@@ -235,16 +253,19 @@ public class FileDetailActivity extends BaseActivity {
         } else {
 
 
-//            Uri uri = Uri.fromFile(new File(SDCardUtils.getDownloadPath() + downloadDB.getFileName(mFile.getUrl())));
-//            Intent intent = new Intent(Intent.ACTION_VIEW);
-//            intent.setData(uri);
-//            startActivity(intent);
+            Uri uri = Uri.fromFile(new File(SDCardUtils.getDownloadPath() + downloadDB.getFileName(mFile.getUrl())));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(uri);
+            startActivity(intent);
 
             File file = new File(SDCardUtils.getDownloadPath() + downloadDB.getFileName(mFile.getUrl()));
             openFile(file);
         }
     }
 
+    /**
+     *      将文件发送到我的电脑
+     */
     private void sendToComputer() {
 
 
@@ -255,7 +276,7 @@ public class FileDetailActivity extends BaseActivity {
             intent.setType("text/plain");
             intent.setPackage("com.tencent.mobileqq");
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
-            intent.putExtra(Intent.EXTRA_TEXT, (mFile.isDownload() ? downloadDB.getFileName(mFile.getUrl()) : mFile.getName()) + ": " + UrlUnicode.encode(mFile.getUrl()));
+            intent.putExtra(Intent.EXTRA_TEXT, (mFile.isDownload() ? downloadDB.getFileName(mFile.getUrl()) : mFile.getName()) + ": " + mFile.getUrl());
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(Intent.createChooser(intent, "选择\"发送到我的电脑\""));
@@ -265,6 +286,9 @@ public class FileDetailActivity extends BaseActivity {
 
     }
 
+    /**
+     *      中断下载
+     */
     private void cancelDonwload() {
 
         if (downloadTask != null && downloadTask.isAlive()) {
@@ -273,6 +297,10 @@ public class FileDetailActivity extends BaseActivity {
         }
     }
 
+    /**
+     *      设置下载视图
+     *      一般用于下载完成一个文件后的视图设置
+     */
     private void setDownloadViewVisiablity() {
         isDownloading = !isDownloading;
 
@@ -286,6 +314,9 @@ public class FileDetailActivity extends BaseActivity {
         btnCancel.setVisibility(isDownloading ? View.VISIBLE : View.INVISIBLE);
     }
 
+    /**
+     *      刷新下载状态
+     */
     private void refreshDownloadState() {
         tvDelete.setVisibility(mFile.isDownload() ? View.VISIBLE : View.INVISIBLE);
         btnDownload.setText(mFile.isDownload() ? "打开文件" : "下载到手机");

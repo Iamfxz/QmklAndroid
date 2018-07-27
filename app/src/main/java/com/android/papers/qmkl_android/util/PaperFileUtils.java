@@ -116,11 +116,12 @@ public class PaperFileUtils {
         int num = 0;
         int index2 = path.indexOf("/");
         for (int i = 0; i < path.length();i++){
-            if(path.charAt(i) == '/' ){
+            if(path.charAt(i) == '/'){
                 num ++;
             }
             if(num == 2){
                 index2 = i;
+                break;
             }
         }
         return path.substring(path.indexOf("/")+1,index2);
