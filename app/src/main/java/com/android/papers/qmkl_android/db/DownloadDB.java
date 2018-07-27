@@ -14,13 +14,14 @@ import java.util.List;
 
 /**
  * Created by Administrator on 16/4/25.
+ * Alter by fxz on 18/7/25
  */
 public class DownloadDB extends SQLiteOpenHelper {
     private volatile static DownloadDB downloadDB;
 
     private SQLiteDatabase db;
 
-    private static final String TABLE_NAME = "download_info";
+    private static final String TABLE_NAME = "download_info";//表名
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String COURSE = "course";
@@ -29,17 +30,23 @@ public class DownloadDB extends SQLiteOpenHelper {
     private static final String URL = "url";
     private static final String TIME = "time";
 
+    //根据URL查找文件所有信息
     private static final String QUERY_DOWNLOADED = "SELECT * FROM " + TABLE_NAME
             + " WHERE " + URL + " = ?";
+    //按照（文件名，课程，大小，类型，URL，时间）插入数据
     private static final String ADD_DOWNLOADED = "INSERT INTO " + TABLE_NAME
             + "(" + NAME + ", " + COURSE + ", " + SIZE + ", " + TYPE + ", "
             + URL + ", " + TIME + ")"
             + "VALUES(?, ?, ?, ?, ?, ?)";
+    //根据URL删除该文件所有信息
     private static final String REMOVE_DOWNLOADED = "DELETE FROM " + TABLE_NAME + " WHERE "
             + URL + " = ?";
+    //搜索数据库中的所有文件
     private static final String EMPTY_QUERY = "SELECT * FROM " + TABLE_NAME;
+    //降序搜索所有文件
     private static final String GET_DOWNLOADED = EMPTY_QUERY + " ORDER BY "
             + ID + " DESC";
+    //根据URL搜索文件名
     private static final String QUERY_NAME = "SELECT " + NAME + " from " + TABLE_NAME + " WHERE "
             + URL + " = ?";
 
@@ -59,6 +66,7 @@ public class DownloadDB extends SQLiteOpenHelper {
         return downloadDB;
     }
 
+    //创建数据库，主码为ID，其他非空
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
@@ -77,6 +85,7 @@ public class DownloadDB extends SQLiteOpenHelper {
     }
 
 
+    //判断该URL是否已下载
     public boolean isDownloaded(String url) {
         Cursor cursor = db.rawQuery(QUERY_DOWNLOADED, new String[]{ url });
         boolean result = cursor.moveToFirst();
@@ -84,6 +93,7 @@ public class DownloadDB extends SQLiteOpenHelper {
         return result;
     }
 
+    //添加下载信息
     public void addDownloadInfo(PaperFile paperFile) {
         db.execSQL(ADD_DOWNLOADED, new String[] {
                 paperFile.getName(),
@@ -95,10 +105,12 @@ public class DownloadDB extends SQLiteOpenHelper {
         });
     }
 
+    //删除下载信息
     public void removeDownloadInfo(String url) {
         db.execSQL(REMOVE_DOWNLOADED, new String[] { url });
     }
 
+    //已下载文件是空的则返回true
     public boolean isEmpty() {
         Cursor cursor = db.rawQuery(GET_DOWNLOADED, null);
         boolean result = !cursor.moveToFirst();
@@ -106,6 +118,11 @@ public class DownloadDB extends SQLiteOpenHelper {
         return result;
     }
 
+    /**
+     *      获取已下载的文件
+     *      暂时废弃
+     * @return 已下载的文件
+     */
     public List<DownloadedFile> getDownloadedFiles() {
         ArrayList<DownloadedFile> downloadedFiles = new ArrayList<DownloadedFile>();
 

@@ -8,13 +8,24 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.AdsActivity;
+import com.android.papers.qmkl_android.activity.FileDetailActivity;
 import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
+<<<<<<< HEAD
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.AdData;
+=======
+import com.android.papers.qmkl_android.impl.PostFileDetail;
+import com.android.papers.qmkl_android.impl.PostFileUrl;
+import com.android.papers.qmkl_android.impl.PostLogin;
+import com.android.papers.qmkl_android.model.AdData;
+import com.android.papers.qmkl_android.model.FileDetailRes;
+import com.android.papers.qmkl_android.model.FileRes;
+import com.android.papers.qmkl_android.model.FileUrlRes;
+import com.android.papers.qmkl_android.model.PaperFile;
+>>>>>>> 3a07bad6294a63fffcae0673ec8cfcf56b1328fb
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.requestModel.TokenLoginRequest;
@@ -31,17 +42,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class RetrofitUtils {
+    //实例化Retrofit对象
+    private static Retrofit retrofit  = new Retrofit.Builder()
+            .baseUrl("http://120.77.32.233/qmkl1.0.0/")// 设置 网络请求 Url,1.0.0版本
+            .addConverterFactory(GsonConverterFactory.create())//设置使用Gson解析(记得加入依赖)
+            .build();
     private static final int errorCode=404;
     private static final int successCode = 200;
     private static final String TAG = ".RetrofitUtils";
     private static String oldAdName,newAdName,adPath;
     //获取广告
     public static void postAd(final Context context, final Activity startAct){
-        //创建Retrofit对象
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
-                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                .build();
+
 
         //创建 网络请求接口 的实例
         PostAds request = retrofit.create(PostAds.class);
@@ -50,7 +62,7 @@ public class RetrofitUtils {
         request.getCall().enqueue(new Callback<ResponseInfo<AdData>>() {
             //请求成功时回调
             @Override
-            public void onResponse(Call<ResponseInfo<AdData>> call, Response<ResponseInfo<AdData>> response) {
+            public void onResponse(@NonNull Call<ResponseInfo<AdData>> call, @NonNull Response<ResponseInfo<AdData>> response) {
                 //广告页当前不可用
                 if (Integer.parseInt(Objects.requireNonNull(response.body()).getCode())!=successCode||
                         !Objects.requireNonNull(response.body()).getData().isEnabled()) {
@@ -70,13 +82,17 @@ public class RetrofitUtils {
                 }
                 //广告页当前可用
                 oldAdName = SharedPreferencesUtils.getStoredMessage(context, "AdName");
-                newAdName = response.body().getData().getUpdatedAt();
-                adPath = response.body().getData().getUrl();
+                newAdName = Objects.requireNonNull(response.body()).getData().getUpdatedAt();
+                adPath = Objects.requireNonNull(response.body()).getData().getUrl();
                 SharedPreferencesUtils.setStoredMessage(context,"fallback",
+<<<<<<< HEAD
                         response.body().getData().getFallback());
                 SharedPreferencesUtils.setStoredMessage(context,"adtitle",
                         response.body().getData().getTitle());
                 Log.d(TAG, response.body().getData().getTitle());
+=======
+                        Objects.requireNonNull(response.body()).getData().getFallback());
+>>>>>>> 3a07bad6294a63fffcae0673ec8cfcf56b1328fb
                 //此前尚未缓存过广告数据、广告数据已更新、广告数据被删除，重新缓存
                 if (oldAdName == null || !oldAdName.equals(newAdName) || !checkLocalADImage()) {
                     SharedPreferencesUtils.setStoredMessage(context, "AdName", newAdName);
@@ -105,6 +121,7 @@ public class RetrofitUtils {
                                     }
                                 }).start();
                             } catch (Exception e) {
+<<<<<<< HEAD
                                 //缓存失败，进入登录界面或者主界面
                                 Toast.makeText(startAct,"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
                                 try {
@@ -114,6 +131,10 @@ public class RetrofitUtils {
                                     }
                                     nextActivity(context,startAct);
                              }
+=======
+                                e.printStackTrace();
+                            }
+>>>>>>> 3a07bad6294a63fffcae0673ec8cfcf56b1328fb
                         }
                     }).start();
                 }
@@ -134,7 +155,7 @@ public class RetrofitUtils {
             }
 
             @Override
-            public void onFailure(Call<ResponseInfo<AdData>> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseInfo<AdData>> call, @NonNull Throwable t) {
                 Toast.makeText(context,"服务器请求失败",Toast.LENGTH_SHORT).show();
                 new Thread(new Runnable() {
                     @Override
@@ -155,11 +176,14 @@ public class RetrofitUtils {
         //登录调用API发送登录数据给服务器
         public static void postLogin(final Activity startActivity, final Context context, LoginRequest r, final ZLoadingDialog dialog){
 
+<<<<<<< HEAD
             //创建Retrofit对象
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
                     .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
                     .build();
+=======
+>>>>>>> 3a07bad6294a63fffcae0673ec8cfcf56b1328fb
 
         //创建 网络请求接口 的实例
         PostLogin request = retrofit.create(PostLogin.class);
@@ -186,13 +210,14 @@ public class RetrofitUtils {
                     SharedPreferencesUtils.setStoredMessage(context,"token",token);
                     Log.d(TAG, "已保存正确token值");
 
-                    //TODO
+                    //TODO token每次登陆要刷新
                     Intent intent = new Intent(startActivity,MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                     startActivity.finish();
 
                 }else{
+                    //TODO 子线程更新UI界面
                     Toast.makeText(context,"发生未知错误,请反馈给开发者",Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
@@ -209,11 +234,6 @@ public class RetrofitUtils {
     //判断当前token是否可以登录
     public static void postLogin(final Context context, String token){
         if(token!=null){
-            //创建Retrofit对象
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,0.0.4版本
-                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                    .build();
 
             //创建 网络请求接口 的实例
             PostLogin request = retrofit.create(PostLogin.class);
@@ -231,7 +251,7 @@ public class RetrofitUtils {
                     if(resultCode == errorCode){
                         SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
                     }else if (resultCode == successCode){
-                        SharedPreferencesUtils.setStoredMessage(context,"token",response.body().getData().toString());
+                        SharedPreferencesUtils.setStoredMessage(context,"token", Objects.requireNonNull(response.body()).getData().toString());
                         SharedPreferencesUtils.setStoredMessage(context,"hasLogin","true");
                     }else{
                         SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
@@ -250,16 +270,6 @@ public class RetrofitUtils {
         }
     }
 
-
-    /**
-     * 请求文件资源，主要用于主界面的资源页面
-     * @param path "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
-     * @param context 发出请求的上下文
-     * @param token
-     */
-    public static void postFile(final Context context, String token,String path,String colleageName){
-
-    }
     /**
      *
      * 获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在

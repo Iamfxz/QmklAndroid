@@ -27,12 +27,13 @@ public class PaperFileUtils {
             put("ppt", R.drawable.document_type_ppt);
             put("pptx", R.drawable.document_type_ppt);
 
-            //xls
+            //表格
+            put("xls", R.drawable.document_type_xls);
             put("xls", R.drawable.document_type_xls);
             put("xlt", R.drawable.document_type_xls);
             put("et", R.drawable.document_type_xls);
 
-            //txt
+            //文本
             put("txt", R.drawable.document_type_txt);
             put("rtf", R.drawable.document_type_txt);
 
@@ -50,6 +51,9 @@ public class PaperFileUtils {
 
             //unknow
             put("unknow", R.drawable.document_type_unknow);
+
+            //folder
+            put("folder",R.drawable.document_type_folder);
         }
     };
 
@@ -66,28 +70,62 @@ public class PaperFileUtils {
         String result = "";
 
         if (size < 1024) {
-            result = format.format(size) +"KB";
+            result = format.format(size) +"B";
         } else if (size < 1024 * 1024) {
-            result = format.format(size / 1024.0) + "MB";
+            result = format.format(size / 1024.0) + "KB";
         } else if (size < 1024 * 1024 * 1024) {
-            return format.format(size / 1024.0 / 1024.0) + "GB";
+            result = format.format(size / 1024.0 / 1024.0) + "MB";
+        } else if (size < 1024 * 1024 * 1024) {
+            result = format.format(size / 1024.0 / 1024.0 / 1024.0) + "GB";
         }
-
         return result;
     }
 
     /**
-     * 获取文件拓展名
-     *
-     * @param fileName 文件名
-     * @return 文件拓展名
+     *      通过服务器返回的字符串判断文件类型
+     *      folder--文件夹
+     *      word--某种文档格式
+     * @param fileName 服务器返回的字符串
+     * @return 文件类型
      */
-    public static String typeWithFileName(String fileName) {
+    static public String typeWithFileName(String fileName){
+        String result;
+        if(fileName.contains("."))
+            result = fileName.substring(fileName.lastIndexOf(".")+1,fileName.length());
+        else
+            result = "folder";
 
-        int index = fileName.lastIndexOf(".");
-        return fileName.substring(index + 1, fileName.length());
+        return result.trim();
     }
 
+    /**
+     *      利用路径名字得出文件的名字
+     * @param path 相对路径
+     * @return 文件的名字
+     */
+    static public String nameWithPath(String path){
+        return path.substring(path.lastIndexOf("/")+1,path.length());
+    }
+
+    /**
+     *      获取课程名字
+     * @param path 相对路径
+     * @return 课程名字
+     */
+    static public String courseWithPath(String path){
+        int num = 0;
+        int index2 = path.indexOf("/");
+        for (int i = 0; i < path.length();i++){
+            if(path.charAt(i) == '/'){
+                num ++;
+            }
+            if(num == 2){
+                index2 = i;
+                break;
+            }
+        }
+        return path.substring(path.indexOf("/")+1,index2);
+    }
     /**
      * 文件后缀获得相应资源文件id
      *
@@ -96,9 +134,9 @@ public class PaperFileUtils {
      */
     public static int parseImageResource(String type) {
         if (types.containsKey(type.toLowerCase())) {
-            return (int)types.get(type.toLowerCase());
+            return types.get(type.toLowerCase());
         } else {
-            return (int)types.get("unknow");//原意unknown
+            return types.get("unknow");//原意unknown
         }
     }
 
@@ -112,4 +150,8 @@ public class PaperFileUtils {
         return simpleDateFormat.format(new Date());
     }
 
+    public static String ParseTimestamp(Long timestamp){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+        return simpleDateFormat.format(timestamp);
+    }
 }

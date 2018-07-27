@@ -76,7 +76,7 @@ public class FileFolderActivity extends BaseActivity {
         baocuo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //跳转至报错web
+                //TODO 跳转至报错web
                 Intent toWebIntent = new Intent(FileFolderActivity.this, WebViewActivity.class);
                 toWebIntent.putExtra("url", "http://robinchen.mikecrm.com/f.php?t=yFA9QI");
                 toWebIntent.putExtra("title", "报错");
@@ -105,14 +105,14 @@ public class FileFolderActivity extends BaseActivity {
                     startActivity(intent);
 
                 } else {
-
-                    PaperData.Files file = mFiles.get(position - mFolders.size());
-                    PaperFile paperFile = new PaperFile(file, BasePath + mPath, mTitle);
-                    paperFile.setDownload(downloadDB.isDownloaded(paperFile.getUrl()));
-
-                    Intent intent = new Intent(FileFolderActivity.this, FileDetailActivity.class);   //直接进入文件详情
-                    intent.putExtra("file", paperFile);
-                    startActivityForResult(intent, GO_TO_DETAIL);
+                    //TODO 进入文件下载详情页面
+//                    PaperData.Files file = mFiles.get(position - mFolders.size());
+//                    PaperFile paperFile = new PaperFile(file, BasePath + mPath, mTitle);
+//                    paperFile.setDownload(downloadDB.isDownloaded(paperFile.getUrl()));
+//
+//                    Intent intent = new Intent(FileFolderActivity.this, FileDetailActivity.class);   //直接进入文件详情
+//                    intent.putExtra("file", paperFile);
+//                    startActivityForResult(intent, GO_TO_DETAIL);
                 }
             }
         });

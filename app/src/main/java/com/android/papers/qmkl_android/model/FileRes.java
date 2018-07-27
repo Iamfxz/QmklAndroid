@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.transform.Source;
@@ -11,19 +13,19 @@ import javax.xml.transform.Source;
 /**
  * 作者：方向臻 on 2018/7/24/024 11:08
  * 邮箱：273332683@qq.com
- *      向端口请求文件列表后返回的数据
+ *      向“文件列表”端口请求文件列表后返回的数据
  *      使用Parcelable方法传递数据
  */
 public class FileRes implements Parcelable{
     private String code;
-    private ArrayList<String> data;//每一行是一个文件的名字
+    private HashMap<String,String> data;//每一行是一个文件的名字，及文件大小
     private String msg;
 
 
     public FileRes(Parcel source) {
         this.code = source.readString();
-        data = new ArrayList<>();
-        source.readList(data,ClassLoader.getSystemClassLoader());
+        data = new HashMap<>();
+        source.readHashMap(HashMap.class.getClassLoader());
     }
 
     public String getCode() {
@@ -34,11 +36,11 @@ public class FileRes implements Parcelable{
         this.code = code;
     }
 
-    public ArrayList<String> getData() {
+    public HashMap<String, String> getData() {
         return data;
     }
 
-    public void setData(ArrayList<String> data) {
+    public void setData(HashMap<String, String> data) {
         this.data = data;
     }
 
@@ -58,7 +60,7 @@ public class FileRes implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(code);//写出操作结果码
-        dest.writeList(data);//写入该列表下所有文件名
+        dest.writeMap(data);//写入该列表下所有文件名及对应文件大小
         dest.writeString(msg);//操作结果解释
     }
 
