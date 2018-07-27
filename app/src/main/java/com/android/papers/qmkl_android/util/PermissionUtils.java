@@ -316,4 +316,23 @@ public class PermissionUtils {
 
         return permissions;
     }
+
+    //判断是否拥有SD卡读写权限
+    public static boolean isHaveWritePer(final Activity activity,final int requestCode){
+        final String requestPermission = requestPermissions[requestCode];
+
+        int checkSelfPermission;
+        try {
+            checkSelfPermission = ActivityCompat.checkSelfPermission(activity, requestPermission);
+        } catch (RuntimeException e) {
+
+            return false;
+        }
+
+        if (checkSelfPermission != PackageManager.PERMISSION_GRANTED){
+            return false;
+        }
+        return true;
+    }
+
 }

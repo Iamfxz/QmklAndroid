@@ -74,9 +74,8 @@ public class AdsActivity extends Activity {
                 isClicked=true;
                 Log.d(TAG, "点击广告");
                 Intent intent=new Intent(AdsActivity.this,AdsDetailsActivity.class);
-//                nextActivity(AdsDetailsActivity.class);
                 intent.putExtra("url",SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback"));
-                intent.putExtra("title","广告");
+                intent.putExtra("title",SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"adtitle"));
                 startActivity(intent);
                 finish();
             }
@@ -113,7 +112,8 @@ public class AdsActivity extends Activity {
                             }
                             else {
                                 nextActivity(MainActivity.class);
-                            }                        }
+                            }
+                        }
                     }
                 });
             }

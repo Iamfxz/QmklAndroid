@@ -3,7 +3,7 @@ package com.android.papers.qmkl_android.model;
 public class AdData {
     String createdAt;
     boolean enabled;
-    String fallback,id,pic,remark,updatedAt,url,views;
+    private String fallback,id,pic,remark, title,updatedAt,url,views;
 
     public String getCreatedAt() {
         return createdAt;
@@ -51,6 +51,14 @@ public class AdData {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getUpdatedAt() {

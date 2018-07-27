@@ -13,18 +13,14 @@ import com.android.papers.qmkl_android.activity.AdsActivity;
 import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
-import com.android.papers.qmkl_android.impl.PostFile;
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.AdData;
-import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.model.ResponseInfo;
-import com.android.papers.qmkl_android.requestModel.FileRequest;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.requestModel.TokenLoginRequest;
 import com.zyao89.view.zloading.ZLoadingDialog;
 
 import java.io.File;
-import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -32,8 +28,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import static android.support.constraint.Constraints.TAG;
 
 
 public class RetrofitUtils {
@@ -68,55 +62,7 @@ public class RetrofitUtils {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            startAct.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if(SharedPreferencesUtils.getStoredMessage(context,"hasLogin").equals("false")){
-                                        //缓冲两秒初始界面
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                try {
-                                                    Thread.sleep(2000);
-                                                } catch (InterruptedException e) {
-                                                    e.printStackTrace();
-                                                }
-                                                startAct.runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        Intent intent=new Intent(startAct,LoginActivity.class);
-                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                        context.startActivity(intent);
-                                                        startAct.finish();
-                                                    }
-                                                });
-                                            }
-                                        }).start();
-
-                                    }
-                                    else {
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                try {
-                                                    Thread.sleep(2000);
-                                                } catch (InterruptedException e) {
-                                                    e.printStackTrace();
-                                                }
-                                                startAct.runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        Intent intent=new Intent(startAct,MainActivity.class);
-                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                        context.startActivity(intent);
-                                                        startAct.finish();
-                                                    }
-                                                });
-                                            }
-                                        }).start();
-                                    }
-                                }
-                            });
+                            nextActivity(context,startAct);
                         }
                     }).start();
                     Log.d(TAG, "广告不可用");
@@ -128,6 +74,9 @@ public class RetrofitUtils {
                 adPath = response.body().getData().getUrl();
                 SharedPreferencesUtils.setStoredMessage(context,"fallback",
                         response.body().getData().getFallback());
+                SharedPreferencesUtils.setStoredMessage(context,"adtitle",
+                        response.body().getData().getTitle());
+                Log.d(TAG, response.body().getData().getTitle());
                 //此前尚未缓存过广告数据、广告数据已更新、广告数据被删除，重新缓存
                 if (oldAdName == null || !oldAdName.equals(newAdName) || !checkLocalADImage()) {
                     SharedPreferencesUtils.setStoredMessage(context, "AdName", newAdName);
@@ -152,22 +101,19 @@ public class RetrofitUtils {
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
                                         }
-                                        startAct.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Intent intent=new Intent(startAct,AdsActivity.class);
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                context.startActivity(intent);
-                                                startAct.finish();
-                                            }
-                                        });
+                                        nextActivity(context,startAct,AdsActivity.class);
                                     }
                                 }).start();
                             } catch (Exception e) {
                                 //缓存失败，进入登录界面或者主界面
-                                Toast.makeText(context,"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
-                                e.printStackTrace();
-                            }
+                                Toast.makeText(startAct,"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
+                                try {
+                                    Thread.sleep(2000);
+                                    } catch (InterruptedException e2) {
+                                        e.printStackTrace();
+                                    }
+                                    nextActivity(context,startAct);
+                             }
                         }
                     }).start();
                 }
@@ -181,20 +127,10 @@ public class RetrofitUtils {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            startAct.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Intent intent=new Intent(startAct,AdsActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    context.startActivity(intent);
-                                    startAct.finish();
-                                }
-                            });
+                            nextActivity(context,startAct,AdsActivity.class);
                         }
                     }).start();
                 }
-
-
             }
 
             @Override
@@ -208,15 +144,7 @@ public class RetrofitUtils {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        startAct.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent=new Intent(startAct,LoginActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                context.startActivity(intent);
-                                startAct.finish();
-                            }
-                        });
+                        nextActivity(context,startAct,LoginActivity.class);
                     }
                 }).start();
             }
@@ -224,14 +152,14 @@ public class RetrofitUtils {
     }
 
 
-    //登录调用API发送登录数据给服务器
-    public static void postLogin(final Activity startActivity, final Context context, LoginRequest r, final ZLoadingDialog dialog){
+        //登录调用API发送登录数据给服务器
+        public static void postLogin(final Activity startActivity, final Context context, LoginRequest r, final ZLoadingDialog dialog){
 
-        //创建Retrofit对象
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
-                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                .build();
+            //创建Retrofit对象
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
+                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                    .build();
 
         //创建 网络请求接口 的实例
         PostLogin request = retrofit.create(PostLogin.class);
@@ -341,5 +269,42 @@ public class RetrofitUtils {
         Log.d(TAG, "检测本地广告图像是否存在");
         File adImageFile = new File(SDCardUtils.getADImage(newAdName));
         return adImageFile.exists();
+    }
+
+    private static void nextActivity(final Context context, final Activity startAct){
+        if(SharedPreferencesUtils.getStoredMessage(context,"hasLogin").equals("false")){
+            startAct.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent=new Intent(startAct,LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                    startAct.finish();
+                }
+            });
+        }
+        else {
+            startAct.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent=new Intent(startAct,MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                    startAct.finish();
+                }
+            });
+        }
+    }
+
+    private static void nextActivity(final Context context, final Activity startAct,final Class endAct) {
+        startAct.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent=new Intent(startAct,endAct);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                startAct.finish();
+            }
+        });
     }
 }

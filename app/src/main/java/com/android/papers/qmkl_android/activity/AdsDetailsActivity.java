@@ -15,6 +15,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.impl.PostLogin;
@@ -41,6 +42,8 @@ public class AdsDetailsActivity extends Activity {
     WebView ads_webview;
     @BindView((R.id.xtfy_activity_back_iv))
     ImageView back_iv;
+    @BindView(R.id.webview_title)
+    TextView webview_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +51,13 @@ public class AdsDetailsActivity extends Activity {
         setContentView(R.layout.web_ads);
         ButterKnife.bind(this);
 
-        adUrl = SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback");
+//        adUrl = SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback");
+        Log.d(TAG, "fallback="+SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback"));
 
+        adUrl=getIntent().getStringExtra("url");
+        webview_title.setText(getIntent().getStringExtra("title"));
         ads_webview.getSettings().setJavaScriptEnabled(true);
+        ads_webview.getSettings().setDomStorageEnabled(true);
         ads_webview.loadUrl(adUrl);
 
         back_iv.setOnClickListener(new View.OnClickListener() {
@@ -70,13 +77,14 @@ public class AdsDetailsActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if(url.startsWith("http:") || url.startsWith("https:") ) {
+                    Log.d(TAG, url);
                     view.loadUrl(url);
                     return false;
                 }else{
+                    Log.d(TAG, "1111111: ");
                     try{
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                         startActivity(intent);
-
                     }catch (ActivityNotFoundException e){
                         e.printStackTrace();
                         Log.d(TAG, "没有匹配");
@@ -89,16 +97,24 @@ public class AdsDetailsActivity extends Activity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
-            nextActivity(LoginActivity.class);
+    public boolean onKeyDown(int keyCode, KeyEvent keyEvent) {
+        if (keyCode == keyEvent.KEYCODE_BACK) {//监听返回键，如果可以后退就后退
+            if (ads_webview.canGoBack()) {
+                ads_webview.goBack();
+                return true;
+            }
+            else{
+                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                    nextActivity(LoginActivity.class);
+                }
+                else {
+                    nextActivity(MainActivity.class);
+                }
+            }
         }
-        else {
-            nextActivity(MainActivity.class);
-        }
-    }
 
+        return super.onKeyDown(keyCode, keyEvent);
+    }
 
 
 

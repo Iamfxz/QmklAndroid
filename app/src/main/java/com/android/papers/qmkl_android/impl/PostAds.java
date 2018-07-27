@@ -8,6 +8,6 @@ import retrofit2.Call;
 import retrofit2.http.POST;
 
 public interface PostAds {
-    @POST("ad/detail/广告页")
+    @POST("ad/detail/adpage")
     Call<ResponseInfo<AdData>> getCall();
 }
