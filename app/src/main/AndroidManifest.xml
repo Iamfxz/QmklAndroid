@@ -30,6 +30,7 @@
         <activity android:name=".activity.WebViewActivity"/>
         <activity android:name=".activity.FileDetailActivity"/>
         <activity android:name=".activity.FileFolderActivity"/>
+        <activity android:name=".activity.UserInfoActivity"/>
 
     </application>
 

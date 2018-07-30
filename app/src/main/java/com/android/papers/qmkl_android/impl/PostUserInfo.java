@@ -1,11 +1,11 @@
 package com.android.papers.qmkl_android.impl;
 
-import com.android.papers.qmkl_android.model.ResponseInfo;
+import com.android.papers.qmkl_android.model.UserInfoRes;
+import com.android.papers.qmkl_android.requestModel.TokenRequest;
 
 import retrofit2.Call;
-import retrofit2.http.Field;
+import retrofit2.http.Body;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
 
 /**
  * 使用token登录
@@ -13,5 +13,5 @@ import retrofit2.http.Query;
  */
 public interface PostUserInfo {
     @POST("user/info")
-    Call<ResponseInfo> getCall(@Field("token") String token);
+    Call<UserInfoRes> getCall(@Body TokenRequest token);
 }

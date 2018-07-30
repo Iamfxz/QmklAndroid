@@ -1,37 +1,24 @@
 package com.android.papers.qmkl_android.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.android.papers.qmkl_android.R;
-import com.android.papers.qmkl_android.impl.PostLogin;
-import com.android.papers.qmkl_android.model.ResponseInfo;
-import com.android.papers.qmkl_android.requestModel.TokenLoginRequest;
 import com.android.papers.qmkl_android.util.CountDownTimer;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 //第二启动页 (放广告的页面 缺省)
 public class AdsActivity extends Activity {

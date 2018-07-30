@@ -1,15 +1,11 @@
 package com.android.papers.qmkl_android.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,13 +14,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
-import com.android.papers.qmkl_android.impl.PostLogin;
-import com.android.papers.qmkl_android.model.ResponseInfo;
 
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
-import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -33,11 +26,6 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends BaseActivity {
     private static final int errorCode=404;

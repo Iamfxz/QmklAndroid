@@ -2,4 +2,5 @@
 <resources>
     <string name="base_url">http://120.77.32.233/qmkl1.0.0/</string>
     <string name="old_base_url">https://finalexam.cn/</string>
+    <string name="user_info_url">http://120.77.32.233/qmkl1.0.0/user/download/avatar/</string>
 </resources>
