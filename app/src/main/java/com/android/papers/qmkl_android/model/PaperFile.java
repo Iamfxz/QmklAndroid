@@ -26,11 +26,11 @@ public class PaperFile implements Parcelable {
 
     }
 
-    public PaperFile(String path, int size, Long updateAt, Long createAt) {
+    public PaperFile(String path, String size, Long updateAt, Long createAt) {
         this.path = path;
         this.name = PaperFileUtils.nameWithPath(path);
         this.type = PaperFileUtils.typeWithFileName(this.name);
-        this.size = PaperFileUtils.sizeWithDouble((double)size);
+        this.size = size;
         this.course = PaperFileUtils.courseWithPath(path);
         this.download = false;
         this.createAt = createAt;
@@ -122,6 +122,7 @@ public class PaperFile implements Parcelable {
         dest.writeString(this.size);
         dest.writeString(this.course);
         dest.writeByte(download ? (byte) 1 : (byte) 0);
+        dest.writeString(this.url);
     }
 
     protected PaperFile(Parcel in) {
@@ -131,6 +132,7 @@ public class PaperFile implements Parcelable {
         this.size = in.readString();
         this.course = in.readString();
         this.download = in.readByte() != 0;
+        this.url = in.readString();
     }
 
     public static final Creator<PaperFile> CREATOR = new Creator<PaperFile>() {

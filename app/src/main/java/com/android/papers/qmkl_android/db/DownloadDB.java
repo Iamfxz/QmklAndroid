@@ -120,7 +120,7 @@ public class DownloadDB extends SQLiteOpenHelper {
 
     /**
      *      获取已下载的文件
-     *      暂时废弃
+     *
      * @return 已下载的文件
      */
     public List<DownloadedFile> getDownloadedFiles() {
@@ -160,6 +160,18 @@ public class DownloadDB extends SQLiteOpenHelper {
         cursor.close();
 
         return result;
+    }
+
+    /**
+     * 为下载文件适当添加后缀以确定下载文件的储存名唯一
+     *
+     * @param name
+     * @return
+     */
+    public static String addSuffix(String name, int suffix) {
+        StringBuffer buffer = new StringBuffer(name);
+        int index = buffer.lastIndexOf(".");
+        return buffer.replace(index, index + 1, "(" + suffix + ").").toString();
     }
 
 }

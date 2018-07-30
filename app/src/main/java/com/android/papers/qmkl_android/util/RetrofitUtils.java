@@ -20,9 +20,12 @@ import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.activity.UserInfoActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
+<<<<<<< HEAD
 import com.android.papers.qmkl_android.impl.PostAllAcademies;
 import com.android.papers.qmkl_android.impl.PostAllColleges;
 import com.android.papers.qmkl_android.impl.PostExitLogin;
+=======
+>>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.impl.PostUpdateUserInfo;
 import com.android.papers.qmkl_android.impl.PostUserInfo;
@@ -93,6 +96,7 @@ public class RetrofitUtils {
                 newAdName = Objects.requireNonNull(response.body()).getData().getUpdatedAt();
                 adPath = Objects.requireNonNull(response.body()).getData().getUrl();
                 SharedPreferencesUtils.setStoredMessage(context,"fallback",
+<<<<<<< HEAD
                         Objects.requireNonNull(response.body()).getData().getFallback());
                 SharedPreferencesUtils.setStoredMessage(context,"adtitle",
                         response.body().getData().getTitle());
@@ -100,6 +104,12 @@ public class RetrofitUtils {
 
 
 
+=======
+                        response.body().getData().getFallback());
+                SharedPreferencesUtils.setStoredMessage(context,"adtitle",
+                        response.body().getData().getTitle());
+                Log.d(TAG, response.body().getData().getTitle());
+>>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
                 //此前尚未缓存过广告数据、广告数据已更新、广告数据被删除，重新缓存
                 if (oldAdName == null || !oldAdName.equals(newAdName) || !checkLocalADImage()) {
                     SharedPreferencesUtils.setStoredMessage(context, "AdName", newAdName);
@@ -128,7 +138,10 @@ public class RetrofitUtils {
                                     }
                                 }).start();
                             } catch (Exception e) {
+<<<<<<< HEAD
                                 e.printStackTrace();
+=======
+>>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
                                 //缓存失败，进入登录界面或者主界面
                                 Toast.makeText(startAct,"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
                                 try {
@@ -177,10 +190,20 @@ public class RetrofitUtils {
 
         //登录调用API发送登录数据给服务器
         public static void postLogin(final Activity startActivity, final Context context, LoginRequest r, final ZLoadingDialog dialog){
+<<<<<<< HEAD
+=======
+
+            //创建Retrofit对象
+>>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
                     .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
                     .build();
+<<<<<<< HEAD
+=======
+
+        //创建 网络请求接口 的实例
+>>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
         PostLogin request = retrofit.create(PostLogin.class);
         Call<ResponseInfo> call = request.getCall(r);
         call.enqueue(new Callback<ResponseInfo>() {
