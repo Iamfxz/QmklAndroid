@@ -102,7 +102,8 @@ public class DiscoveryFragment extends Fragment {
     public void onResume() {
         setUserInfo();
         super.onResume();
-
     }
+
+
 
 }

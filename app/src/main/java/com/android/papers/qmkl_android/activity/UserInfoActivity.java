@@ -1,10 +1,19 @@
 package com.android.papers.qmkl_android.activity;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +32,7 @@ import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,14 +75,17 @@ public class UserInfoActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_information);
         ButterKnife.bind(this);
-
         initView();
-
     }
+
 
     @OnClick(R.id.user_avatar)
     public void clickAvatar(){
-
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent,1);
+//        startActivityForResult(intent, 1);
     }
 
     @OnClick(R.id.user_nickname)
@@ -260,5 +273,64 @@ public class UserInfoActivity extends BaseActivity {
         UpdateUserRequest userRequest=new UpdateUserRequest(
                 nickname,gender,enterYear,college,academy,token);
         return userRequest;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1 && resultCode == RESULT_OK && data != null){
+            Uri uri = data.getData();
+            String imagePath=null;
+            if (DocumentsContract.isDocumentUri(this,uri)){
+                //如果是document类型的uri 则通过id进行解析处理
+                String docId = DocumentsContract.getDocumentId(uri);
+                if ("com.android.providers.media.documents".equals(uri.getAuthority())){
+                    //解析出数字格式id
+                    String id = docId.split(":")[1];
+                    String selection = MediaStore.Images.Media._ID + "=" +id;
+                    imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection);
+                }else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())){
+                    Uri contentUri = ContentUris.withAppendedId(Uri.parse("" +
+                            "content://downloads/public_downloads"),Long.valueOf(docId));
+                    imagePath = getImagePath(contentUri,null);
+                }
+            }else if ("content".equals(uri.getScheme())){
+                //如果不是document类型的uri，则使用普通的方式处理
+                imagePath = getImagePath(uri,null);
+            }
+            displayImage(imagePath);
+        }
+    }
+    /**
+     * 通过 uri seletion选择来获取图片的真实uri
+     * @param uri
+     * @param seletion
+     * @return
+     */
+    private String getImagePath(Uri uri, String seletion){
+        String path = null;
+        Cursor cursor = getContentResolver().query(uri,null,seletion,null,null);
+        if (cursor != null){
+            if (cursor.moveToFirst()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close();
+        }
+        return path;
+    }
+
+    /**
+     * 通过imagepath来绘制immageview图像
+     * @param imagePath
+     */
+    private void displayImage(String imagePath){
+        if (imagePath != null){
+            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+            avatar.setImageBitmap(bitmap);
+            RetrofitUtils.postUserAvatar(getApplicationContext(),imagePath);
+        }else{
+            Toast.makeText(this,"图片获取失败",Toast.LENGTH_SHORT).show();
+        }
     }
 }

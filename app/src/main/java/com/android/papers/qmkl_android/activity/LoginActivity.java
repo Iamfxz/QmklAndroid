@@ -1,9 +1,11 @@
 package com.android.papers.qmkl_android.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -22,6 +24,8 @@ import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +35,7 @@ public class LoginActivity extends BaseActivity {
     private static final int errorCode=404;
     private static final int successCode = 200;
     private static final String TAG = "LoginActivity";
-
+    private static Boolean isExit = false; //是否退出
     @BindView(R.id.back)
     ImageView back;//返回
     @BindView(R.id.user_phone_num)
@@ -118,7 +122,27 @@ public class LoginActivity extends BaseActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.back:
-                finish();
+                // 创建构建器
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                // 设置参数
+                builder.setTitle("确定要退出？")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {// 积极
+
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                finish();
+                                System.exit(0);
+                            }
+                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {// 消极
+
+                    @Override
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+
+                    }
+                });
+                builder.create().show();
                 break;
             case R.id.user_phone_num:
                 break;
@@ -158,4 +182,23 @@ public class LoginActivity extends BaseActivity {
         RetrofitUtils.postLogin(LoginActivity.this,getApplicationContext(), req,dialog);//发送登录请求验证
     }
 
+    @Override
+    public void onBackPressed() {
+        Timer tExit = null;
+        if (isExit == false) {
+            isExit = true; // 准备退出
+            Toast.makeText(this, "再按一次退出期末考啦", Toast.LENGTH_SHORT).show();
+            tExit = new Timer();
+            tExit.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    isExit = false; // 取消退出
+                }
+            }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
+
+        } else {
+            finish();
+            System.exit(0);
+        }
+    }
 }

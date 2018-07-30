@@ -20,14 +20,12 @@ import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.activity.UserInfoActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
-<<<<<<< HEAD
 import com.android.papers.qmkl_android.impl.PostAllAcademies;
 import com.android.papers.qmkl_android.impl.PostAllColleges;
 import com.android.papers.qmkl_android.impl.PostExitLogin;
-=======
->>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.impl.PostUpdateUserInfo;
+import com.android.papers.qmkl_android.impl.PostUserAvatar;
 import com.android.papers.qmkl_android.impl.PostUserInfo;
 import com.android.papers.qmkl_android.model.AcademiesOrCollegesRes;
 import com.android.papers.qmkl_android.model.AdData;
@@ -44,6 +42,9 @@ import java.io.File;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -96,20 +97,11 @@ public class RetrofitUtils {
                 newAdName = Objects.requireNonNull(response.body()).getData().getUpdatedAt();
                 adPath = Objects.requireNonNull(response.body()).getData().getUrl();
                 SharedPreferencesUtils.setStoredMessage(context,"fallback",
-<<<<<<< HEAD
                         Objects.requireNonNull(response.body()).getData().getFallback());
                 SharedPreferencesUtils.setStoredMessage(context,"adtitle",
                         response.body().getData().getTitle());
                 Log.d(TAG, response.body().getData().getTitle());
 
-
-
-=======
-                        response.body().getData().getFallback());
-                SharedPreferencesUtils.setStoredMessage(context,"adtitle",
-                        response.body().getData().getTitle());
-                Log.d(TAG, response.body().getData().getTitle());
->>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
                 //此前尚未缓存过广告数据、广告数据已更新、广告数据被删除，重新缓存
                 if (oldAdName == null || !oldAdName.equals(newAdName) || !checkLocalADImage()) {
                     SharedPreferencesUtils.setStoredMessage(context, "AdName", newAdName);
@@ -138,10 +130,8 @@ public class RetrofitUtils {
                                     }
                                 }).start();
                             } catch (Exception e) {
-<<<<<<< HEAD
                                 e.printStackTrace();
-=======
->>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
+
                                 //缓存失败，进入登录界面或者主界面
                                 Toast.makeText(startAct,"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
                                 try {
@@ -190,20 +180,8 @@ public class RetrofitUtils {
 
         //登录调用API发送登录数据给服务器
         public static void postLogin(final Activity startActivity, final Context context, LoginRequest r, final ZLoadingDialog dialog){
-<<<<<<< HEAD
-=======
-
-            //创建Retrofit对象
->>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
-                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                    .build();
-<<<<<<< HEAD
-=======
 
         //创建 网络请求接口 的实例
->>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
         PostLogin request = retrofit.create(PostLogin.class);
         Call<ResponseInfo> call = request.getCall(r);
         call.enqueue(new Callback<ResponseInfo>() {
@@ -601,6 +579,44 @@ public class RetrofitUtils {
                     dialog.dismiss();
                 }
             });
+    }
+
+    //传入用户token和图片，上传用户头像
+    public static void postUserAvatar(final Context context,String imagePath){
+        PostUserAvatar request = retrofit.create(PostUserAvatar.class);
+        File avatar=new File(imagePath);
+        String token=SharedPreferencesUtils.getStoredMessage(context,"token");
+
+//设置Content-Type:application/octet-stream
+        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), avatar);
+//设置Content-Disposition:form-data; name="photo"; filename="xuezhiqian.png"
+        MultipartBody.Part avatarRequest = MultipartBody.Part.createFormData("avatar", avatar.getName(), photoRequestBody);
+
+        RequestBody tokenRequest = RequestBody.create(MediaType.parse("multipart/form-data"), token);
+        Call<ResponseInfo<String>> call = request.getCall(avatarRequest,tokenRequest);
+        call.enqueue(new Callback<ResponseInfo<String>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull final Response<ResponseInfo<String>> response) {
+                SharedPreferencesUtils.setStoredMessage(context,"avatar",response.body().getData());
+                avatarPath=context.getString(R.string.user_info_url)+response.body().getData();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            DownLoader.downloadFile(new File(SDCardUtils.getAvatarImage(response.body().getData())),
+                                    avatarPath);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
+                Log.d(TAG, "请求失败");
+                Toast.makeText(context,"上传头像失败",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 

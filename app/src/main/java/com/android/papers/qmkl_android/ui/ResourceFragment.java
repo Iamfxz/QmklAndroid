@@ -106,15 +106,8 @@ public class ResourceFragment extends Fragment {
         ButterKnife.bind(this, view);
 
 
-<<<<<<< HEAD
-        //上传资源按钮个
-        uploadImg = (ImageView) view.findViewById(R.id.uploadImage_Academy);
-
-
-=======
         //TODO 上传资源按钮
         uploadImg = view.findViewById(R.id.uploadImage_Academy);
->>>>>>> 71a4b059bc589b887d76069e1c52b430729ced2a
         uploadImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
