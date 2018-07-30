@@ -122,6 +122,7 @@ public class PaperFile implements Parcelable {
         dest.writeString(this.size);
         dest.writeString(this.course);
         dest.writeByte(download ? (byte) 1 : (byte) 0);
+        dest.writeString(this.url);
     }
 
     protected PaperFile(Parcel in) {
@@ -131,6 +132,7 @@ public class PaperFile implements Parcelable {
         this.size = in.readString();
         this.course = in.readString();
         this.download = in.readByte() != 0;
+        this.url = in.readString();
     }
 
     public static final Creator<PaperFile> CREATOR = new Creator<PaperFile>() {

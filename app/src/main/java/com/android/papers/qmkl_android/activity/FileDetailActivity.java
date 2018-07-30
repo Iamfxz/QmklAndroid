@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -13,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.papers.qmkl_android.BuildConfig;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.model.PaperFile;
@@ -134,12 +136,12 @@ public class FileDetailActivity extends BaseActivity {
 
         //显示图标
         imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType().toLowerCase()));
-// 测试传递的过来的文件是否准确，准确
-//        System.out.println(mFile.getCourse());
-//        System.out.println(mFile.getName());
-//        System.out.println(mFile.getPath());
-//        System.out.println(mFile.getType());
-//        System.out.println("url:"+mFile.getUrl());
+        //测试传递的过来的文件是否准确，准确
+        System.out.println(mFile.getCourse());
+        System.out.println(mFile.getName());
+        System.out.println(mFile.getPath());
+        System.out.println(mFile.getType());
+        System.out.println("url:"+mFile.getUrl());
         //显示按钮
         btnDownload.setText(mFile.isDownload() ? "打开文件" : "下载到手机");
         fileOpenTip.setVisibility(mFile.isDownload()? View.VISIBLE:View.INVISIBLE);
@@ -197,7 +199,6 @@ public class FileDetailActivity extends BaseActivity {
                                     pbProgress.setProgress((int) ((double) hasWrite / (double) totalExpected * 100));
                                     tvProgress.setText("下载中...(" + PaperFileUtils.sizeWithDouble(hasWrite / 1024.0) + "" +
                                             "/" + mFile.getSize() + ")");
-
                                 }
                             });
 
@@ -251,14 +252,13 @@ public class FileDetailActivity extends BaseActivity {
             downloadTask.start();
 
         } else {
-
-
-            Uri uri = Uri.fromFile(new File(SDCardUtils.getDownloadPath() + downloadDB.getFileName(mFile.getUrl())));
+            System.out.println("存储路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
+            File file = new File(SDCardUtils.getDownloadPath() + mFile.getName());
+            Uri uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileProvider", file);
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(uri);
             startActivity(intent);
 
-            File file = new File(SDCardUtils.getDownloadPath() + downloadDB.getFileName(mFile.getUrl()));
             openFile(file);
         }
     }
@@ -276,7 +276,7 @@ public class FileDetailActivity extends BaseActivity {
             intent.setType("text/plain");
             intent.setPackage("com.tencent.mobileqq");
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
-            intent.putExtra(Intent.EXTRA_TEXT, (mFile.isDownload() ? downloadDB.getFileName(mFile.getUrl()) : mFile.getName()) + ": " + mFile.getUrl());
+            intent.putExtra(Intent.EXTRA_TEXT, (mFile.isDownload() ? downloadDB.getFileName(mFile.getUrl()) : mFile.getName()) + ": " + UrlUnicode.encode(mFile.getUrl()));
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(Intent.createChooser(intent, "选择\"发送到我的电脑\""));
