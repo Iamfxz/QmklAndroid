@@ -26,11 +26,11 @@ public class PaperFile implements Parcelable {
 
     }
 
-    public PaperFile(String path, int size, Long updateAt, Long createAt) {
+    public PaperFile(String path, String size, Long updateAt, Long createAt) {
         this.path = path;
         this.name = PaperFileUtils.nameWithPath(path);
         this.type = PaperFileUtils.typeWithFileName(this.name);
-        this.size = PaperFileUtils.sizeWithDouble((double)size);
+        this.size = size;
         this.course = PaperFileUtils.courseWithPath(path);
         this.download = false;
         this.createAt = createAt;

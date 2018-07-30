@@ -106,13 +106,8 @@ public class ResourceFragment extends Fragment {
         ButterKnife.bind(this, view);
 
 
-<<<<<<< HEAD
-        //上传资源按钮个
-        uploadImg = (ImageView) view.findViewById(R.id.uploadImage_Academy);
-=======
         //TODO 上传资源按钮
         uploadImg = view.findViewById(R.id.uploadImage_Academy);
->>>>>>> 3a07bad6294a63fffcae0673ec8cfcf56b1328fb
         uploadImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,7 +187,7 @@ public class ResourceFragment extends Fragment {
         ptrFrame.postDelayed(new Runnable() {
             @Override
             public void run() {
-              ptrFrame.autoRefresh();
+                ptrFrame.autoRefresh();
             }
         }, 100);
 
@@ -313,7 +308,8 @@ public class ResourceFragment extends Fragment {
                         System.out.println(Objects.requireNonNull(response.body()).getMsg());
                     }else if (resultCode == successCode){
                         System.out.println("文件详细信息请求成功");
-                        int size = Objects.requireNonNull(response.body()).getData().getSize();
+
+                        String size = Objects.requireNonNull(response.body()).getData().getSize();
                         Long updateAt = Objects.requireNonNull(response.body()).getData().getUpdateAt();
                         Long createAt = Objects.requireNonNull(response.body()).getData().getCreateAt();
                         PaperFile paperFile = new PaperFile(path, size, updateAt, createAt);
@@ -449,4 +445,3 @@ public class ResourceFragment extends Fragment {
         }
     }
 }
-

@@ -13,8 +13,21 @@ public class FileDetailRes {
         String md5;
         String name;
         String nick;
-        int size;
+        String size;
         Long updateAt;
+        int dislikeNum;
+        int likeNum;
+        int uid;
+        int id;
+
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
 
         public Long getCreateAt() {
             return createAt;
@@ -48,20 +61,44 @@ public class FileDetailRes {
             this.nick = nick;
         }
 
-        public int getSize() {
-            return size;
-        }
-
-        public void setSize(int size) {
-            this.size = size;
-        }
-
         public Long getUpdateAt() {
             return updateAt;
         }
 
         public void setUpdateAt(Long updateAt) {
             this.updateAt = updateAt;
+        }
+
+        public String getSize() {
+            return size;
+        }
+
+        public void setSize(String size) {
+            this.size = size;
+        }
+
+        public int getDislikeNum() {
+            return dislikeNum;
+        }
+
+        public void setDislikeNum(int dislikeNum) {
+            this.dislikeNum = dislikeNum;
+        }
+
+        public int getLikeNum() {
+            return likeNum;
+        }
+
+        public void setLikeNum(int likeNum) {
+            this.likeNum = likeNum;
+        }
+
+        public int getUid() {
+            return uid;
+        }
+
+        public void setUid(int uid) {
+            this.uid = uid;
         }
     }
     private String msg;

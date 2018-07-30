@@ -8,24 +8,13 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.AdsActivity;
-import com.android.papers.qmkl_android.activity.FileDetailActivity;
 import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
-<<<<<<< HEAD
 import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.model.AdData;
-=======
-import com.android.papers.qmkl_android.impl.PostFileDetail;
-import com.android.papers.qmkl_android.impl.PostFileUrl;
-import com.android.papers.qmkl_android.impl.PostLogin;
-import com.android.papers.qmkl_android.model.AdData;
-import com.android.papers.qmkl_android.model.FileDetailRes;
-import com.android.papers.qmkl_android.model.FileRes;
-import com.android.papers.qmkl_android.model.FileUrlRes;
-import com.android.papers.qmkl_android.model.PaperFile;
->>>>>>> 3a07bad6294a63fffcae0673ec8cfcf56b1328fb
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.requestModel.TokenLoginRequest;
@@ -85,14 +74,10 @@ public class RetrofitUtils {
                 newAdName = Objects.requireNonNull(response.body()).getData().getUpdatedAt();
                 adPath = Objects.requireNonNull(response.body()).getData().getUrl();
                 SharedPreferencesUtils.setStoredMessage(context,"fallback",
-<<<<<<< HEAD
                         response.body().getData().getFallback());
                 SharedPreferencesUtils.setStoredMessage(context,"adtitle",
                         response.body().getData().getTitle());
                 Log.d(TAG, response.body().getData().getTitle());
-=======
-                        Objects.requireNonNull(response.body()).getData().getFallback());
->>>>>>> 3a07bad6294a63fffcae0673ec8cfcf56b1328fb
                 //此前尚未缓存过广告数据、广告数据已更新、广告数据被删除，重新缓存
                 if (oldAdName == null || !oldAdName.equals(newAdName) || !checkLocalADImage()) {
                     SharedPreferencesUtils.setStoredMessage(context, "AdName", newAdName);
@@ -121,7 +106,6 @@ public class RetrofitUtils {
                                     }
                                 }).start();
                             } catch (Exception e) {
-<<<<<<< HEAD
                                 //缓存失败，进入登录界面或者主界面
                                 Toast.makeText(startAct,"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
                                 try {
@@ -131,10 +115,6 @@ public class RetrofitUtils {
                                     }
                                     nextActivity(context,startAct);
                              }
-=======
-                                e.printStackTrace();
-                            }
->>>>>>> 3a07bad6294a63fffcae0673ec8cfcf56b1328fb
                         }
                     }).start();
                 }
@@ -176,14 +156,11 @@ public class RetrofitUtils {
         //登录调用API发送登录数据给服务器
         public static void postLogin(final Activity startActivity, final Context context, LoginRequest r, final ZLoadingDialog dialog){
 
-<<<<<<< HEAD
             //创建Retrofit对象
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(context.getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
                     .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
                     .build();
-=======
->>>>>>> 3a07bad6294a63fffcae0673ec8cfcf56b1328fb
 
         //创建 网络请求接口 的实例
         PostLogin request = retrofit.create(PostLogin.class);
