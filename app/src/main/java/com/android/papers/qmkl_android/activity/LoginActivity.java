@@ -1,6 +1,6 @@
 package com.android.papers.qmkl_android.activity;
-
 import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -169,13 +169,7 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (qqAuthProvider != null) {
-//            qqAuthProvider.handleActivityResult(requestCode, resultCode, data);
-//        }
-//    }
+
     private void doLogin(String username,String password) {
         String SHApassword = SHAArithmetic.encode(password);//密码加密
         LoginRequest req = new LoginRequest(username,SHApassword);//账号密码封装

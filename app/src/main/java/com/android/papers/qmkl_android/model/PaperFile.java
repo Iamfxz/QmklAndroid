@@ -26,6 +26,7 @@ public class PaperFile implements Parcelable {
 
     }
 
+
     public PaperFile(String path, String size, Long updateAt, Long createAt) {
         this.path = path;
         this.name = PaperFileUtils.nameWithPath(path);
@@ -107,6 +108,9 @@ public class PaperFile implements Parcelable {
 
     public void setPath(String path) {
         this.path = path;
+        this.name = PaperFileUtils.nameWithPath(path);
+        this.type = PaperFileUtils.typeWithFileName(this.name);
+        this.course = PaperFileUtils.courseWithPath(path);
     }
 
     @Override
@@ -133,6 +137,12 @@ public class PaperFile implements Parcelable {
         this.course = in.readString();
         this.download = in.readByte() != 0;
         this.url = in.readString();
+    }
+
+    public void show(){
+        System.out.println("1.是否下载："+this.isDownload());
+        System.out.println("2.路径："+this.getPath());
+        System.out.println("3.大小："+this.getSize());
     }
 
     public static final Creator<PaperFile> CREATOR = new Creator<PaperFile>() {
