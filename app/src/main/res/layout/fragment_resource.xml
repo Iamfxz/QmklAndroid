@@ -6,7 +6,9 @@
     android:background="@color/background"
     >
 
-    <include layout="@layout/bar_fragment_resource"/>
+    <!--<include-->
+        <!--android:id="@+id/bar_resource"-->
+        <!--layout="@layout/bar_fragment_resource"/>-->
 
     <in.srain.cube.views.ptr.PtrFrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"

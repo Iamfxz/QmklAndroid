@@ -5,12 +5,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,13 +39,16 @@ import com.android.papers.qmkl_android.requestModel.QueryAcademiesRequest;
 import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
 import com.zyao89.view.zloading.ZLoadingDialog;
+import com.zyao89.view.zloading.Z_TYPE;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -54,9 +59,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class RetrofitUtils {
+//    private static final OkHttpClient client = new OkHttpClient.Builder().
+//            connectTimeout(10, TimeUnit.SECONDS).
+//            readTimeout(10, TimeUnit.SECONDS).
+//            writeTimeout(10, TimeUnit.SECONDS).build();
     //实例化Retrofit对象
     private static Retrofit retrofit  = new Retrofit.Builder()
             .baseUrl("http://120.77.32.233/qmkl1.0.0/")// 设置 网络请求 Url,1.0.0版本
+//            .client(client)//设置超时时间
             .addConverterFactory(GsonConverterFactory.create())//设置使用Gson解析(记得加入依赖)
             .build();
     private static final int errorCode=404;
@@ -192,26 +202,19 @@ public class RetrofitUtils {
                 System.out.println(resultCode);
                 if(resultCode == errorCode){
                     Toast.makeText(context,"请检查账号密码是否准确",Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
                 }else if (resultCode == successCode){
-                    dialog.dismiss();
+
                     //token存储到本地
                     String token = Objects.requireNonNull(response.body()).getData().toString();
-
                     //接下来进入登录界面
                     SharedPreferencesUtils.setStoredMessage(context,"token",token);
                     Log.d(TAG, "已保存正确token值");
-
-                    //TODO token每次登陆要刷新
-                    Intent intent = new Intent(startActivity,MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
-                    startActivity.finish();
+                    //获取用户信息
+                    RetrofitUtils.postUserInfo(context,startActivity,token,dialog);
 
                 }else{
                     //TODO 子线程更新UI界面
                     Toast.makeText(context,"发生未知错误,请反馈给开发者",Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
                 }
             }
             //请求失败时回调
@@ -254,6 +257,76 @@ public class RetrofitUtils {
         }
     }
 
+
+    //通过token值返回当前登录用户的信息
+    public static void postUserInfo(final Context context, final Activity startActivity,String token, final ZLoadingDialog dialog){
+
+        if(token!=null){
+            PostUserInfo request = retrofit.create(PostUserInfo.class);
+            Call<UserInfoRes> call = request.getCall(new TokenRequest(token));
+            call.enqueue(new Callback<UserInfoRes>() {
+                @Override
+                public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
+                    //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
+                    if (!checkLocalAvatarImage() || SharedPreferencesUtils.getStoredMessage(context,"avatar")==null
+                            || (SharedPreferencesUtils.getStoredMessage(context,"avatar")!=null
+                            && !SharedPreferencesUtils.getStoredMessage(context,"avatar").equals(response.body().getData().getAcademy()))) {
+                        SharedPreferencesUtils.setStoredMessage(context,"nickname",response.body().getData().getNickname());
+                        SharedPreferencesUtils.setStoredMessage(context,"academy",response.body().getData().getAcademy());
+                        SharedPreferencesUtils.setStoredMessage(context,"avatar",response.body().getData().getAvatar());
+                        SharedPreferencesUtils.setStoredMessage(context,"college",response.body().getData().getCollege());
+                        SharedPreferencesUtils.setStoredMessage(context,"enterYear",response.body().getData().getEnteYear());
+                        SharedPreferencesUtils.setStoredMessage(context,"gender",response.body().getData().getGender());
+                        SharedPreferencesUtils.setStoredMessage(context,"phone",response.body().getData().getPhone());
+                        SharedPreferencesUtils.setStoredMessage(context,"username",response.body().getData().getUsername());
+
+                        avatarPath=context.getString(R.string.user_info_url)+response.body().getData().getAvatar();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    DownLoader.downloadFile(new File(SDCardUtils.getAvatarImage(response.body().getData().getAvatar())),
+                                            avatarPath);
+                                    final Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(response.body().getData().getAvatar()));
+
+                                    //TODO token每次登陆要刷新
+                                    Intent intent = new Intent(startActivity,MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    context.startActivity(intent);
+                                    startActivity.finish();
+                                    dialog.dismiss();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    }
+                    //本地照片存在且未更新头像
+                    else {
+                        final Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(response.body().getData().getAvatar()));
+                        //TODO token每次登陆要刷新
+                        Intent intent = new Intent(startActivity,MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                        startActivity.finish();
+                        dialog.dismiss();
+                    }
+
+                }
+                //请求失败时回调
+                @Override
+                public void onFailure(@NonNull Call<UserInfoRes> call, @NonNull Throwable t) {
+                    Log.d(TAG, "请求失败");
+                    Toast.makeText(context,"服务器请求失败",Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+            });
+        }
+        else{
+            Toast.makeText(context,"请先登录",Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        }
+    }
     //通过token值返回当前登录用户的信息，并显示用户头像等信息
     public static void postUserInfo(final Context context, String token, final CircleImageView headImg, final TextView userName, final TextView userCollege ,final ZLoadingDialog dialog){
 
@@ -329,7 +402,7 @@ public class RetrofitUtils {
     }
 
     //传入token值和用户信息并更新
-    public static void postUpdateUser(final int flag,final Context context, final UpdateUserRequest userInfo, final AlertDialog alertDialog, final TextView textView,final ZLoadingDialog dialog){
+    public static void postUpdateUser(final int flag, final Context context, final UpdateUserRequest userInfo, final AlertDialog alertDialog, final TextView textView, final ZLoadingDialog dialog, final boolean isBackSchool){
 
         PostUpdateUserInfo request = retrofit.create(PostUpdateUserInfo.class);
         Call<ResponseInfo> call = request.getCall(userInfo);
@@ -358,9 +431,25 @@ public class RetrofitUtils {
                             break;
                         //修改所在大学
                         case COLLEGE:
+                            //返回上一学校
+                            if(isBackSchool){
+                                textView.setText(SharedPreferencesUtils.getStoredMessage(context,"lastCollege"));
+                                SharedPreferencesUtils.setStoredMessage(context,"college",SharedPreferencesUtils.getStoredMessage(context,"lastCollege"));
+
+                            }
+                            //修改为新学校
+                            else{
+                                textView.setText(userInfo.getUser().getCollege());
+                                SharedPreferencesUtils.setStoredMessage(context,"lastCollege",
+                                        SharedPreferencesUtils.getStoredMessage(context,"college"));
+                                SharedPreferencesUtils.setStoredMessage(context,"college",userInfo.getUser().getCollege());
+                            }
+
                             break;
                         //修改所在学院
                         case ACADEMY:
+                            textView.setText(userInfo.getUser().getAcademy());
+                            SharedPreferencesUtils.setStoredMessage(context,"academy",userInfo.getUser().getAcademy());
                             break;
                     }
                 }
@@ -389,10 +478,8 @@ public class RetrofitUtils {
                 @Override
                 public boolean onKey(DialogInterface DialogInterface, int keyCode, KeyEvent event) {
                     if(keyCode==KeyEvent.KEYCODE_BACK){
-                        college.setText(SharedPreferencesUtils.getStoredMessage(context,"lastCollege"));
-                        SharedPreferencesUtils.setStoredMessage(context,"college",SharedPreferencesUtils.getStoredMessage(context,"lastCollege"));
                         UpdateUserRequest userRequest=UserInfoActivity.getUserRequest(context,college.getText().toString(),COLLEGE);
-                        RetrofitUtils.postUpdateUser(COLLEGE,context,userRequest,null,academy,dialog);
+                        RetrofitUtils.postUpdateUser(COLLEGE,context,userRequest,null,academy,dialog,true);
                     }
                     return false;
                 }
@@ -423,10 +510,8 @@ public class RetrofitUtils {
                                 .setItems(UserInfoActivity.academies, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int which) {
-                                        academy.setText(UserInfoActivity.academies[which]);
-                                        SharedPreferencesUtils.setStoredMessage(context,"academy",UserInfoActivity.academies[which]);
-                                        UpdateUserRequest userRequest=UserInfoActivity.getUserRequest(context,academy.getText().toString(),ACADEMY);
-                                        RetrofitUtils.postUpdateUser(ACADEMY,context,userRequest,null,academy,dialog);
+                                        UpdateUserRequest userRequest=UserInfoActivity.getUserRequest(context,UserInfoActivity.academies[which],ACADEMY);
+                                        RetrofitUtils.postUpdateUser(ACADEMY,context,userRequest,null,academy,dialog,false);
                                     }
                                 });
 
@@ -453,10 +538,8 @@ public class RetrofitUtils {
                     .setItems(UserInfoActivity.academies, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int which) {
-                            academy.setText(UserInfoActivity.academies[which]);
-                            SharedPreferencesUtils.setStoredMessage(context,"academy",UserInfoActivity.academies[which]);
-                            UpdateUserRequest userRequest=UserInfoActivity.getUserRequest(context,academy.getText().toString(),ACADEMY);
-                            RetrofitUtils.postUpdateUser(ACADEMY,context,userRequest,null,academy,dialog);
+                            UpdateUserRequest userRequest=UserInfoActivity.getUserRequest(context,UserInfoActivity.academies[which],ACADEMY);
+                            RetrofitUtils.postUpdateUser(ACADEMY,context,userRequest,null,academy,dialog,false);
                         }
                     });
             AlertDialog alertDialog=builder.create();
@@ -493,12 +576,8 @@ public class RetrofitUtils {
                                 .setItems(UserInfoActivity.collgees, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int which) {
-                                        college.setText(UserInfoActivity.collgees[which]);
-                                        SharedPreferencesUtils.setStoredMessage(context,"lastCollege",
-                                                SharedPreferencesUtils.getStoredMessage(context,"college"));
-                                        SharedPreferencesUtils.setStoredMessage(context,"college",UserInfoActivity.collgees[which]);
-                                        UpdateUserRequest userRequest=UserInfoActivity.getUserRequest(context,college.getText().toString(),COLLEGE);
-                                        RetrofitUtils.postUpdateUser(COLLEGE,context,userRequest,null,college,dialog);
+                                        UpdateUserRequest userRequest=UserInfoActivity.getUserRequest(context,UserInfoActivity.collgees[which],COLLEGE);
+                                        RetrofitUtils.postUpdateUser(COLLEGE,context,userRequest,null,college,dialog,false);
                                         UserInfoActivity.academies=null;
                                         QueryAcademiesRequest academiesRequest=new QueryAcademiesRequest(
                                                 SharedPreferencesUtils.getStoredMessage(context,"college"),
@@ -529,12 +608,8 @@ public class RetrofitUtils {
                     .setItems(UserInfoActivity.collgees, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int which) {
-                            college.setText(UserInfoActivity.collgees[which]);
-                            SharedPreferencesUtils.setStoredMessage(context,"lastCollege",
-                                    SharedPreferencesUtils.getStoredMessage(context,"college"));
-                            SharedPreferencesUtils.setStoredMessage(context,"college",UserInfoActivity.collgees[which]);
-                            UpdateUserRequest userRequest=UserInfoActivity.getUserRequest(context,college.getText().toString(),COLLEGE);
-                            RetrofitUtils.postUpdateUser(COLLEGE,context,userRequest,null,college,dialog);
+                            UpdateUserRequest userRequest=UserInfoActivity.getUserRequest(context,UserInfoActivity.collgees[which],COLLEGE);
+                            RetrofitUtils.postUpdateUser(COLLEGE,context,userRequest,null,college,dialog,false);
                             UserInfoActivity.academies=null;
                             QueryAcademiesRequest academiesRequest=new QueryAcademiesRequest(
                                     SharedPreferencesUtils.getStoredMessage(context,"college"),
@@ -582,9 +657,9 @@ public class RetrofitUtils {
     }
 
     //传入用户token和图片，上传用户头像
-    public static void postUserAvatar(final Context context,String imagePath){
+    public static void postUserAvatar(final Context context, String imagePath, final ImageView avatarView,final Bitmap bitmap, final ZLoadingDialog dialog){
         PostUserAvatar request = retrofit.create(PostUserAvatar.class);
-        File avatar=new File(imagePath);
+        final File avatar=new File(imagePath);
         String token=SharedPreferencesUtils.getStoredMessage(context,"token");
 
 //设置Content-Type:application/octet-stream
@@ -605,6 +680,25 @@ public class RetrofitUtils {
                         try {
                             DownLoader.downloadFile(new File(SDCardUtils.getAvatarImage(response.body().getData())),
                                     avatarPath);
+                            Log.d(TAG, "上传成功");
+                            avatarView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    avatarView.setImageBitmap(bitmap);
+                                }
+                            });
+                            MainActivity.toolbar.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context,"avatar")));
+                                    drawable=ZoomDrawable.zoomDrawable(drawable,100,100);
+
+                                    CircleDrawable circleDrawable = new CircleDrawable(drawable, context, 44);
+                                    MainActivity.toolbar.setNavigationIcon(circleDrawable);
+                                }
+                            });
+
+                            dialog.dismiss();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -615,6 +709,7 @@ public class RetrofitUtils {
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
                 Log.d(TAG, "请求失败");
                 Toast.makeText(context,"上传头像失败",Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
             }
         });
     }

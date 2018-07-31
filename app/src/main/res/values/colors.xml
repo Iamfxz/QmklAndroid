@@ -29,4 +29,5 @@
     <color name="commo_text_color">#ff333333</color>
     <color name="line">#ffd3dde6</color>
     <color name="btn_blue">#1BBAF1</color>
+    <color name="head_back">#ffffff</color>
 </resources>

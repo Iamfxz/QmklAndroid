@@ -46,6 +46,7 @@ public class DownloadedFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         downloadDB = DownloadDB.getInstance(getActivity());
+
     }
 
     @Override
@@ -53,6 +54,11 @@ public class DownloadedFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_downloaded, container, false);
         ButterKnife.bind(this, view);
+
+        TextView title=getActivity().findViewById(R.id.toolbar).findViewById(R.id.title);
+        title.setText("已下载");
+        ImageView imageView=getActivity().findViewById(R.id.toolbar).findViewById(R.id.choose_school_btn);
+        imageView.setVisibility(View.GONE);
 
         checkDownloaded();
 

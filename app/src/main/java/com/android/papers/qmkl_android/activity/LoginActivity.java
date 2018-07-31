@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.android.papers.qmkl_android.R;
 
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
+import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
 import com.zyao89.view.zloading.ZLoadingDialog;
@@ -112,9 +113,7 @@ public class LoginActivity extends BaseActivity {
             }
         });
 
-
     }
-
 
 
 
@@ -158,6 +157,7 @@ public class LoginActivity extends BaseActivity {
                 } else {
                     doLogin(Objects.requireNonNull(userPhoneNum.getEditText()).getText().toString(),
                             Objects.requireNonNull(userPsw.getEditText()).getText().toString());
+
                 }
                 break;
             case R.id.user_info:
@@ -177,9 +177,10 @@ public class LoginActivity extends BaseActivity {
         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                 .setLoadingColor(getResources().getColor(R.color.blue))//颜色
                 .setHintText("Login...")
+                .setCanceledOnTouchOutside(false)
                 .show();
 
-        RetrofitUtils.postLogin(LoginActivity.this,getApplicationContext(), req,dialog);//发送登录请求验证
+        RetrofitUtils.postLogin(LoginActivity.this,this, req,dialog);//发送登录请求验证
     }
 
     @Override
@@ -197,7 +198,7 @@ public class LoginActivity extends BaseActivity {
             }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
 
         } else {
-            finish();
+            ActManager.finishAllActivity();
             System.exit(0);
         }
     }

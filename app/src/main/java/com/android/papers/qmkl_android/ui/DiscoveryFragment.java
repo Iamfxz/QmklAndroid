@@ -54,21 +54,29 @@ public class DiscoveryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_discovery, container, false);
+
         ButterKnife.bind(this, view);
 
-        if(firstLoad){
-            //使用com.zyao89:zloading:1.1.2引用別人的加载动画
-            ZLoadingDialog dialog = new ZLoadingDialog(getContext());
-            dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                    .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                    .setHintText("loading...")
-                    .show();
-            RetrofitUtils.postUserInfo(getContext(), SharedPreferencesUtils.getStoredMessage(getContext(),"token"),headImg,userName,userCollege,dialog);
-            firstLoad=false;
-        }
-        else{
-            setUserInfo();
-        }
+        TextView title=getActivity().findViewById(R.id.toolbar).findViewById(R.id.title);
+        title.setText("我和发现");
+        ImageView imageView=getActivity().findViewById(R.id.toolbar).findViewById(R.id.choose_school_btn);
+        imageView.setVisibility(View.GONE);
+
+
+        setUserInfo();
+//        if(firstLoad){
+//            //使用com.zyao89:zloading:1.1.2引用別人的加载动画
+//            ZLoadingDialog dialog = new ZLoadingDialog(getContext());
+//            dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+//                    .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+//                    .setHintText("loading...")
+//                    .show();
+//            RetrofitUtils.postUserInfo(getContext(), SharedPreferencesUtils.getStoredMessage(getContext(),"token"),headImg,userName,userCollege,dialog);
+//            firstLoad=false;
+//        }
+//        else{
+//            setUserInfo();
+//        }
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

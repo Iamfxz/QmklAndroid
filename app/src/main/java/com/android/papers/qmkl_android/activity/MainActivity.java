@@ -1,17 +1,36 @@
 package com.android.papers.qmkl_android.activity;
 
 import android.annotation.TargetApi;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
@@ -19,20 +38,37 @@ import com.android.papers.qmkl_android.ui.DiscoveryFragment;
 import com.android.papers.qmkl_android.ui.DownloadedFragment;
 import com.android.papers.qmkl_android.ui.ResourceFragment;
 import com.android.papers.qmkl_android.ui.StudentsCircleFragment;
+import com.android.papers.qmkl_android.util.ActManager;
+import com.android.papers.qmkl_android.util.CircleDrawable;
+import com.android.papers.qmkl_android.util.RetrofitUtils;
+import com.android.papers.qmkl_android.util.SDCardUtils;
+import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
+import com.android.papers.qmkl_android.util.ZoomDrawable;
+import com.zyao89.view.zloading.ZLoadingDialog;
+import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.zip.Inflater;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * 登录后的主界面
  */
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener{
+
+
 
     //底部的tab控件
     private FragmentTabHost mTabHost;
     private LayoutInflater mLayoutInflater;
-
+    public static Toolbar toolbar;
+    private ActionBarDrawerToggle toggle;
     //4个切换的页面的fragment.
     private Class mFragmentArray[] = {
             ResourceFragment.class,//资源页面
@@ -55,9 +91,11 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
+        initView(getApplicationContext());
+
 
 //        //友盟升级, 已失效
 //        UmengUpdateAgent.setUpdateOnlyWifi(false);
@@ -74,7 +112,41 @@ public class MainActivity extends FragmentActivity {
             tintManager.setStatusBarDarkMode(true, this);
         }
 
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
+        toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, 0, 0);
+        toggle.setDrawerIndicatorEnabled(false);
+//设置点击事件，点击弹出menu界面
+
+        Log.d("头像路径", SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"avatar")));
+
+        Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"avatar")));
+        drawable=ZoomDrawable.zoomDrawable(drawable,100,100);
+        CircleDrawable circleDrawable = new CircleDrawable(drawable, MainActivity.this, 44);
+        toolbar.setNavigationIcon(circleDrawable);
+
+        drawer.addDrawerListener(toggle);
+        //因为修改默认按钮，这个图标的点击事件会消失，点击图标不能打开侧边栏，所以添加点击事件
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawer.openDrawer(GravityCompat.START);
+            }
+        });
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
     }
+
+
 
     @TargetApi(19)
     private void setTranslucentStatus(boolean on) {
@@ -100,7 +172,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * 初始化主界面的视图
      */
-    private void initView() {
+    private void initView(Context context) {
         //
         mLayoutInflater = LayoutInflater.from(this);
 
@@ -116,6 +188,8 @@ public class MainActivity extends FragmentActivity {
             mTabHost.addTab(tabSpec, mFragmentArray[i], null);
             mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_background);
         }
+
+
     }
 
     private View getTabItemView(int index) {
@@ -153,6 +227,11 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
 
 
 }
