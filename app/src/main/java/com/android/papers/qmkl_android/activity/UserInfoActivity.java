@@ -67,7 +67,8 @@ public class UserInfoActivity extends BaseActivity {
     TextView gender;
     @BindView(R.id.enterYear_info)
     TextView enterYear;
-
+    @BindView(R.id.iv_back)
+    ImageView back;
 
 
     @Override
@@ -236,6 +237,11 @@ public class UserInfoActivity extends BaseActivity {
                 .setCanceledOnTouchOutside(false)
                 .show();
         RetrofitUtils.postExitLogin(getApplicationContext(),SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"username"),UserInfoActivity.this,dialog);
+    }
+
+    @OnClick(R.id.iv_back)
+    public void clickBack(){
+        finish();
     }
 
     private void initView(){

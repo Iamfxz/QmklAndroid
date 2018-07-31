@@ -12,8 +12,6 @@
         android:background="@color/head_back"
         >
 
-
-
     </RelativeLayout>
     <LinearLayout
         android:id="@+id/user_info"

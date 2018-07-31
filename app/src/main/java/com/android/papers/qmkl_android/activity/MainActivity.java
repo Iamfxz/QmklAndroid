@@ -2,6 +2,7 @@ package com.android.papers.qmkl_android.activity;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -117,15 +118,14 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, 0, 0);
         toggle.setDrawerIndicatorEnabled(false);
-//设置点击事件，点击弹出menu界面
+
 
         Log.d("头像路径", SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"avatar")));
 
+        //获取头像文件，先转化为100*100的drawable文件，然后通过工具类转换为圆形头像并显示
         Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"avatar")));
         drawable=ZoomDrawable.zoomDrawable(drawable,100,100);
         CircleDrawable circleDrawable = new CircleDrawable(drawable, MainActivity.this, 44);
@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity
 
         drawer.addDrawerListener(toggle);
         //因为修改默认按钮，这个图标的点击事件会消失，点击图标不能打开侧边栏，所以添加点击事件
+        //设置点击事件，点击弹出menu界面
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -142,7 +143,28 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+//        app:headerLayout="@layout/nav_header"
+//        app:menu="@menu/nav_menu"
+
+        //引入header和menu
+        navigationView.inflateHeaderView(R.layout.nav_header);
+        navigationView.inflateMenu(R.menu.nav_menu);
+
+        //设置menu的监听事件
         navigationView.setNavigationItemSelectedListener(this);
+        //获取头部布局
+        View navHeaderView = navigationView.getHeaderView(0);
+        //设置监听事件
+        LinearLayout userInfo = (LinearLayout) navHeaderView.findViewById(R.id.user_info);
+        userInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(MainActivity.this, UserInfoActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
     }
 
@@ -227,7 +249,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
+    //设置menu的监听事件
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
