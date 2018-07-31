@@ -63,7 +63,12 @@ public class BaseActivity extends Activity {
         //设置intent的data和Type属性。
         intent.setDataAndType(/*uri*/Uri.fromFile(file), type);
         //跳转
-        startActivity(Intent.createChooser(intent, "打开方式"));     //这里最好try一下，有可能会报错。 //比如说你的MIME类型是打开邮箱，但是你手机里面没装邮箱客户端，就会报错。
+        try{
+            startActivity(Intent.createChooser(intent, "打开方式"));     //这里最好try一下，有可能会报错。 //比如说你的MIME类型是打开邮箱，但是你手机里面没装邮箱客户端，就会报错。
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     /**

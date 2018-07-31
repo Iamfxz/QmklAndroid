@@ -70,13 +70,11 @@ public class PaperFileUtils {
         String result = "";
 
         if (size < 1024) {
-            result = format.format(size) +"B";
+            result = format.format(size) + "KB";
         } else if (size < 1024 * 1024) {
-            result = format.format(size / 1024.0) + "KB";
+            result = format.format(size / 1024.0) + "MB";
         } else if (size < 1024 * 1024 * 1024) {
-            result = format.format(size / 1024.0 / 1024.0) + "MB";
-        } else if (size < 1024 * 1024 * 1024) {
-            result = format.format(size / 1024.0 / 1024.0 / 1024.0) + "GB";
+            result = format.format(size / 1024.0 / 1024.0) + "GB";
         }
         return result;
     }
