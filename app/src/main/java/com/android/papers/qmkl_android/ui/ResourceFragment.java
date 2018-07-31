@@ -39,6 +39,8 @@ import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
+import com.zyao89.view.zloading.ZLoadingDialog;
+import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +87,8 @@ public class ResourceFragment extends Fragment
     final int errorCode = 404;
     final int successCode = 200;
 
+    //加载动画
+    ZLoadingDialog dialog;
 
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
@@ -273,10 +277,9 @@ public class ResourceFragment extends Fragment
                 System.out.println("请重新登陆");
             }
         }else {//如果是某个具体文件，则应该使用这个请求获得url地址
-            //TODO 进入文件下载详细页面
-            postFileDetail(path.toString(),"福州大学");
-            postFileUrl(path.toString(),"福州大学");
 
+            postFileUrl(path.toString(),"福州大学");
+            postFileDetail(path.toString(),"福州大学");
         }
 
     }

@@ -1,6 +1,6 @@
 package com.android.papers.qmkl_android.activity;
-
 import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
-
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
@@ -36,7 +35,9 @@ public class LoginActivity extends BaseActivity {
     private static final int errorCode=404;
     private static final int successCode = 200;
     private static final String TAG = "LoginActivity";
+
     private static Boolean isExit = false; //是否退出
+
     @BindView(R.id.back)
     ImageView back;//返回
     @BindView(R.id.user_phone_num)
@@ -167,6 +168,7 @@ public class LoginActivity extends BaseActivity {
                 break;
         }
     }
+
 
     private void doLogin(String username,String password) {
         String SHApassword = SHAArithmetic.encode(password);//密码加密

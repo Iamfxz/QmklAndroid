@@ -129,6 +129,8 @@ public class FileDetailActivity extends BaseActivity {
         mFile = getIntent().getParcelableExtra("FileDetail");//由于端口设置原因url从下面方式获取
         mFile.setUrl(SharedPreferencesUtils.getStoredMessage(this,mFile.getPath()));
 
+
+
         //显示文本
         tvTitle.setText(mFile.getCourse());
         tvFileName.setText(mFile.getName());
@@ -254,10 +256,10 @@ public class FileDetailActivity extends BaseActivity {
         } else {
             System.out.println("存储路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
             File file = new File(SDCardUtils.getDownloadPath() + mFile.getName());
-            Uri uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileProvider", file);
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(uri);
-            startActivity(intent);
+//            Uri uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileProvider", file);
+//            Intent intent = new Intent(Intent.ACTION_VIEW);
+//            intent.setData(uri);
+//            startActivity(intent);
 
             openFile(file);
         }
@@ -276,7 +278,7 @@ public class FileDetailActivity extends BaseActivity {
             intent.setType("text/plain");
             intent.setPackage("com.tencent.mobileqq");
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
-            intent.putExtra(Intent.EXTRA_TEXT, (mFile.isDownload() ? downloadDB.getFileName(mFile.getUrl()) : mFile.getName()) + ": " + UrlUnicode.encode(mFile.getUrl()));
+            intent.putExtra(Intent.EXTRA_TEXT, (mFile.isDownload() ? downloadDB.getFileName(mFile.getUrl()) : mFile.getName()) + ": " + mFile.getUrl());
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(Intent.createChooser(intent, "选择\"发送到我的电脑\""));

@@ -29,6 +29,7 @@ public class DownloadDB extends SQLiteOpenHelper {
     private static final String TYPE = "type";
     private static final String URL = "url";
     private static final String TIME = "time";
+    private static final String PATH = "path";
 
     //根据URL查找文件所有信息
     private static final String QUERY_DOWNLOADED = "SELECT * FROM " + TABLE_NAME
@@ -36,8 +37,8 @@ public class DownloadDB extends SQLiteOpenHelper {
     //按照（文件名，课程，大小，类型，URL，时间）插入数据
     private static final String ADD_DOWNLOADED = "INSERT INTO " + TABLE_NAME
             + "(" + NAME + ", " + COURSE + ", " + SIZE + ", " + TYPE + ", "
-            + URL + ", " + TIME + ")"
-            + "VALUES(?, ?, ?, ?, ?, ?)";
+            + URL + ", " + TIME + ", " + PATH +") "
+            + "VALUES(?, ?, ?, ?, ?, ?, ?)";
     //根据URL删除该文件所有信息
     private static final String REMOVE_DOWNLOADED = "DELETE FROM " + TABLE_NAME + " WHERE "
             + URL + " = ?";
@@ -76,7 +77,8 @@ public class DownloadDB extends SQLiteOpenHelper {
                 + SIZE + " TEXT NOT NULL,"
                 + TYPE + " TEXT NOT NULL,"
                 + URL + " TEXT NOT NULL,"
-                + TIME + " TEXT NOT NULL)");
+                + TIME + " TEXT NOT NULL,"
+                + PATH + " TEXT NOT NULL)");
     }
 
     @Override
@@ -101,7 +103,8 @@ public class DownloadDB extends SQLiteOpenHelper {
                 paperFile.getSize(),
                 paperFile.getType(),
                 paperFile.getUrl(),
-                PaperFileUtils.getCurrentTime()
+                PaperFileUtils.getCurrentTime(),
+                paperFile.getPath()
         });
     }
 
@@ -124,7 +127,7 @@ public class DownloadDB extends SQLiteOpenHelper {
      * @return 已下载的文件
      */
     public List<DownloadedFile> getDownloadedFiles() {
-        ArrayList<DownloadedFile> downloadedFiles = new ArrayList<DownloadedFile>();
+        ArrayList<DownloadedFile> downloadedFiles = new ArrayList<>();
 
         Cursor cursor = db.rawQuery(GET_DOWNLOADED, null);
 
@@ -139,6 +142,7 @@ public class DownloadDB extends SQLiteOpenHelper {
             file.setType(cursor.getString(cursor.getColumnIndex(TYPE)));
             file.setSize(cursor.getString(cursor.getColumnIndex(SIZE)));
             file.setDownload(true);
+            file.setPath(cursor.getString(cursor.getColumnIndex(PATH)));
 
             downloadedFile.setFile(file);
             downloadedFile.setDownloadTime(cursor.getString(cursor.getColumnIndex(TIME)));
