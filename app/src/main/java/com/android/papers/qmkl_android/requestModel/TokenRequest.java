@@ -1,9 +1,9 @@
 package com.android.papers.qmkl_android.requestModel;
 
-public class TokenLoginRequest {
+public class TokenRequest {
     String token;
 
-    public TokenLoginRequest(String token) {
+    public TokenRequest(String token) {
         this.token = token;
     }
 

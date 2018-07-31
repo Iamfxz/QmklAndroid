@@ -1,5 +1,7 @@
 package com.android.papers.qmkl_android.util;
 
+import android.util.Log;
+
 import java.security.MessageDigest;
 
 /**

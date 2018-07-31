@@ -118,6 +118,17 @@ public class SDCardUtils {
     }
 
     /**
+     * 获取本地头像图片路径
+     *
+     * @param avatarName 头像名字
+     * @return 头像图片路径
+     */
+    public static String getAvatarImage(String avatarName) {
+        return getCachePath() + avatarName+ ".png";
+    }
+
+
+    /**
      * 获取SD卡的剩余容量 单位byte
      *
      * @return SD卡的剩余容量
