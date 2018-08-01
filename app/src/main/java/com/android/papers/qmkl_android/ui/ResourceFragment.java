@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +26,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileDetailActivity;
@@ -46,6 +48,8 @@ import com.zyao89.view.zloading.Z_TYPE;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,7 +86,7 @@ public class ResourceFragment extends Fragment
 
     //地址变化
     private String BasePath = "/";
-    StringBuffer path;//临时路径
+    private StringBuffer path;//临时路径
 
     //请求结果
     final int errorCode = 404;
@@ -158,13 +162,13 @@ public class ResourceFragment extends Fragment
                     ptrFrame.postDelayed(new Runnable(){
                         @Override
                         public void run(){
-                            loadPaperData(folder);//指定文件夹路径
+                            loadPaperData(folder,0);//指定文件夹路径
                             ptrFrame.refreshComplete();
                         }
                     },100);
                 }
                 else {//点击的是具体某个可以下载的文件
-                    loadPaperData(folder);
+                    loadPaperData(folder,0);
                     System.out.println("你点击了："+folder);
                 }
             }
@@ -197,7 +201,7 @@ public class ResourceFragment extends Fragment
                     @Override
                     public void run(){
                         BasePath = "/";
-                        loadPaperData( null);//全部文件夹
+                        loadPaperData( null,0);//全部文件夹
                         ptrFrame.refreshComplete();
                     }
                 },1000);
@@ -213,24 +217,81 @@ public class ResourceFragment extends Fragment
         return view;
     }
 
+    private static Boolean isExit = false; //是否退出
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        if(keyCode == KeyEvent.KEYCODE_BACK && path.toString().equals("/"))
+        {
+            exitBy2Click();
+        }
+        else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            loadPaperData(null,1);//退回上一个文件夹
+        }
+        return true;
+    }
+
+    //双击返回键退出app
+    private void exitBy2Click() {
+        Timer tExit = null;
+        if (!isExit) {
+            isExit = true; // 准备退出
+            Toast.makeText(this.getContext(), "再按一次退出期末考啦", Toast.LENGTH_SHORT).show();
+            tExit = new Timer();
+            tExit.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    isExit = false; // 取消退出
+                }
+            }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
+
+        } else {
+            Objects.requireNonNull(this.getActivity()).finish();
+            System.exit(0);
+        }
+    }
+    public static int last2IndexOf(String str){
+        int num = 0, num2 = 0;
+        int i;
+        for(i = 0; i < str.length(); i++){
+            if(str.charAt(i) == '/')
+                num++;
+        }
+        for(i = 0 ;i < str.length() ; i++){
+            if(str.charAt(i) == '/'){
+                num2++;
+            }
+            if(num2 == num-1) break;
+        }
+        if(num == 0)
+            return num;
+        return i;
+    }
     /**
      * 请求并加载文件资源，主要用于主界面的资源页面
      * @param folder "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
      */
-    private void loadPaperData(final String folder) {
-        if(folder != null){
-            if(!PaperFileUtils.typeWithFileName(folder).equals("folder"))
-            {
-                path = new StringBuffer(BasePath + folder);//这是一个具体的文件，不需要以"/"结尾
-            }else{
-                BasePath += folder;
-                BasePath += "/";
+    private void loadPaperData(final String folder,int requestCode) {
+        if(requestCode ==1){
+            if(!path.toString().equals("/"))
+                BasePath = path.substring(0,last2IndexOf(path.toString())+1);
+            path = new StringBuffer(BasePath);
+        }else {
+            if(folder != null){
+                if(!PaperFileUtils.typeWithFileName(folder).equals("folder"))
+                {
+                    //这是一个具体的文件，不需要以"/"结尾
+                    path = new StringBuffer(BasePath + folder);
+                }else{
+                    //这是一个文件夹，需要改变BasePath的地址
+                    BasePath += folder;
+                    BasePath += "/";
+                    path = new StringBuffer(BasePath);
+                }
+            }else {
                 path = new StringBuffer(BasePath);
             }
-        }else {
-            path = new StringBuffer(BasePath);
         }
-        System.out.println("当前路径"+path);
+        System.out.println("当前路径："+path);
 
         if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")){
             System.out.println("正在加载文件夹资源");

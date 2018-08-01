@@ -13,7 +13,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -49,6 +51,7 @@ import com.android.papers.qmkl_android.util.ZoomDrawable;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.zip.Inflater;
@@ -114,10 +117,10 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, 0, 0);
         toggle.setDrawerIndicatorEnabled(false);
@@ -156,7 +159,7 @@ public class MainActivity extends AppCompatActivity
         //获取头部布局
         View navHeaderView = navigationView.getHeaderView(0);
         //设置监听事件
-        LinearLayout userInfo = (LinearLayout) navHeaderView.findViewById(R.id.user_info);
+        LinearLayout userInfo = navHeaderView.findViewById(R.id.user_info);
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -223,16 +226,31 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK)  {
+        if(getVisibleFragment() instanceof ResourceFragment){
+            ((ResourceFragment) getVisibleFragment()).onKeyDown(keyCode,event);
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             exitBy2Click();
         }
         return false;
     }
 
+    /**
+     *
+     * @return  当前显示的fragement
+     */
+    public Fragment getVisibleFragment(){
+        FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        for(Fragment fragment : fragments){
+            if(fragment != null && fragment.isVisible())
+                return fragment;
+        }
+        return null;
+    }
     //双击返回键退出app
     private void exitBy2Click() {
         Timer tExit = null;
-        if (isExit == false) {
+        if (!isExit) {
             isExit = true; // 准备退出
             Toast.makeText(this, "再按一次退出期末考啦", Toast.LENGTH_SHORT).show();
             tExit = new Timer();
