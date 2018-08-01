@@ -45,17 +45,12 @@ import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
-import com.android.papers.qmkl_android.util.ZoomDrawable;
-import com.zyao89.view.zloading.ZLoadingDialog;
-import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.zip.Inflater;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 /**
  * 登录后的主界面
@@ -127,7 +122,6 @@ public class MainActivity extends AppCompatActivity
 
         //获取头像文件，先转化为100*100的drawable文件，然后通过工具类转换为圆形头像并显示
         Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"avatar")));
-        drawable=ZoomDrawable.zoomDrawable(drawable,100,100);
         CircleDrawable circleDrawable = new CircleDrawable(drawable, MainActivity.this, 44);
         toolbar.setNavigationIcon(circleDrawable);
 
@@ -155,8 +149,15 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
         View navHeaderView = navigationView.getHeaderView(0);
-        //设置监听事件
+        //初始化头像等内容
         LinearLayout userInfo = (LinearLayout) navHeaderView.findViewById(R.id.user_info);
+        CircleImageView headImg=navHeaderView.findViewById(R.id.head_img);
+        TextView userName=navHeaderView.findViewById(R.id.user_name);
+        TextView userCollegeName=navHeaderView.findViewById(R.id.user_college_name);
+        headImg.setImageDrawable(drawable);
+        userName.setText(SharedPreferencesUtils.getStoredMessage(this,"nickname"));
+        userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this,"college"));
+        //设置监听事件
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity
         if(keyCode == KeyEvent.KEYCODE_BACK)  {
             exitBy2Click();
         }
-        return false;
+        return true;
     }
 
     //双击返回键退出app
@@ -244,8 +245,8 @@ public class MainActivity extends AppCompatActivity
             }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
 
         } else {
-            finish();
-            System.exit(0);
+            Log.d("退出", "退出期末考啦");
+            ActManager.AppExit(getApplicationContext());
         }
     }
 

@@ -54,7 +54,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        ActManager.addActivity(this);
         setBarColor(R.color.white); //沉浸式状态栏设置颜色
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
@@ -131,8 +131,7 @@ public class LoginActivity extends BaseActivity {
                             @Override
                             public void onClick(DialogInterface dialog,
                                                 int which) {
-                                finish();
-                                System.exit(0);
+                                ActManager.AppExit(getApplicationContext());
                             }
                         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {// 消极
 
@@ -200,8 +199,7 @@ public class LoginActivity extends BaseActivity {
             }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
 
         } else {
-            ActManager.finishAllActivity();
-            System.exit(0);
+            ActManager.AppExit(getApplicationContext());
         }
     }
 }

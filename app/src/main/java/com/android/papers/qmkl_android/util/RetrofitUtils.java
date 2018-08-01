@@ -127,27 +127,46 @@ public class RetrofitUtils {
                                 Log.d(TAG, "文件路径："+SDCardUtils.getADImage(newAdName));
                                 DownLoader.downloadFile(new File(SDCardUtils.getADImage(newAdName)),
                                         adPath);
+//                                DownLoader.downLoadFromUrl(adPath,newAdName+".png",SDCardUtils.getADImage(newAdName));
                                 //缓存成功，进入广告页
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            Thread.sleep(2000);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                if(checkLocalADImage()){
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                Thread.sleep(2000);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            Log.d(TAG, "run: ");
+                                            nextActivity(context,startAct,AdsActivity.class);
+
                                         }
-                                        nextActivity(context,startAct,AdsActivity.class);
-                                    }
-                                }).start();
+                                    }).start();
+                                }
+                                else {
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                Thread.sleep(2000);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            nextActivity(context, startAct);
+                                        }
+                                    }).start();
+                                }
+
                             } catch (Exception e) {
                                 e.printStackTrace();
 
                                 //缓存失败，进入登录界面或者主界面
-                                Toast.makeText(startAct,"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(startAct.getApplicationContext(),"缓存广告失败,请反馈给开发者",Toast.LENGTH_SHORT).show();
                                 try {
                                     Thread.sleep(2000);
                                     } catch (InterruptedException e2) {
-                                        e.printStackTrace();
+                                        e2.printStackTrace();
                                     }
                                     nextActivity(context,startAct);
                              }
@@ -156,6 +175,7 @@ public class RetrofitUtils {
                 }
                 //广告页已准备就绪，进入广告页
                 else{
+                    Log.d(TAG, "广告页已准备就绪，进入广告页");
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -220,11 +240,12 @@ public class RetrofitUtils {
             //请求失败时回调
             @Override
             public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+                Log.d(TAG, "PostLogin请求失败");
                 Toast.makeText(context,"服务器请求失败",Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
             }
         });
     }
-
 
     //判断当前token是否可以登录
     public static void postLogin(final Context context, String token){
@@ -241,6 +262,7 @@ public class RetrofitUtils {
                     }else if (resultCode == successCode){
                         SharedPreferencesUtils.setStoredMessage(context,"token", Objects.requireNonNull(response.body()).getData().toString());
                         SharedPreferencesUtils.setStoredMessage(context,"hasLogin","true");
+                        postUserInfo(context,SharedPreferencesUtils.getStoredMessage(context,"token"));
                     }else{
                         SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
                     }
@@ -249,6 +271,7 @@ public class RetrofitUtils {
                 public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
                     Log.d(TAG, "请求失败");
                     SharedPreferencesUtils.setStoredMessage(context,"hasLogin","false");
+
                 }
             });
         }
@@ -268,7 +291,7 @@ public class RetrofitUtils {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
                     //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
-                    if (!checkLocalAvatarImage() || SharedPreferencesUtils.getStoredMessage(context,"avatar")==null
+                    if (!checkLocalAvatarImage(context) || SharedPreferencesUtils.getStoredMessage(context,"avatar")==null
                             || (SharedPreferencesUtils.getStoredMessage(context,"avatar")!=null
                             && !SharedPreferencesUtils.getStoredMessage(context,"avatar").equals(response.body().getData().getAcademy()))) {
                         SharedPreferencesUtils.setStoredMessage(context,"nickname",response.body().getData().getNickname());
@@ -285,10 +308,10 @@ public class RetrofitUtils {
                             @Override
                             public void run() {
                                 try {
+                                    Log.d(TAG, SDCardUtils.getAvatarImage(response.body().getData().getAvatar()+"\navatarPath:"+avatarPath));
+                                    Log.d(TAG, "用户头像名称："+SharedPreferencesUtils.getStoredMessage(context,"avatar"));
                                     DownLoader.downloadFile(new File(SDCardUtils.getAvatarImage(response.body().getData().getAvatar())),
                                             avatarPath);
-                                    final Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(response.body().getData().getAvatar()));
-
                                     //TODO token每次登陆要刷新
                                     Intent intent = new Intent(startActivity,MainActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -303,7 +326,7 @@ public class RetrofitUtils {
                     }
                     //本地照片存在且未更新头像
                     else {
-                        final Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(response.body().getData().getAvatar()));
+                        Log.d(TAG, "本地照片存在且未更新头像");
                         //TODO token每次登陆要刷新
                         Intent intent = new Intent(startActivity,MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -316,7 +339,7 @@ public class RetrofitUtils {
                 //请求失败时回调
                 @Override
                 public void onFailure(@NonNull Call<UserInfoRes> call, @NonNull Throwable t) {
-                    Log.d(TAG, "请求失败");
+                    Log.d(TAG, "PostUserInfo请求失败");
                     Toast.makeText(context,"服务器请求失败",Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
@@ -327,8 +350,9 @@ public class RetrofitUtils {
             dialog.dismiss();
         }
     }
-    //通过token值返回当前登录用户的信息，并显示用户头像等信息
-    public static void postUserInfo(final Context context, String token, final CircleImageView headImg, final TextView userName, final TextView userCollege ,final ZLoadingDialog dialog){
+
+    //通过token值返回当前登录用户的信息
+    public static void postUserInfo(final Context context,String token){
 
         if(token!=null){
             PostUserInfo request = retrofit.create(PostUserInfo.class);
@@ -337,7 +361,7 @@ public class RetrofitUtils {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
                     //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
-                    if (!checkLocalAvatarImage() || SharedPreferencesUtils.getStoredMessage(context,"avatar")==null
+                    if (!checkLocalAvatarImage(context) || SharedPreferencesUtils.getStoredMessage(context,"avatar")==null
                             || (SharedPreferencesUtils.getStoredMessage(context,"avatar")!=null
                             && !SharedPreferencesUtils.getStoredMessage(context,"avatar").equals(response.body().getData().getAcademy()))) {
                         SharedPreferencesUtils.setStoredMessage(context,"nickname",response.body().getData().getNickname());
@@ -348,24 +372,16 @@ public class RetrofitUtils {
                         SharedPreferencesUtils.setStoredMessage(context,"gender",response.body().getData().getGender());
                         SharedPreferencesUtils.setStoredMessage(context,"phone",response.body().getData().getPhone());
                         SharedPreferencesUtils.setStoredMessage(context,"username",response.body().getData().getUsername());
-                        userName.setText(response.body().getData().getNickname());
-                        userCollege.setText(response.body().getData().getCollege());
+
                         avatarPath=context.getString(R.string.user_info_url)+response.body().getData().getAvatar();
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
+                                    Log.d(TAG, SDCardUtils.getAvatarImage(response.body().getData().getAvatar()+"\navatarPath:"+avatarPath));
+                                    Log.d(TAG, "用户头像名称："+SharedPreferencesUtils.getStoredMessage(context,"avatar"));
                                     DownLoader.downloadFile(new File(SDCardUtils.getAvatarImage(response.body().getData().getAvatar())),
                                             avatarPath);
-                                    final Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(response.body().getData().getAvatar()));
-
-                                    headImg.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            headImg.setImageDrawable(drawable);
-                                        }
-                                    });
-
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -374,16 +390,8 @@ public class RetrofitUtils {
                     }
                     //本地照片存在且未更新头像
                     else {
-                        final Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(response.body().getData().getAvatar()));
-
-                        headImg.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                headImg.setImageDrawable(drawable);
-                            }
-                        });
+                        Log.d(TAG, "本地照片存在且未更新头像");
                     }
-                    dialog.dismiss();
 
                 }
                 //请求失败时回调
@@ -391,13 +399,11 @@ public class RetrofitUtils {
                 public void onFailure(@NonNull Call<UserInfoRes> call, @NonNull Throwable t) {
                     Log.d(TAG, "请求失败");
                     Toast.makeText(context,"服务器请求失败",Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
                 }
             });
         }
         else{
             Toast.makeText(context,"请先登录",Toast.LENGTH_SHORT).show();
-            dialog.dismiss();
         }
     }
 
@@ -691,7 +697,7 @@ public class RetrofitUtils {
                                 @Override
                                 public void run() {
                                     Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context,"avatar")));
-                                    drawable=ZoomDrawable.zoomDrawable(drawable,100,100);
+                                    drawable=CircleDrawable.zoomDrawable(drawable,100,100);
 
                                     CircleDrawable circleDrawable = new CircleDrawable(drawable, context, 44);
                                     MainActivity.toolbar.setNavigationIcon(circleDrawable);
@@ -717,15 +723,17 @@ public class RetrofitUtils {
 
     //获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在
     private static boolean checkLocalADImage() {
-        Log.d(TAG, "检测本地广告图像是否存在");
+
         File adImageFile = new File(SDCardUtils.getADImage(newAdName));
+        if(adImageFile.exists())Log.d(TAG, "本地广告图像存在");
+        else Log.d(TAG, "本地广告图像不存在");
         return adImageFile.exists();
     }
 
-    //获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在
-    private static boolean checkLocalAvatarImage() {
-        Log.d(TAG, "检测本地广告图像是否存在");
-        File avatarImageFile = new File(SDCardUtils.getCachePath());
+    //获取远程信息失败或者广告版本为最新时, 检查本地头像是否存在
+    private static boolean checkLocalAvatarImage(Context context) {
+        Log.d(TAG, "检测本地头像是否存在");
+        File avatarImageFile = new File(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context,"avatar")));
         return avatarImageFile.exists();
     }
 

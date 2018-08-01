@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
 import butterknife.BindView;
@@ -33,6 +34,7 @@ public class AdsDetailsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActManager.addActivity(this);
         setContentView(R.layout.web_ads);
         ButterKnife.bind(this);
 

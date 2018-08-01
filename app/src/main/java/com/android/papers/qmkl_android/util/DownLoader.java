@@ -3,8 +3,10 @@ package com.android.papers.qmkl_android.util;
 import android.app.ProgressDialog;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -177,22 +179,89 @@ public class DownLoader {
      * @return 下载完的文件引用
      * @throws Exception 调用者处理
      */
-    public static File downloadFile(File file, String path) throws Exception {
-        URL url = new URL(path);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setConnectTimeout(5000);
-        connection.setReadTimeout(5000);
-        InputStream is = connection.getInputStream();
-        FileOutputStream fout = new FileOutputStream(file);
+    public static File downloadFile(File file, String path)  {
+        try {
+            URL url = new URL(path);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(10000);
+            connection.setReadTimeout(10000);
+            InputStream is = connection.getInputStream();
+            FileOutputStream fout = new FileOutputStream(file);
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            while((len = is.read(buffer)) != -1)  {
+                fout.write(buffer, 0, len);
+            }
+            fout.flush();
+            fout.close();
+            is.close();
+        }catch (java.net.SocketTimeoutException e){
+            Log.d("downloader", "超时 ");
+        }catch (IOException e) {
+            Log.d("downloader", "异常 ");
+        }
+
+        return file;
+    }
+
+    /* 从网络Url中下载文件
+     *
+     * @param urlStr
+     * @param fileName
+     * @param savePath
+     * @throws IOException
+     */
+    public static void downLoadFromUrl(String urlStr, String fileName, String savePath) throws IOException {
+        URL url = new URL(urlStr);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        //设置超时间为3秒
+        conn.setConnectTimeout(5 * 1000);
+        //防止屏蔽程序抓取而返回403错误
+        conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+        //得到输入流
+        InputStream inputStream = conn.getInputStream();
+        //获取自己数组
+        byte[] getData = readInputStream(inputStream);
+        //文件保存位置
+        File saveDir = new File(savePath);
+        if (!saveDir.exists()) {
+            saveDir.mkdir();
+        }
+        File file = new File(saveDir + File.separator + fileName);
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(getData);
+        if (fos != null) {
+            fos.close();
+        }
+        if (inputStream != null) {
+            inputStream.close();
+        }
+        System.out.println("info:" + url + " download success");
+    }
+    /**
+     * 从输入流中获取字节数组
+     *
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
+    public static byte[] readInputStream(InputStream inputStream) throws IOException {
         byte[] buffer = new byte[1024];
         int len = 0;
-        while((len = is.read(buffer)) != -1)  {
-            fout.write(buffer, 0, len);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        while ((len = inputStream.read(buffer)) != -1) {
+            bos.write(buffer, 0, len);
         }
-        fout.flush();
-        fout.close();
-        is.close();
-        return file;
+        bos.close();
+        return bos.toByteArray();
+    }
+    public static void main(String[] args) {
+        try {
+            downLoadFromUrl("https://qmkl.oss-cn-qingdao.aliyuncs.com/objects/000/0586d07f86fee3d92a66d443b089e?OSSAccessKeyId=O7fR5ZayjEVadzYh&Expires=1531562343&Signature=SSLLKn1kFSg%2Bg1ZaVbactsAjYWc%3D",
+                    "课件2.pdf", "D:\\qmkl下载");
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
     }
 }

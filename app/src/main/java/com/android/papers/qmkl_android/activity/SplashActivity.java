@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 
@@ -37,6 +38,7 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
     };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
@@ -68,7 +70,6 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         //请求读写SD卡权限
         if (requestCode == 8) {
             for (int i = 0; i < permissions.length; i++) {
@@ -107,8 +108,9 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(intent);
                         finish();
+                        startActivity(intent);
+
                     }
                 });
             }
@@ -122,10 +124,11 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
             startAct.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    startAct.finish();
                     Intent intent=new Intent(startAct,LoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
-                    startAct.finish();
+
                 }
             });
         }
@@ -133,10 +136,11 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
             startAct.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    startAct.finish();
                     Intent intent=new Intent(startAct,MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
-                    startAct.finish();
+
                 }
             });
         }

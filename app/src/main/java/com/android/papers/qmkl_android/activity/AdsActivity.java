@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.CountDownTimer;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
@@ -38,6 +39,7 @@ public class AdsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActManager.addActivity(this);
         setContentView(R.layout.activity_ads);
         ButterKnife.bind(this);
 

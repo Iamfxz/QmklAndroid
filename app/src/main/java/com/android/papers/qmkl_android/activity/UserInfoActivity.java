@@ -27,6 +27,7 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.QueryAcademiesRequest;
 import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
+import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
@@ -73,6 +74,7 @@ public class UserInfoActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_information);
         ButterKnife.bind(this);

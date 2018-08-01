@@ -2,6 +2,7 @@ package com.android.papers.qmkl_android.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,6 +101,7 @@ public class ActManager {
         for (int i = 0, size = activityStack.size(); i < size; i++) {
             if (null != activityStack.get(i)) {
                 Activity activity = activityStack.get(i);
+                Log.d("终结", "finishAllActivity: "+activity.getLocalClassName());
                 if (!activity.isFinishing()) {
                     activity.finish();
                 }
@@ -121,12 +123,12 @@ public class ActManager {
     public static void AppExit(Context context) {
         try {
             finishAllActivity();
-            //DalvikVM的本地方法
-            // 杀死该应用进程
-            //android.os.Process.killProcess(android.os.Process.myPid());
-            //System.exit(0);
-            //这些方法如果是放到主Activity就可以退出应用，如果不是主Activity
-            //就是退出当前的Activity
+//            DalvikVM的本地方法
+//             杀死该应用进程
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(0);
+//            这些方法如果是放到主Activity就可以退出应用，如果不是主Activity
+//            就是退出当前的Activity
         } catch (Exception e) {
         }
     }

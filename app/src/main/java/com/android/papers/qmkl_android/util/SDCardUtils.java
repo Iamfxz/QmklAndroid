@@ -124,7 +124,7 @@ public class SDCardUtils {
      * @return 头像图片路径
      */
     public static String getAvatarImage(String avatarName) {
-        return getCachePath() + avatarName+ ".png";
+        return getCachePath() + avatarName;
     }
 
 

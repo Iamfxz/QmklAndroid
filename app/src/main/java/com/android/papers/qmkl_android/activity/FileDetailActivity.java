@@ -18,6 +18,7 @@ import com.android.papers.qmkl_android.BuildConfig;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.model.PaperFile;
+import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.LogUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
@@ -114,6 +115,7 @@ public class FileDetailActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_detail);
         ButterKnife.bind(this);

@@ -16,6 +16,7 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.model.PaperData;
 import com.android.papers.qmkl_android.model.PaperFile;
+import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 
 import java.util.List;
@@ -66,6 +67,7 @@ public class FileFolderActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_list);
         ButterKnife.bind(this);

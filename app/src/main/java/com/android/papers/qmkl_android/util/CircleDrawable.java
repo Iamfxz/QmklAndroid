@@ -32,18 +32,21 @@ public class CircleDrawable extends Drawable {
     private float radius;
 
     public CircleDrawable(Drawable drawable, Context context, int size) {
-        size = dip2px(context, size);
-        drawable = zoomDrawable(drawable, dip2px(context, size), dip2px(context, size));
-        this.bitmap = drawableToBitmap(drawable);
-        bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        if(drawable!=null){
+            size = dip2px(context, size);
+            drawable = zoomDrawable(drawable, dip2px(context, size), dip2px(context, size));
+            this.bitmap = drawableToBitmap(drawable);
+            bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
 
-        paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setShader(bitmapShader);
+            paint = new Paint();
+            paint.setAntiAlias(true);
+            paint.setShader(bitmapShader);
 
-        cx = size / 2;
-        cy = size / 2;
-        radius = size / 2;
+            cx = size / 2;
+            cy = size / 2;
+            radius = size / 2;
+        }
+
     }
 
     @Override
@@ -54,7 +57,7 @@ public class CircleDrawable extends Drawable {
     /**
      * 缩放Drawable
      * */
-    private Drawable zoomDrawable(Drawable drawable, int w, int h) {
+    public static Drawable zoomDrawable(Drawable drawable, int w, int h) {
         int width = drawable.getIntrinsicWidth();
         int height = drawable.getIntrinsicHeight();
         Bitmap oldbmp = drawableToBitmap(drawable);
@@ -70,7 +73,7 @@ public class CircleDrawable extends Drawable {
     /**
      * Drawable转Bitmap
      * */
-    private Bitmap drawableToBitmap(Drawable drawable) {
+    public static Bitmap drawableToBitmap(Drawable drawable) {
         int width = drawable.getIntrinsicWidth();
         int height = drawable.getIntrinsicHeight();
         Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888

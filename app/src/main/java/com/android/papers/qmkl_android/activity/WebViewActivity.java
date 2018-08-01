@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.util.ActManager;
 
 //"校内服务"页面上的所有web链接打开的webview
 public class WebViewActivity extends BaseActivity {
@@ -35,6 +36,7 @@ public class WebViewActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
