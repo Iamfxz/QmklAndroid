@@ -59,8 +59,6 @@ public class DiscoveryFragment extends Fragment {
 
         TextView title=getActivity().findViewById(R.id.toolbar).findViewById(R.id.title);
         title.setText("我和发现");
-        ImageView imageView=getActivity().findViewById(R.id.toolbar).findViewById(R.id.choose_school_btn);
-        imageView.setVisibility(View.GONE);
 
 
         setUserInfo();

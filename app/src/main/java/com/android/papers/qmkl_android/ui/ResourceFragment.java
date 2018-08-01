@@ -1,6 +1,7 @@
 package com.android.papers.qmkl_android.ui;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,11 +15,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -92,9 +95,7 @@ public class ResourceFragment extends Fragment
     final int errorCode = 404;
     final int successCode = 200;
 
-    //加载动画
-    ZLoadingDialog dialog;
-
+    private GestureDetector gesture; //手势识别
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
      */
@@ -214,11 +215,42 @@ public class ResourceFragment extends Fragment
             }
         }, 100);
 
+        //根据父窗体getActivity()为fragment设置手势识别
+        gesture = new GestureDetector(this.getActivity(), new MyOnGestureListener());
+        //为fragment添加OnTouchListener监听器
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gesture.onTouchEvent(event);//返回手势识别触发的事件
+            }
+        });
+
         return view;
     }
 
+    //设置手势识别监听器
+    private class MyOnGestureListener extends GestureDetector.SimpleOnGestureListener
+    {
+        @Override//此方法必须重写且返回真，否则onFling不起效
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if((e1.getX()- e2.getX()>120)&&Math.abs(velocityX)>200){
+                System.out.println("向左");
+                return true;
+            }else if((e2.getX()- e1.getX()>120)&&Math.abs(velocityX)>200){
+                System.out.println("向右");
+                return true;
+            }
+            return false;
+        }
+    }
+
     private static Boolean isExit = false; //是否退出
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public void onKeyDown(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
         if(keyCode == KeyEvent.KEYCODE_BACK && path.toString().equals("/"))
         {
@@ -227,7 +259,6 @@ public class ResourceFragment extends Fragment
         else if (keyCode == KeyEvent.KEYCODE_BACK) {
             loadPaperData(null,1);//退回上一个文件夹
         }
-        return true;
     }
 
     //双击返回键退出app

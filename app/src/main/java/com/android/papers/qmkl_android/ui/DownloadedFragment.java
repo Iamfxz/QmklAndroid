@@ -57,8 +57,7 @@ public class DownloadedFragment extends Fragment {
 
         TextView title=getActivity().findViewById(R.id.toolbar).findViewById(R.id.title);
         title.setText("已下载");
-        ImageView imageView=getActivity().findViewById(R.id.toolbar).findViewById(R.id.choose_school_btn);
-        imageView.setVisibility(View.GONE);
+
 
         checkDownloaded();
 

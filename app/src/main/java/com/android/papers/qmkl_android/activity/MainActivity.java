@@ -3,23 +3,16 @@ package com.android.papers.qmkl_android.activity;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -43,7 +36,6 @@ import com.android.papers.qmkl_android.ui.ResourceFragment;
 import com.android.papers.qmkl_android.ui.StudentsCircleFragment;
 import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
-import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
@@ -68,6 +60,7 @@ public class MainActivity extends AppCompatActivity
     private LayoutInflater mLayoutInflater;
     public static Toolbar toolbar;
     private ActionBarDrawerToggle toggle;
+
     //4个切换的页面的fragment.
     private Class mFragmentArray[] = {
             ResourceFragment.class,//资源页面
@@ -75,6 +68,7 @@ public class MainActivity extends AppCompatActivity
             StudentsCircleFragment.class,//学生圈界面
             DiscoveryFragment.class//发现界面
     };
+
 
     //tab栏图标
     private int mImageArray[] = {
@@ -88,6 +82,9 @@ public class MainActivity extends AppCompatActivity
     private String mTextArray[] = { "资源", "已下载", "学生圈", "发现"};
     private static Boolean isExit = false; //是否退出
 
+    //左右滑动
+    private static final int FLING_MIN_DISTANCE = 50;   //最小距离
+    private static final int FLING_MIN_VELOCITY = 0;  //最小速度
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ActManager.addActivity(this);
@@ -115,6 +112,7 @@ public class MainActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, 0, 0);
@@ -139,7 +137,7 @@ public class MainActivity extends AppCompatActivity
         });
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
 
 //        app:headerLayout="@layout/nav_header"
 //        app:menu="@menu/nav_menu"
@@ -152,20 +150,16 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
         View navHeaderView = navigationView.getHeaderView(0);
-<<<<<<< HEAD
         //初始化头像等内容
-        LinearLayout userInfo = (LinearLayout) navHeaderView.findViewById(R.id.user_info);
-        CircleImageView headImg=navHeaderView.findViewById(R.id.head_img);
-        TextView userName=navHeaderView.findViewById(R.id.user_name);
-        TextView userCollegeName=navHeaderView.findViewById(R.id.user_college_name);
+        LinearLayout userInfo = navHeaderView.findViewById(R.id.user_info);
+        CircleImageView headImg = navHeaderView.findViewById(R.id.head_img);
+        TextView userName = navHeaderView.findViewById(R.id.user_name);
+        TextView userCollegeName = navHeaderView.findViewById(R.id.user_college_name);
+
         headImg.setImageDrawable(drawable);
         userName.setText(SharedPreferencesUtils.getStoredMessage(this,"nickname"));
         userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this,"college"));
         //设置监听事件
-=======
-        //设置监听事件
-        LinearLayout userInfo = navHeaderView.findViewById(R.id.user_info);
->>>>>>> 08f294477622c4d002c692454568e79cbf368744
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -175,10 +169,8 @@ public class MainActivity extends AppCompatActivity
         });
 
 
+
     }
-
-
-
     @TargetApi(19)
     private void setTranslucentStatus(boolean on) {
         Window win = getWindow();
@@ -276,6 +268,9 @@ public class MainActivity extends AppCompatActivity
     //设置menu的监听事件
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+
+        }
         return false;
     }
 
