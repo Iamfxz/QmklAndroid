@@ -67,7 +67,8 @@ public class UserInfoActivity extends BaseActivity {
     TextView gender;
     @BindView(R.id.enterYear_info)
     TextView enterYear;
-
+    @BindView(R.id.iv_back)
+    ImageView back;
 
 
     @Override
@@ -85,7 +86,6 @@ public class UserInfoActivity extends BaseActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent,1);
-//        startActivityForResult(intent, 1);
     }
 
     @OnClick(R.id.user_nickname)
@@ -114,9 +114,10 @@ public class UserInfoActivity extends BaseActivity {
                 dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                         .setLoadingColor(getResources().getColor(R.color.blue))//颜色
                         .setHintText("loading...")
+                        .setCanceledOnTouchOutside(false)
                         .show();
                 UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),username.getText().toString(),NICKNAME);
-                RetrofitUtils.postUpdateUser(NICKNAME,getApplicationContext(),userRequest,alertDialog,nickname,dialog);
+                RetrofitUtils.postUpdateUser(NICKNAME,getApplicationContext(),userRequest,alertDialog,nickname,dialog,false);
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +135,7 @@ public class UserInfoActivity extends BaseActivity {
         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                 .setLoadingColor(getResources().getColor(R.color.blue))//颜色
                 .setHintText("loading...")
+                .setCanceledOnTouchOutside(false)
                 .show();
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -150,6 +152,7 @@ public class UserInfoActivity extends BaseActivity {
         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                 .setLoadingColor(getResources().getColor(R.color.blue))//颜色
                 .setHintText("loading...")
+                .setCanceledOnTouchOutside(false)
                 .show();
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -165,6 +168,7 @@ public class UserInfoActivity extends BaseActivity {
         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                 .setLoadingColor(getResources().getColor(R.color.blue))//颜色
                 .setHintText("loading...")
+                .setCanceledOnTouchOutside(false)
                 .show();
         final String[] genderItems = new String[] { "男","女" };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -173,7 +177,7 @@ public class UserInfoActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface DialogInterface, int which) {
                         UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),genderItems[which],GENDER);
-                        RetrofitUtils.postUpdateUser(GENDER,getApplicationContext(),userRequest,null,gender,dialog);
+                        RetrofitUtils.postUpdateUser(GENDER,getApplicationContext(),userRequest,null,gender,dialog,false);
                     }
                 });
         //监听返回键
@@ -197,6 +201,7 @@ public class UserInfoActivity extends BaseActivity {
         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                 .setLoadingColor(getResources().getColor(R.color.blue))//颜色
                 .setHintText("loading...")
+                .setCanceledOnTouchOutside(false)
                 .show();
         final String[] enterYearItems = new String[] { "2013","2014","2015","2016","2017","2018","2019" };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -205,7 +210,7 @@ public class UserInfoActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface DialogInterface, int which) {
                         UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),enterYearItems[which],ENTERYEAR);
-                        RetrofitUtils.postUpdateUser(ENTERYEAR,getApplicationContext(),userRequest,null,enterYear,dialog);
+                        RetrofitUtils.postUpdateUser(ENTERYEAR,getApplicationContext(),userRequest,null,enterYear,dialog,false);
                     }
                 });
         //监听返回键
@@ -228,9 +233,15 @@ public class UserInfoActivity extends BaseActivity {
         final ZLoadingDialog dialog = new ZLoadingDialog(this);
         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                 .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                .setHintText("loading...")
+                .setHintText("exiting...")
+                .setCanceledOnTouchOutside(false)
                 .show();
         RetrofitUtils.postExitLogin(getApplicationContext(),SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"username"),UserInfoActivity.this,dialog);
+    }
+
+    @OnClick(R.id.iv_back)
+    public void clickBack(){
+        finish();
     }
 
     private void initView(){
@@ -327,8 +338,14 @@ public class UserInfoActivity extends BaseActivity {
     private void displayImage(String imagePath){
         if (imagePath != null){
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            avatar.setImageBitmap(bitmap);
-            RetrofitUtils.postUserAvatar(getApplicationContext(),imagePath);
+
+            final ZLoadingDialog dialog = new ZLoadingDialog(this);
+            dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                    .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                    .setHintText("upLoading...")
+                    .setCanceledOnTouchOutside(false)
+                    .show();
+            RetrofitUtils.postUserAvatar(this,imagePath,avatar,bitmap,dialog);
         }else{
             Toast.makeText(this,"图片获取失败",Toast.LENGTH_SHORT).show();
         }

@@ -7,8 +7,17 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -56,7 +65,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * A simple {@link Fragment} subclass.
  * 主页面四个tab之一: 资源页面
  */
-public class ResourceFragment extends Fragment {
+public class ResourceFragment extends Fragment
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     //为方便将Fragment在Tag中改为Activity,方便LogCat的过滤
     private static final String Tag = "ResourceActivityTag";
@@ -84,23 +94,25 @@ public class ResourceFragment extends Fragment {
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
      */
-    @BindView(R.id.uploadImage_Academy)
-    ImageView uploadImageAcademy;
+//    @BindView(R.id.uploadImage_Academy)
+//    ImageView uploadImageAcademy;
     @BindView(R.id.lv_academy)
     ListView lvAcademy;
     @BindView(R.id.ptr_frame)
     PtrFrameLayout ptrFrame;
 
 
-    @OnClick(R.id.uploadImage_Academy)
-    public void clickUploadImage() {
-        // TODO: 16/5/6 在这里添加打开上传网页
-    }
+//    @OnClick(R.id.uploadImage_Academy)
+//    public void clickUploadImage() {
+//        // TODO: 16/5/6 在这里添加打开上传网页
+//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         System.out.println("initData");
+        setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -110,19 +122,21 @@ public class ResourceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_resource, container, false);
         ButterKnife.bind(this, view);
 
+        TextView title=getActivity().findViewById(R.id.toolbar).findViewById(R.id.title);
+        title.setText("福州大学");
 
-        //TODO 上传资源按钮
-        uploadImg = view.findViewById(R.id.uploadImage_Academy);
-        uploadImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //跳转至上传web
-                Intent toWebIntent = new Intent(getActivity(), WebViewActivity.class);
-                toWebIntent.putExtra("url", "http://robinchen.mikecrm.com/f.php?t=ZmhFim");
-                toWebIntent.putExtra("title", "上传你的资源");
-                startActivity(toWebIntent);
-            }
-        });
+//        //TODO 上传资源按钮
+//        uploadImg = view.findViewById(R.id.uploadImage_Academy);
+//        uploadImg.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //跳转至上传web
+//                Intent toWebIntent = new Intent(getActivity(), WebViewActivity.class);
+//                toWebIntent.putExtra("url", "http://robinchen.mikecrm.com/f.php?t=ZmhFim");
+//                toWebIntent.putExtra("title", "上传你的资源");
+//                startActivity(toWebIntent);
+//            }
+//        });
 
         //TODO 点击文件夹后的操作
         mAdapter = new AcademyAdapter();
@@ -385,6 +399,12 @@ public class ResourceFragment extends Fragment {
             SharedPreferencesUtils.setStoredMessage(getContext(),"hasLogin","false");
         }
     }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
+
     private class AcademyAdapter extends BaseAdapter {
 
         @Override
@@ -450,5 +470,11 @@ public class ResourceFragment extends Fragment {
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu,inflater);
+        getActivity().getMenuInflater().inflate(R.menu.fragment_resource_menu,menu);
     }
 }

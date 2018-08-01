@@ -6,6 +6,13 @@
     android:background="@color/background"
     >
 
-    <include layout="@layout/bar_fragment_students_circle"/>
+    <!--<include layout="@layout/bar_fragment_students_circle"/>-->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
+
+
+    </FrameLayout>
 </RelativeLayout>
