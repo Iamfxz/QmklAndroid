@@ -31,25 +31,25 @@ public class DownloadDB extends SQLiteOpenHelper {
     private static final String TIME = "time";
     private static final String PATH = "path";
 
-    //根据URL查找文件所有信息
+    //根据PATH查找文件所有信息
     private static final String QUERY_DOWNLOADED = "SELECT * FROM " + TABLE_NAME
-            + " WHERE " + URL + " = ?";
+            + " WHERE " + PATH + " = ?";
     //按照（文件名，课程，大小，类型，URL，时间）插入数据
     private static final String ADD_DOWNLOADED = "INSERT INTO " + TABLE_NAME
             + "(" + NAME + ", " + COURSE + ", " + SIZE + ", " + TYPE + ", "
             + URL + ", " + TIME + ", " + PATH +") "
             + "VALUES(?, ?, ?, ?, ?, ?, ?)";
-    //根据URL删除该文件所有信息
+    //根据PATH删除该文件所有信息
     private static final String REMOVE_DOWNLOADED = "DELETE FROM " + TABLE_NAME + " WHERE "
-            + URL + " = ?";
+            + PATH + " = ?";
     //搜索数据库中的所有文件
     private static final String EMPTY_QUERY = "SELECT * FROM " + TABLE_NAME;
     //降序搜索所有文件
     private static final String GET_DOWNLOADED = EMPTY_QUERY + " ORDER BY "
             + ID + " DESC";
-    //根据URL搜索文件名
+    //根据PATH搜索文件名(担心文件重复下载，所以在数据库内查找而不是直接截取末尾文件名)
     private static final String QUERY_NAME = "SELECT " + NAME + " from " + TABLE_NAME + " WHERE "
-            + URL + " = ?";
+            + PATH + " = ?";
 
     private DownloadDB(Context context) {
         super(context, "Downloaded_Info.db", null, 1);
@@ -87,9 +87,9 @@ public class DownloadDB extends SQLiteOpenHelper {
     }
 
 
-    //判断该URL是否已下载
-    public boolean isDownloaded(String url) {
-        Cursor cursor = db.rawQuery(QUERY_DOWNLOADED, new String[]{ url });
+    //判断该path的文件是否已下载
+    public boolean isDownloaded(String path) {
+        Cursor cursor = db.rawQuery(QUERY_DOWNLOADED, new String[]{ path });
         boolean result = cursor.moveToFirst();
         cursor.close();
         return result;
@@ -109,8 +109,8 @@ public class DownloadDB extends SQLiteOpenHelper {
     }
 
     //删除下载信息
-    public void removeDownloadInfo(String url) {
-        db.execSQL(REMOVE_DOWNLOADED, new String[] { url });
+    public void removeDownloadInfo(String path) {
+        db.execSQL(REMOVE_DOWNLOADED, new String[] { path });
     }
 
     //已下载文件是空的则返回true
@@ -154,10 +154,10 @@ public class DownloadDB extends SQLiteOpenHelper {
         return downloadedFiles;
     }
 
-    public String getFileName(String url) {
+    public String getFileName(String path) {
         String result = "";
 
-        Cursor cursor = db.rawQuery(QUERY_NAME, new String[]{ url });
+        Cursor cursor = db.rawQuery(QUERY_NAME, new String[]{ path });
         if (cursor.moveToFirst()) {
             result = cursor.getString(0);
         }

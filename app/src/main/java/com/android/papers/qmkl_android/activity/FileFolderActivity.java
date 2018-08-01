@@ -248,7 +248,7 @@ public class FileFolderActivity extends BaseActivity {
                 fileViewHolder.tvFileName.setText(file.getName());
                 fileViewHolder.tvFileSize.setText(PaperFileUtils.sizeWithDouble(Double.valueOf(file.getSize())));
                 fileViewHolder.imgFileType.setImageResource(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(file.getName())));
-                fileViewHolder.tvFileDownloadTag.setVisibility(downloadDB.isDownloaded(BasePath + mPath + file.getName()) ? View.VISIBLE : View.INVISIBLE);
+                //fileViewHolder.tvFileDownloadTag.setVisibility(downloadDB.isDownloaded(BasePath + mPath + file.getName()) ? View.VISIBLE : View.INVISIBLE);
             }
 
             return convertView;

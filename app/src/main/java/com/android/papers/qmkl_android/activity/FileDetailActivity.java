@@ -138,12 +138,12 @@ public class FileDetailActivity extends BaseActivity {
 
         //显示图标
         imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType().toLowerCase()));
-        //测试传递的过来的文件是否准确，准确
-        System.out.println(mFile.getCourse());
-        System.out.println(mFile.getName());
-        System.out.println(mFile.getPath());
-        System.out.println(mFile.getType());
-        System.out.println("url:"+mFile.getUrl());
+//        //测试传递的过来的文件是否准确，准确
+//        System.out.println(mFile.getCourse());
+//        System.out.println(mFile.getName());
+//        System.out.println(mFile.getPath());
+//        System.out.println(mFile.getType());
+//        System.out.println("url:"+mFile.getUrl());
         //显示按钮
         btnDownload.setText(mFile.isDownload() ? "打开文件" : "下载到手机");
         fileOpenTip.setVisibility(mFile.isDownload()? View.VISIBLE:View.INVISIBLE);
@@ -160,12 +160,13 @@ public class FileDetailActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        File file = new File(SDCardUtils.getDownloadPath() + downloadDB.getFileName(mFile.getUrl()));
+                        File file = new File(SDCardUtils.getDownloadPath() + downloadDB.getFileName(mFile.getPath()));
+                        System.out.println("文件地址"+" :"+file.toString());
                         if (file.exists()) {
                             file.delete();
                             LogUtils.d(Tag, "删除文件: " + file.getName());
                         }
-                        downloadDB.removeDownloadInfo(mFile.getUrl());
+                        downloadDB.removeDownloadInfo(mFile.getPath());
                         LogUtils.d(Tag, "清除数据库信息: " + mFile.getUrl());
 
                         mFile.setDownload(false);
@@ -278,7 +279,7 @@ public class FileDetailActivity extends BaseActivity {
             intent.setType("text/plain");
             intent.setPackage("com.tencent.mobileqq");
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
-            intent.putExtra(Intent.EXTRA_TEXT, (mFile.isDownload() ? downloadDB.getFileName(mFile.getUrl()) : mFile.getName()) + ": " + mFile.getUrl());
+            intent.putExtra(Intent.EXTRA_TEXT,  mFile.getName() + ": " + mFile.getUrl());
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(Intent.createChooser(intent, "选择\"发送到我的电脑\""));

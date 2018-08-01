@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileDetailActivity;
 import com.android.papers.qmkl_android.activity.WebViewActivity;
+import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.impl.PostFile;
 import com.android.papers.qmkl_android.impl.PostFileDetail;
 import com.android.papers.qmkl_android.impl.PostFileUrl;
@@ -316,6 +317,9 @@ public class ResourceFragment extends Fragment {
                         Long updateAt = Objects.requireNonNull(response.body()).getData().getUpdateAt();
                         Long createAt = Objects.requireNonNull(response.body()).getData().getCreateAt();
                         PaperFile paperFile = new PaperFile(path, size, updateAt, createAt);
+                        //查询数据库是否已经下载过
+                        paperFile.setDownload(DownloadDB.getInstance(getContext()).isDownloaded(path));
+
                         Intent intent = new Intent(getActivity(),FileDetailActivity.class);
                         intent.putExtra("FileDetail",paperFile);
                         startActivity(intent);
