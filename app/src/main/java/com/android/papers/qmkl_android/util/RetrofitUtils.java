@@ -222,8 +222,8 @@ public class RetrofitUtils {
                 System.out.println(resultCode);
                 if(resultCode == errorCode){
                     Toast.makeText(context,"请检查账号密码是否准确",Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
                 }else if (resultCode == successCode){
-
                     //token存储到本地
                     String token = Objects.requireNonNull(response.body()).getData().toString();
                     //接下来进入登录界面

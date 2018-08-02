@@ -39,11 +39,13 @@ import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
+import com.example.zhouwei.library.CustomPopWindow;
 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import butterknife.BindView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -82,9 +84,8 @@ public class MainActivity extends AppCompatActivity
     private String mTextArray[] = { "资源", "已下载", "学生圈", "发现"};
     private static Boolean isExit = false; //是否退出
 
-    //左右滑动
-    private static final int FLING_MIN_DISTANCE = 50;   //最小距离
-    private static final int FLING_MIN_VELOCITY = 0;  //最小速度
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ActManager.addActivity(this);
@@ -169,8 +170,22 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
+        final TextView chooseSchoolBtn = findViewById(R.id.title);
+        chooseSchoolBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //创建并显示popWindow,引用别人封装好
+                CustomPopWindow mCustomPopWindow= new CustomPopWindow.PopupWindowBuilder(MainActivity.this)
+                        .setView(R.layout.pop_menu_choose_school)
+                        .enableBackgroundDark(true) //弹出popWindow时，背景是否变暗
+                        .setBgDarkAlpha(0.7f) // 控制亮度
+                        .create()
+                        .showAsDropDown(chooseSchoolBtn,0,0);
+            }
+        });
     }
+
+
     @TargetApi(19)
     private void setTranslucentStatus(boolean on) {
         Window win = getWindow();

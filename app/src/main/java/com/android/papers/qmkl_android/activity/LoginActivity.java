@@ -157,7 +157,6 @@ public class LoginActivity extends BaseActivity {
                 } else {
                     doLogin(Objects.requireNonNull(userPhoneNum.getEditText()).getText().toString(),
                             Objects.requireNonNull(userPsw.getEditText()).getText().toString());
-
                 }
                 break;
             case R.id.user_info:

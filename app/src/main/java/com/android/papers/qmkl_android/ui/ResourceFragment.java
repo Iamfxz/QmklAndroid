@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileDetailActivity;
+import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.activity.WebViewActivity;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.impl.PostFile;
@@ -43,6 +44,7 @@ import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.model.FileUrlRes;
 import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
+import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
@@ -154,24 +156,29 @@ public class ResourceFragment extends Fragment
 //                System.out.println("/"+folder+"/");
 //                intent.putExtra("folder", folder);
 //                startActivity(intent);
-                list = new ArrayList<>(mData.getData().keySet());
+                if (CommonUtils.isFastDoubleClick()) {
+                    System.out.println("别点太快");
+                }else{
+                    //弹出Toast或者Dialog
+                    list = new ArrayList<>(mData.getData().keySet());
+                    final String folder = list.get(position);
+                    //点击的是文件夹
+                    if(PaperFileUtils.typeWithFileName(folder).equals("folder"))
+                    {
+                        ptrFrame.postDelayed(new Runnable(){
+                            @Override
+                            public void run(){
+                                loadPaperData(folder,0);//指定文件夹路径
+                                ptrFrame.refreshComplete();
+                            }
+                        },100);
+                    }
+                    else {//点击的是具体某个可以下载的文件
+                        loadPaperData(folder,0);
+                        System.out.println("你点击了："+folder);
+                    }
+                }
 
-                final String folder = list.get(position);
-                //点击的是文件夹
-                if(PaperFileUtils.typeWithFileName(folder).equals("folder"))
-                {
-                    ptrFrame.postDelayed(new Runnable(){
-                        @Override
-                        public void run(){
-                            loadPaperData(folder,0);//指定文件夹路径
-                            ptrFrame.refreshComplete();
-                        }
-                    },100);
-                }
-                else {//点击的是具体某个可以下载的文件
-                    loadPaperData(folder,0);
-                    System.out.println("你点击了："+folder);
-                }
             }
         });
 

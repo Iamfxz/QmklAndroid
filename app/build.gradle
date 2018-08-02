@@ -38,6 +38,8 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     //登录等待动画
     implementation 'com.zyao89:zloading:1.1.2'
+    //弹出窗口
+    implementation 'com.github.pinguo-zhouwei:CustomPopwindow:2.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
