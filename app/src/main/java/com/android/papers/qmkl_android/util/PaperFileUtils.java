@@ -97,6 +97,29 @@ public class PaperFileUtils {
     }
 
     /**
+     *      获取倒数第二个斜杠的索引
+     * @param str 需要处理的字符串，一般为路径，例如/cad/
+     * @return 倒数第二个斜杠的索引，上述例子返回为0
+     */
+    public static int last2IndexOf(String str){
+        int num = 0, num2 = 0;
+        int i;
+        for(i = 0; i < str.length(); i++){
+            if(str.charAt(i) == '/')
+                num++;
+        }
+        for(i = 0 ;i < str.length() ; i++){
+            if(str.charAt(i) == '/'){
+                num2++;
+            }
+            if(num2 == num-1) break;
+        }
+        if(num == 0)
+            return num;
+        return i;
+    }
+
+    /**
      *      利用路径名字得出文件的名字
      * @param path 相对路径
      * @return 文件的名字

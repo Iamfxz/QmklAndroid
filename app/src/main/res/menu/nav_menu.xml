@@ -6,7 +6,7 @@
             android:icon="@mipmap/ic_launcher"
             android:title="Call" />
         <item
-            android:id="@+id/nav_friends"
+            android:id="@+id/friend_item"
             android:icon="@mipmap/ic_launcher"
             android:title="Friends" />
         <item

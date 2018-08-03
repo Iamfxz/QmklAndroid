@@ -40,8 +40,10 @@ import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
 import com.example.zhouwei.library.CustomPopWindow;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,8 +55,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * 登录后的主界面
  */
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final String TAG = "MainActivity";
 
 
     //底部的tab控件
@@ -81,9 +84,8 @@ public class MainActivity extends AppCompatActivity
     };
 
     //tab栏的字
-    private String mTextArray[] = { "资源", "已下载", "学生圈", "发现"};
+    private String mTextArray[] = {"资源", "已下载", "学生圈", "发现"};
     private static Boolean isExit = false; //是否退出
-
 
 
     @Override
@@ -109,9 +111,10 @@ public class MainActivity extends AppCompatActivity
             tintManager.setStatusBarDarkMode(true, this);
         }
 
-
+        //设置顶部工具栏
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setOnMenuItemClickListener(onMenuItemClick);
 
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -120,10 +123,10 @@ public class MainActivity extends AppCompatActivity
         toggle.setDrawerIndicatorEnabled(false);
 
 
-        Log.d("头像路径", SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"avatar")));
+        Log.d("头像路径", SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
 
         //获取头像文件，先转化为100*100的drawable文件，然后通过工具类转换为圆形头像并显示
-        Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"avatar")));
+        Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
         CircleDrawable circleDrawable = new CircleDrawable(drawable, MainActivity.this, 44);
         toolbar.setNavigationIcon(circleDrawable);
 
@@ -158,31 +161,18 @@ public class MainActivity extends AppCompatActivity
         TextView userCollegeName = navHeaderView.findViewById(R.id.user_college_name);
 
         headImg.setImageDrawable(drawable);
-        userName.setText(SharedPreferencesUtils.getStoredMessage(this,"nickname"));
-        userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this,"college"));
+        userName.setText(SharedPreferencesUtils.getStoredMessage(this, "nickname"));
+        userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this, "college"));
+
         //设置监听事件
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(MainActivity.this, UserInfoActivity.class);
+                Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
                 startActivity(intent);
             }
         });
 
-
-        final TextView chooseSchoolBtn = findViewById(R.id.title);
-        chooseSchoolBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //创建并显示popWindow,引用别人封装好
-                CustomPopWindow mCustomPopWindow= new CustomPopWindow.PopupWindowBuilder(MainActivity.this)
-                        .setView(R.layout.pop_menu_choose_school)
-                        .enableBackgroundDark(true) //弹出popWindow时，背景是否变暗
-                        .setBgDarkAlpha(0.7f) // 控制亮度
-                        .create()
-                        .showAsDropDown(chooseSchoolBtn,0,0);
-            }
-        });
     }
 
 
@@ -198,10 +188,12 @@ public class MainActivity extends AppCompatActivity
         }
         win.setAttributes(winParams);
     }
+
     public void onResume() {
         super.onResume();
 //        MobclickAgent.onResume(this);原本是友盟的接口，现在已废弃
     }
+
     public void onPause() {
         super.onPause();
 //        MobclickAgent.onPause(this);
@@ -239,8 +231,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(getVisibleFragment() instanceof ResourceFragment){
-            ((ResourceFragment) getVisibleFragment()).onKeyDown(keyCode,event);
+        if (getVisibleFragment() instanceof ResourceFragment) {
+            ((ResourceFragment) getVisibleFragment()).onKeyDown(keyCode, event);
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             exitBy2Click();
         }
@@ -248,18 +240,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     *
-     * @return  当前显示的fragement
+     * @return 当前显示的fragement
      */
-    public Fragment getVisibleFragment(){
+    public Fragment getVisibleFragment() {
         FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
         List<Fragment> fragments = fragmentManager.getFragments();
-        for(Fragment fragment : fragments){
-            if(fragment != null && fragment.isVisible())
+        for (Fragment fragment : fragments) {
+            if (fragment != null && fragment.isVisible())
                 return fragment;
         }
         return null;
     }
+
     //双击返回键退出app
     private void exitBy2Click() {
         Timer tExit = null;
@@ -283,11 +275,27 @@ public class MainActivity extends AppCompatActivity
     //设置menu的监听事件
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-
+        switch (item.getItemId()) {
         }
         return false;
     }
 
+    private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.search_item:
+                    Toast.makeText(MainActivity.this,"你点击了搜索按钮",Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.upload_item:
+                    Toast.makeText(MainActivity.this,"你点击了上传按钮",Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.change_item:
+                    Toast.makeText(MainActivity.this,"你点击了改变按钮",Toast.LENGTH_SHORT).show();
+                    return true;
+            }
+            return true;
+        }
+    };
 
 }

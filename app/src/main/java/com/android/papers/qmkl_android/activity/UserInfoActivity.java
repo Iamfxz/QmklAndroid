@@ -317,13 +317,13 @@ public class UserInfoActivity extends BaseActivity {
     }
     /**
      * 通过 uri seletion选择来获取图片的真实uri
-     * @param uri
-     * @param seletion
-     * @return
+     * @param uri 统一资源标识符
+     * @param selection 搜索目标
+     * @return 所在地址
      */
-    private String getImagePath(Uri uri, String seletion){
+    private String getImagePath(Uri uri, String selection){
         String path = null;
-        Cursor cursor = getContentResolver().query(uri,null,seletion,null,null);
+        Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
         if (cursor != null){
             if (cursor.moveToFirst()) {
                 path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
@@ -335,7 +335,7 @@ public class UserInfoActivity extends BaseActivity {
 
     /**
      * 通过imagepath来绘制immageview图像
-     * @param imagePath
+     * @param imagePath 图片地址
      */
     private void displayImage(String imagePath){
         if (imagePath != null){
