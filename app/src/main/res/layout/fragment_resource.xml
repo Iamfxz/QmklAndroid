@@ -2,16 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/background"
-    >
-
+    android:orientation="vertical">
     <!--<include-->
-        <!--android:id="@+id/bar_resource"-->
-        <!--layout="@layout/bar_fragment_resource"/>-->
-
-    <in.srain.cube.views.ptr.PtrFrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <!--android:id="@+id/bar_resource"-->
+    <!--layout="@layout/bar_fragment_resource"/>-->
+    <in.srain.cube.views.ptr.PtrFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:cube_ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ptr_frame"
         android:layout_width="match_parent"
@@ -21,15 +17,13 @@
         cube_ptr:ptr_keep_header_when_refresh="true"
         cube_ptr:ptr_pull_to_fresh="false"
         cube_ptr:ptr_ratio_of_header_height_to_refresh="1.2"
-        cube_ptr:ptr_resistance="1.7" >
-
+        cube_ptr:ptr_resistance="1.7">
 
         <ListView
-            android:id="@+id/lv_academy"
+            android:id="@+id/lv_folder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
-            ><!--android:focusable="true"-->
+            android:background="@color/white"><!--android:focusable="true"-->
 
         </ListView>
 

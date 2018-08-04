@@ -3,23 +3,16 @@ package com.android.papers.qmkl_android.activity;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -44,15 +37,18 @@ import com.android.papers.qmkl_android.ui.ResourceFragment;
 import com.android.papers.qmkl_android.ui.StudentsCircleFragment;
 import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
-import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
+import com.example.zhouwei.library.CustomPopWindow;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import butterknife.BindView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -60,8 +56,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * 登录后的主界面
  */
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final String TAG = "MainActivity";
 
 
     //底部的tab控件
@@ -69,6 +66,7 @@ public class MainActivity extends AppCompatActivity
     private LayoutInflater mLayoutInflater;
     public static Toolbar toolbar;
     private ActionBarDrawerToggle toggle;
+
     //4个切换的页面的fragment.
     private Class mFragmentArray[] = {
             ResourceFragment.class,//资源页面
@@ -76,6 +74,7 @@ public class MainActivity extends AppCompatActivity
             StudentsCircleFragment.class,//学生圈界面
             DiscoveryFragment.class//发现界面
     };
+
 
     //tab栏图标
     private int mImageArray[] = {
@@ -86,8 +85,9 @@ public class MainActivity extends AppCompatActivity
     };
 
     //tab栏的字
-    private String mTextArray[] = { "资源", "已下载", "学生圈", "发现"};
+    private String mTextArray[] = {"资源", "已下载", "学生圈", "发现"};
     private static Boolean isExit = false; //是否退出
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,9 +112,11 @@ public class MainActivity extends AppCompatActivity
             tintManager.setStatusBarDarkMode(true, this);
         }
 
-
+        //设置顶部工具栏
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setOnMenuItemClickListener(onMenuItemClick);
+
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
@@ -122,10 +124,10 @@ public class MainActivity extends AppCompatActivity
         toggle.setDrawerIndicatorEnabled(false);
 
 
-        Log.d("头像路径", SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"avatar")));
+        Log.d("头像路径", SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
 
         //获取头像文件，先转化为100*100的drawable文件，然后通过工具类转换为圆形头像并显示
-        Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"avatar")));
+        Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
         CircleDrawable circleDrawable = new CircleDrawable(drawable, MainActivity.this, 44);
         toolbar.setNavigationIcon(circleDrawable);
 
@@ -140,7 +142,7 @@ public class MainActivity extends AppCompatActivity
         });
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
 
 //        app:headerLayout="@layout/nav_header"
 //        app:menu="@menu/nav_menu"
@@ -153,28 +155,37 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
         View navHeaderView = navigationView.getHeaderView(0);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6bfba63f354ba370ea1f4bec39b5712c9c1f6e60
         //初始化头像等内容
-        LinearLayout userInfo = (LinearLayout) navHeaderView.findViewById(R.id.user_info);
-        CircleImageView headImg=navHeaderView.findViewById(R.id.head_img);
-        TextView userName=navHeaderView.findViewById(R.id.user_name);
-        TextView userCollegeName=navHeaderView.findViewById(R.id.user_college_name);
+        LinearLayout userInfo = navHeaderView.findViewById(R.id.user_info);
+        CircleImageView headImg = navHeaderView.findViewById(R.id.head_img);
+        TextView userName = navHeaderView.findViewById(R.id.user_name);
+        TextView userCollegeName = navHeaderView.findViewById(R.id.user_college_name);
+
         headImg.setImageDrawable(drawable);
+<<<<<<< HEAD
         userName.setText(SharedPreferencesUtils.getStoredMessage(this,"nickname"));
         userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this,"college"));
         //设置监听事件
 
+=======
+        userName.setText(SharedPreferencesUtils.getStoredMessage(this, "nickname"));
+        userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this, "college"));
+
+        //设置监听事件
+>>>>>>> 6bfba63f354ba370ea1f4bec39b5712c9c1f6e60
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(MainActivity.this, UserInfoActivity.class);
+                Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
                 startActivity(intent);
             }
         });
 
-
     }
-
 
 
     @TargetApi(19)
@@ -189,10 +200,12 @@ public class MainActivity extends AppCompatActivity
         }
         win.setAttributes(winParams);
     }
+
     public void onResume() {
         super.onResume();
 //        MobclickAgent.onResume(this);原本是友盟的接口，现在已废弃
     }
+
     public void onPause() {
         super.onPause();
 //        MobclickAgent.onPause(this);
@@ -230,8 +243,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(getVisibleFragment() instanceof ResourceFragment){
-            ((ResourceFragment) getVisibleFragment()).onKeyDown(keyCode,event);
+        if (getVisibleFragment() instanceof ResourceFragment) {
+            ((ResourceFragment) getVisibleFragment()).onKeyDown(keyCode, event);
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             exitBy2Click();
         }
@@ -239,18 +252,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     *
-     * @return  当前显示的fragement
+     * @return 当前显示的fragement
      */
-    public Fragment getVisibleFragment(){
+    public Fragment getVisibleFragment() {
         FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
         List<Fragment> fragments = fragmentManager.getFragments();
-        for(Fragment fragment : fragments){
-            if(fragment != null && fragment.isVisible())
+        for (Fragment fragment : fragments) {
+            if (fragment != null && fragment.isVisible())
                 return fragment;
         }
         return null;
     }
+
     //双击返回键退出app
     private void exitBy2Click() {
         Timer tExit = null;
@@ -274,8 +287,27 @@ public class MainActivity extends AppCompatActivity
     //设置menu的监听事件
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+        }
         return false;
     }
 
+    private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.search_item:
+                    Toast.makeText(MainActivity.this,"你点击了搜索按钮",Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.upload_item:
+                    Toast.makeText(MainActivity.this,"你点击了上传按钮",Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.change_item:
+                    Toast.makeText(MainActivity.this,"你点击了改变按钮",Toast.LENGTH_SHORT).show();
+                    return true;
+            }
+            return true;
+        }
+    };
 
 }

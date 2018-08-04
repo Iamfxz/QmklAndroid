@@ -27,7 +27,8 @@
         <activity android:name=".activity.AdsActivity"/>
         <activity android:name=".activity.AdsDetailsActivity"/>
         <activity android:name=".activity.MainActivity"
-            android:label=""/>
+            android:label=""
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".activity.WebViewActivity"/>
         <activity android:name=".activity.FileDetailActivity"/>
         <activity android:name=".activity.FileFolderActivity"/>

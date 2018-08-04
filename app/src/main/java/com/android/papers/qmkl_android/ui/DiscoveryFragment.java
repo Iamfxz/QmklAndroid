@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +14,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.UserInfoActivity;
 import com.android.papers.qmkl_android.util.DownLoader;
+import com.android.papers.qmkl_android.util.LogUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
@@ -23,6 +27,7 @@ import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
 import java.io.File;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +48,8 @@ public class DiscoveryFragment extends Fragment {
     LinearLayout userInfo;
 
     private static final String TAG = "DiscoveryActivityTag";
-    private static boolean firstLoad=true;
+    private static boolean firstLoad = true;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,10 +63,8 @@ public class DiscoveryFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
-        TextView title=getActivity().findViewById(R.id.toolbar).findViewById(R.id.title);
+        TextView title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         title.setText("我和发现");
-        ImageView imageView=getActivity().findViewById(R.id.toolbar).findViewById(R.id.choose_school_btn);
-        imageView.setVisibility(View.GONE);
 
 
         setUserInfo();
@@ -80,11 +84,10 @@ public class DiscoveryFragment extends Fragment {
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(getActivity(), UserInfoActivity.class);
+                Intent intent = new Intent(getActivity(), UserInfoActivity.class);
                 startActivity(intent);
             }
         });
-
 
 
         return view;
@@ -97,13 +100,11 @@ public class DiscoveryFragment extends Fragment {
 
 
     //刷新各控件内容
-    private void setUserInfo(){
-        userName.setText(SharedPreferencesUtils.getStoredMessage(getContext(),"nickname"));
-        userCollege.setText(SharedPreferencesUtils.getStoredMessage(getContext(),"college"));
-
-        final Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getContext(),"avatar")));
+    private void setUserInfo() {
+        userName.setText(SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(getContext()), "nickname"));
+        userCollege.setText(SharedPreferencesUtils.getStoredMessage(getContext(), "college"));
+        final Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getContext(), "avatar")));
         headImg.setImageDrawable(drawable);
-
     }
 
     @Override
@@ -111,7 +112,6 @@ public class DiscoveryFragment extends Fragment {
         setUserInfo();
         super.onResume();
     }
-
 
 
 }

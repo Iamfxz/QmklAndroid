@@ -2,35 +2,40 @@ package com.android.papers.qmkl_android.ui;
 
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileDetailActivity;
-import com.android.papers.qmkl_android.activity.WebViewActivity;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.impl.PostFile;
 import com.android.papers.qmkl_android.impl.PostFileDetail;
@@ -40,20 +45,22 @@ import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.model.FileUrlRes;
 import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
+import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
@@ -70,19 +77,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * 主页面四个tab之一: 资源页面
  */
 public class ResourceFragment extends Fragment
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     //为方便将Fragment在Tag中改为Activity,方便LogCat的过滤
-    private static final String Tag = "ResourceActivityTag";
+    private static final String TAG = "ResourceActivityTag";
 
     //文件总数据
     private FileRes mData;
     private List<String> list;//文件名列表
 
     //数据适配器
-    private AcademyAdapter mAdapter;
+    private FolderAdapter mAdapter;
 
-    private ImageView uploadImg;
+//    private ImageView uploadImg;
 
     //地址变化
     private String BasePath = "/";
@@ -92,19 +99,24 @@ public class ResourceFragment extends Fragment
     final int errorCode = 404;
     final int successCode = 200;
 
-    //加载动画
-    ZLoadingDialog dialog;
+    //学校名称
+    private String collegeName;
+    private GestureDetector gesture; //手势识别
 
+    //搜索框，开源框架，github地址https://github.com/MiguelCatalan/MaterialSearchView
+    private MaterialSearchView searchView;
+
+    //是否退出程序，连续点两次返回则退出
+    private static Boolean isExit = false;
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
      */
 //    @BindView(R.id.uploadImage_Academy)
 //    ImageView uploadImageAcademy;
-    @BindView(R.id.lv_academy)
-    ListView lvAcademy;
+    @BindView(R.id.lv_folder)
+    ListView lvFolder;
     @BindView(R.id.ptr_frame)
     PtrFrameLayout ptrFrame;
-
 
 //    @OnClick(R.id.uploadImage_Academy)
 //    public void clickUploadImage() {
@@ -116,18 +128,20 @@ public class ResourceFragment extends Fragment
         super.onCreate(savedInstanceState);
         System.out.println("initData");
         setHasOptionsMenu(true);
-
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // 为fragement加载布局
         View view = inflater.inflate(R.layout.fragment_resource, container, false);
         ButterKnife.bind(this, view);
 
-        TextView title=getActivity().findViewById(R.id.toolbar).findViewById(R.id.title);
-        title.setText("福州大学");
+        TextView title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
+        //设置学校名称
+        collegeName = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "college");
+        title.setText(collegeName);
+
 
 //        //TODO 上传资源按钮
 //        uploadImg = view.findViewById(R.id.uploadImage_Academy);
@@ -141,36 +155,46 @@ public class ResourceFragment extends Fragment
 //                startActivity(toWebIntent);
 //            }
 //        });
-
-        //TODO 点击文件夹后的操作
-        mAdapter = new AcademyAdapter();
-        lvAcademy.setAdapter(mAdapter);
-        lvAcademy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        //搜索框设置
+        mAdapter = new FolderAdapter();
+        lvFolder.setAdapter(mAdapter);
+        lvFolder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(getActivity(), FileFolderActivity.class);
-//                String folder = mData.getData().get(position);
-//                System.out.println("/"+folder+"/");
-//                intent.putExtra("folder", folder);
-//                startActivity(intent);
-                list = new ArrayList<>(mData.getData().keySet());
-
-                final String folder = list.get(position);
-                //点击的是文件夹
-                if(PaperFileUtils.typeWithFileName(folder).equals("folder"))
-                {
-                    ptrFrame.postDelayed(new Runnable(){
+                if (CommonUtils.isFastDoubleClick()) {
+                    //当快速点击时候，弹出1s的动画
+                    //加载文件的动画
+                    final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
+                    dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                            .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                            .setHintText("Loading...")
+                            .setCanceledOnTouchOutside(false);
+                    dialog.show();
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
                         @Override
-                        public void run(){
-                            loadPaperData(folder,0);//指定文件夹路径
-                            ptrFrame.refreshComplete();
+                        public void run() {
+                            dialog.dismiss();
                         }
-                    },100);
+                    }, 1000); // 延时1秒
+                } else {
+                    list = new ArrayList<>(mData.getData().keySet());
+                    final String folder = list.get(position);
+                    //点击的是文件夹
+                    if (PaperFileUtils.typeWithFileName(folder).equals("folder")) {
+                        ptrFrame.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadPaperData(folder, 0, collegeName);//指定文件夹路径
+                                ptrFrame.refreshComplete();
+                            }
+                        }, 100);
+                    } else {//点击的是具体某个可以下载的文件
+                        loadPaperData(folder, 0, collegeName);
+                        System.out.println("你点击了：" + folder);
+                    }
                 }
-                else {//点击的是具体某个可以下载的文件
-                    loadPaperData(folder,0);
-                    System.out.println("你点击了："+folder);
-                }
+
             }
         });
 
@@ -197,14 +221,14 @@ public class ResourceFragment extends Fragment
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
                 System.out.println("正在刷新主页面");
-                ptrFrame.postDelayed(new Runnable(){
+                ptrFrame.postDelayed(new Runnable() {
                     @Override
-                    public void run(){
+                    public void run() {
                         BasePath = "/";
-                        loadPaperData( null,0);//全部文件夹
+                        loadPaperData(null, 0, collegeName);//全部文件夹
                         ptrFrame.refreshComplete();
                     }
-                },1000);
+                }, 1000);
             }
         });
         ptrFrame.postDelayed(new Runnable() {
@@ -214,20 +238,48 @@ public class ResourceFragment extends Fragment
             }
         }, 100);
 
+        //根据父窗体getActivity()为fragment设置手势识别
+        gesture = new GestureDetector(this.getActivity(), new MyOnGestureListener());
+        //为fragment添加OnTouchListener监听器
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gesture.onTouchEvent(event);//返回手势识别触发的事件
+            }
+        });
+
         return view;
     }
 
-    private static Boolean isExit = false; //是否退出
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    //TODO 设置手势识别监听器，暂时无法使用成功，以后回头来看
+    private class MyOnGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override//此方法必须重写且返回真，否则onFling不起效
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if ((e1.getX() - e2.getX() > 120) && Math.abs(velocityX) > 200) {
+                System.out.println("向左");
+                return true;
+            } else if ((e2.getX() - e1.getX() > 120) && Math.abs(velocityX) > 200) {
+                System.out.println("向右");
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+
+    public void onKeyDown(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
-        if(keyCode == KeyEvent.KEYCODE_BACK && path.toString().equals("/"))
-        {
+        if (keyCode == KeyEvent.KEYCODE_BACK && path.toString().equals("/")) {
             exitBy2Click();
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            loadPaperData(null, 1, collegeName);//退回上一个文件夹
         }
-        else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            loadPaperData(null,1);//退回上一个文件夹
-        }
-        return true;
     }
 
     //双击返回键退出app
@@ -249,55 +301,42 @@ public class ResourceFragment extends Fragment
             System.exit(0);
         }
     }
-    public static int last2IndexOf(String str){
-        int num = 0, num2 = 0;
-        int i;
-        for(i = 0; i < str.length(); i++){
-            if(str.charAt(i) == '/')
-                num++;
-        }
-        for(i = 0 ;i < str.length() ; i++){
-            if(str.charAt(i) == '/'){
-                num2++;
-            }
-            if(num2 == num-1) break;
-        }
-        if(num == 0)
-            return num;
-        return i;
-    }
+
+
     /**
      * 请求并加载文件资源，主要用于主界面的资源页面
+     *
      * @param folder "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
+     * @param requestCode 1表示用于回退到上一个文件夹；0表示加载folder
+     * @param collegeName 学校名字，用于判断获取哪个学校的文件列表
      */
-    private void loadPaperData(final String folder,int requestCode) {
-        if(requestCode ==1){
-            if(!path.toString().equals("/"))
-                BasePath = path.substring(0,last2IndexOf(path.toString())+1);
+    private void loadPaperData(final String folder, int requestCode, String collegeName) {
+        if (requestCode == 1) {
+            if (!path.toString().equals("/"))
+                BasePath = path.substring(0, PaperFileUtils.last2IndexOf(path.toString()) + 1);
             path = new StringBuffer(BasePath);
-        }else {
-            if(folder != null){
-                if(!PaperFileUtils.typeWithFileName(folder).equals("folder"))
-                {
+        } else {
+            if (folder != null) {
+                if (!PaperFileUtils.typeWithFileName(folder).equals("folder")) {
                     //这是一个具体的文件，不需要以"/"结尾
                     path = new StringBuffer(BasePath + folder);
-                }else{
+                } else {
                     //这是一个文件夹，需要改变BasePath的地址
                     BasePath += folder;
                     BasePath += "/";
                     path = new StringBuffer(BasePath);
                 }
-            }else {
+            } else {
                 path = new StringBuffer(BasePath);
             }
         }
-        System.out.println("当前路径："+path);
+        System.out.println("当前路径：" + path);
 
-        if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")){
+
+        if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")) {
             System.out.println("正在加载文件夹资源");
-            String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()),"token");
-            String collegeName = "福州大学";
-            if(token!=null){
+            String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
+            if (token != null) {
                 //创建Retrofit对象
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
@@ -308,7 +347,7 @@ public class ResourceFragment extends Fragment
                 PostFile request = retrofit.create(PostFile.class);
 
                 //对 发送请求 进行封装
-                FileRequest fileRequest = new FileRequest(path.toString(),collegeName,token);
+                FileRequest fileRequest = new FileRequest(path.toString(), collegeName, token);
                 Call<FileRes> call = request.getCall(fileRequest);
 
                 //发送网络请求(异步)
@@ -318,43 +357,43 @@ public class ResourceFragment extends Fragment
                     public void onResponse(@NonNull Call<FileRes> call, @NonNull Response<FileRes> response) {
                         int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                         mData = response.body();
-                        if(resultCode == errorCode){
+                        if (resultCode == errorCode) {
                             System.out.println("文件请求失败");
-                        }else if (resultCode == successCode){
+                        } else if (resultCode == successCode) {
                             System.out.println("文件请求成功");
+                            mData.sort();
                             handler.sendEmptyMessage(1);
-                        }else{
+                        } else {
                             System.out.println("文件请求发生未知错误");
                         }
                     }
+
                     //请求失败时回调
                     @Override
                     public void onFailure(@NonNull Call<FileRes> call, @NonNull Throwable t) {
-                        System.out.println( "文件资源请求失败");
+                        System.out.println("文件资源请求失败");
                     }
                 });
-            }
-            else{
+            } else {
                 //TODO 跳转回登陆界面
                 System.out.println("请重新登陆");
             }
-        }else {//如果是某个具体文件，则应该使用这个请求获得url地址
-
-            postFileUrl(path.toString(),"福州大学");
-            postFileDetail(path.toString(),"福州大学");
+        } else {//如果是某个具体文件，则应该使用这个请求获得url地址
+            postFileUrl(path.toString(), collegeName);
+            postFileDetail(path.toString(), collegeName);
         }
 
     }
 
     //handler为线程之间通信的桥梁
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-            switch(msg.what){
+            switch (msg.what) {
                 case 1:  //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
-                    mAdapter.notifyDataSetChanged();        //这个方法一旦调用，UI界面就刷新了
+                    mAdapter.notifyDataSetChanged();//这个方法一旦调用，UI界面就刷新了
                     break;
 
-                default :
+                default:
                     break;
             }
         }
@@ -362,9 +401,9 @@ public class ResourceFragment extends Fragment
     };
 
 
-    private void postFileDetail(final String path, final String collegeName){
-        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()),"token");
-        if(token != null){
+    private void postFileDetail(final String path, final String collegeName) {
+        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
+        if (token != null) {
             //创建Retrofit对象
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
@@ -375,17 +414,17 @@ public class ResourceFragment extends Fragment
             final PostFileDetail request = retrofit.create(PostFileDetail.class);
 
             //对 发送请求 进行封装(账号和密码)
-            Call<FileDetailRes> call = request.getCall(new FileRequest( path, collegeName, token));
+            Call<FileDetailRes> call = request.getCall(new FileRequest(path, collegeName, token));
             //发送网络请求(异步)
             call.enqueue(new Callback<FileDetailRes>() {
                 //请求成功时回调
                 @Override
                 public void onResponse(@NonNull Call<FileDetailRes> call, @NonNull Response<FileDetailRes> response) {
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("文件详细信息请求结果："+resultCode);
-                    if(resultCode == errorCode){
+                    System.out.println("文件详细信息请求结果：" + resultCode);
+                    if (resultCode == errorCode) {
                         System.out.println(Objects.requireNonNull(response.body()).getMsg());
-                    }else if (resultCode == successCode){
+                    } else if (resultCode == successCode) {
                         System.out.println("文件详细信息请求成功");
 
                         String size = Objects.requireNonNull(response.body()).getData().getSize();
@@ -395,28 +434,29 @@ public class ResourceFragment extends Fragment
                         //查询数据库是否已经下载过
                         paperFile.setDownload(DownloadDB.getInstance(getContext()).isDownloaded(path));
 
-                        Intent intent = new Intent(getActivity(),FileDetailActivity.class);
-                        intent.putExtra("FileDetail",paperFile);
+                        Intent intent = new Intent(getActivity(), FileDetailActivity.class);
+                        intent.putExtra("FileDetail", paperFile);
                         startActivity(intent);
-                    }else{
+                    } else {
                         System.out.println("文件详细信息请求异常");
                     }
                 }
+
                 //请求失败时回调
                 @Override
                 public void onFailure(@NonNull Call<FileDetailRes> call, @NonNull Throwable t) {
-                    SharedPreferencesUtils.setStoredMessage(getContext(),"hasLogin","false");
+                    SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
                 }
             });
-        }else{
+        } else {
             //TODO 重新登陆
-            SharedPreferencesUtils.setStoredMessage(getContext(),"hasLogin","false");
+            SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
         }
     }
 
-    private void postFileUrl(final String path,final String collegeName){
-        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()),"token");
-        if(token!=null){
+    private void postFileUrl(final String path, final String collegeName) {
+        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
+        if (token != null) {
             //创建Retrofit对象
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
@@ -427,7 +467,7 @@ public class ResourceFragment extends Fragment
             PostFileUrl request = retrofit.create(PostFileUrl.class);
 
             //对 发送请求 进行封装(账号和密码)
-            Call<FileUrlRes> call = request.getCall(new FileRequest( path, collegeName, token));
+            Call<FileUrlRes> call = request.getCall(new FileRequest(path, collegeName, token));
 
             //发送网络请求(异步)
             call.enqueue(new Callback<FileUrlRes>() {
@@ -435,29 +475,29 @@ public class ResourceFragment extends Fragment
                 @Override
                 public void onResponse(@NonNull Call<FileUrlRes> call, @NonNull Response<FileUrlRes> response) {
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("文件URL请求结果"+resultCode);
-                    if(resultCode == errorCode){
+                    System.out.println("文件URL请求结果" + resultCode);
+                    if (resultCode == errorCode) {
                         System.out.println("文件URL请求失败");
-                    }else if (resultCode == successCode){
+                    } else if (resultCode == successCode) {
                         String url;
                         url = Objects.requireNonNull(response.body()).getData().getUrl();
-                        System.out.println("文件URL是"+url);
+                        System.out.println("文件URL是" + url);
                         //存储路径为path的文件的url
-                        SharedPreferencesUtils.setStoredMessage(getContext(),path,url);
-                    }else{
+                        SharedPreferencesUtils.setStoredMessage(getContext(), path, url);
+                    } else {
                         System.out.println("文件URL请求异常");
                     }
                 }
+
                 //请求失败时回调
                 @Override
                 public void onFailure(@NonNull Call<FileUrlRes> call, @NonNull Throwable t) {
-                    SharedPreferencesUtils.setStoredMessage(getContext(),"hasLogin","false");
+                    SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
                 }
             });
-        }
-        else{
+        } else {
             //TODO 重新登陆
-            SharedPreferencesUtils.setStoredMessage(getContext(),"hasLogin","false");
+            SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
         }
     }
 
@@ -466,7 +506,7 @@ public class ResourceFragment extends Fragment
         return false;
     }
 
-    private class AcademyAdapter extends BaseAdapter {
+    private class FolderAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
@@ -506,11 +546,11 @@ public class ResourceFragment extends Fragment
             //创建View
             holder.tvFolderName.setText(folderName);
             holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
-            if(!PaperFileUtils.typeWithFileName(folderName).equals("folder")){
+            if (!PaperFileUtils.typeWithFileName(folderName).equals("folder")) {
                 holder.tvFolderSize.setText(mData.getData().get(folderName));
                 holder.tvFolderSize.setVisibility(View.VISIBLE);
                 holder.imgFolderArrow.setVisibility(View.INVISIBLE);
-            }else {
+            } else {
                 holder.tvFolderSize.setVisibility(View.INVISIBLE);
                 holder.imgFolderArrow.setVisibility(View.VISIBLE);
             }
@@ -533,9 +573,72 @@ public class ResourceFragment extends Fragment
         }
     }
 
+    /**
+     * 菜单栏
+     *  @param menu     菜单
+     * @param inflater 不知如何解释
+     */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu,inflater);
-        getActivity().getMenuInflater().inflate(R.menu.fragment_resource_menu,menu);
+        super.onCreateOptionsMenu(menu, inflater);
+        Objects.requireNonNull(getActivity()).getMenuInflater().inflate(R.menu.fragment_resource_menu, menu);
+
+        //搜索框架的相关设置
+        searchView = getActivity().findViewById(R.id.search_view);
+        MenuItem item = menu.findItem(R.id.search_item);
+        searchView.setMenuItem(item);
+        searchView.setBackground(new ColorDrawable(Objects.requireNonNull(getContext()).getResources().getColor(R.color.bar_color)));
+        searchView.setVoiceSearch(false);
+        searchView.setEllipsize(true);
+        searchView.setHint("课程名称或文件名称");
+        //设置可搜索的内容
+//        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(queryIsExist(query)){
+                    loadPaperData(query,0,collegeName);
+                    Toast.makeText(getContext(),"您搜索的是《"+query+"》",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getContext(),"找不到您搜索的《"+query+"》课程或文件",Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
+                return false;
+            }
+        });
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
+            }
+        });
+
     }
+
+    /**
+     *      判断query是否在当前目录中
+     * @param query 说需要查找的字符串
+     * @return 查找结果，true代表有
+     */
+    private boolean queryIsExist(String query) {
+        String queryFolder = query.trim();
+        Set<String> strings = mData.getData().keySet();
+        for (String key: strings){
+            if(key.equals(queryFolder))
+                return true;
+        }
+        return false;
+    }
+
 }
