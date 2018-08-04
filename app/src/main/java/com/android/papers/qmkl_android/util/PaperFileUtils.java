@@ -140,9 +140,13 @@ public class PaperFileUtils {
             if(path.charAt(i) == '/'){
                 num ++;
             }
+
             if(num == 2){
                 index2 = i;
                 break;
+            }else if (path.length() == 1){
+                //特殊情况处理，一般后台数据没出错不会执行这里
+                return "/";
             }
         }
         return path.substring(path.indexOf("/")+1,index2);

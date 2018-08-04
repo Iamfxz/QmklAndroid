@@ -58,7 +58,6 @@ public class LoginActivity extends BaseActivity {
         setBarColor(R.color.white); //沉浸式状态栏设置颜色
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-
         //"忘记密码" 加下划线
         forgetPsw.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
         forgetPsw.getPaint().setAntiAlias(true);//抗锯齿

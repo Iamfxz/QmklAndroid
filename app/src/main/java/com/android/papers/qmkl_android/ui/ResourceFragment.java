@@ -2,7 +2,9 @@ package com.android.papers.qmkl_android.ui;
 
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,9 +26,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +55,7 @@ import com.zyao89.view.zloading.Z_TYPE;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -83,7 +89,7 @@ public class ResourceFragment extends Fragment
     //数据适配器
     private FolderAdapter mAdapter;
 
-    private ImageView uploadImg;
+//    private ImageView uploadImg;
 
     //地址变化
     private String BasePath = "/";
@@ -97,16 +103,18 @@ public class ResourceFragment extends Fragment
     private String collegeName;
     private GestureDetector gesture; //手势识别
 
-    //搜索框
+    //搜索框，开源框架，github地址https://github.com/MiguelCatalan/MaterialSearchView
     private MaterialSearchView searchView;
 
+    //是否退出程序，连续点两次返回则退出
+    private static Boolean isExit = false;
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
      */
 //    @BindView(R.id.uploadImage_Academy)
 //    ImageView uploadImageAcademy;
-    @BindView(R.id.lv_academy)
-    ListView lvAcademy;
+    @BindView(R.id.lv_folder)
+    ListView lvFolder;
     @BindView(R.id.ptr_frame)
     PtrFrameLayout ptrFrame;
 
@@ -125,7 +133,7 @@ public class ResourceFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // 为fragement加载布局
         View view = inflater.inflate(R.layout.fragment_resource, container, false);
         ButterKnife.bind(this, view);
 
@@ -148,35 +156,9 @@ public class ResourceFragment extends Fragment
 //            }
 //        });
         //搜索框设置
-/*        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(getContext(),"onQueryTextSubmit",Toast.LENGTH_SHORT).show();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Toast.makeText(getContext(),"onQueryTextChange",Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                Toast.makeText(getContext(),"onSearchViewShown",Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                Toast.makeText(getContext(),"onSearchViewClosed",Toast.LENGTH_SHORT).show();
-            }
-        });*/
-
         mAdapter = new FolderAdapter();
-        lvAcademy.setAdapter(mAdapter);
-        lvAcademy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lvFolder.setAdapter(mAdapter);
+        lvFolder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (CommonUtils.isFastDoubleClick()) {
@@ -289,7 +271,7 @@ public class ResourceFragment extends Fragment
         }
     }
 
-    private static Boolean isExit = false; //是否退出
+
 
     public void onKeyDown(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
@@ -325,6 +307,8 @@ public class ResourceFragment extends Fragment
      * 请求并加载文件资源，主要用于主界面的资源页面
      *
      * @param folder "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
+     * @param requestCode 1表示用于回退到上一个文件夹；0表示加载folder
+     * @param collegeName 学校名字，用于判断获取哪个学校的文件列表
      */
     private void loadPaperData(final String folder, int requestCode, String collegeName) {
         if (requestCode == 1) {
@@ -377,6 +361,7 @@ public class ResourceFragment extends Fragment
                             System.out.println("文件请求失败");
                         } else if (resultCode == successCode) {
                             System.out.println("文件请求成功");
+                            mData.sort();
                             handler.sendEmptyMessage(1);
                         } else {
                             System.out.println("文件请求发生未知错误");
@@ -598,28 +583,35 @@ public class ResourceFragment extends Fragment
         super.onCreateOptionsMenu(menu, inflater);
         Objects.requireNonNull(getActivity()).getMenuInflater().inflate(R.menu.fragment_resource_menu, menu);
 
+        //搜索框架的相关设置
         searchView = getActivity().findViewById(R.id.search_view);
         MenuItem item = menu.findItem(R.id.search_item);
         searchView.setMenuItem(item);
-
-
+        searchView.setBackground(new ColorDrawable(Objects.requireNonNull(getContext()).getResources().getColor(R.color.bar_color)));
         searchView.setVoiceSearch(false);
         searchView.setEllipsize(true);
+        searchView.setHint("课程名称或文件名称");
+        //设置可搜索的内容
 //        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(getContext(),"你要搜索的是："+query,Toast.LENGTH_SHORT).show();
+                if(queryIsExist(query)){
+                    loadPaperData(query,0,collegeName);
+                    Toast.makeText(getContext(),"您搜索的是《"+query+"》",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getContext(),"找不到您搜索的《"+query+"》课程或文件",Toast.LENGTH_SHORT).show();
+                }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //Do some magic
+                searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
                 return false;
             }
         });
-
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
@@ -631,5 +623,22 @@ public class ResourceFragment extends Fragment
                 //Do some magic
             }
         });
+
     }
+
+    /**
+     *      判断query是否在当前目录中
+     * @param query 说需要查找的字符串
+     * @return 查找结果，true代表有
+     */
+    private boolean queryIsExist(String query) {
+        String queryFolder = query.trim();
+        Set<String> strings = mData.getData().keySet();
+        for (String key: strings){
+            if(key.equals(queryFolder))
+                return true;
+        }
+        return false;
+    }
+
 }

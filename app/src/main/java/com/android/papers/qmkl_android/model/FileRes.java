@@ -2,13 +2,18 @@ package com.android.papers.qmkl_android.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
-import java.util.ArrayList;
+import com.github.promeg.pinyinhelper.Pinyin;
+
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
-
-import javax.xml.transform.Source;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 作者：方向臻 on 2018/7/24/024 11:08
@@ -18,13 +23,25 @@ import javax.xml.transform.Source;
  */
 public class FileRes implements Parcelable{
     private String code;
-    private HashMap<String,String> data;//每一行是一个文件的名字，及文件大小
+    private LinkedHashMap<String,String> data;//每一行是一个文件的名字，及文件大小
     private String msg;
 
 
+    //默认使用ascii码排序，后期可再更改成将中文转为拼音在按字母排序
+    public void sort(){
+        Set<Map.Entry<String,String>> entries =  data.entrySet();
+        List<Map.Entry<String,String>> list = new LinkedList<>(entries);
+        Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
+            @Override
+            public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
+                    return o1.getKey().compareTo(o2.getKey());
+            }
+        });
+    }
+
     public FileRes(Parcel source) {
         this.code = source.readString();
-        data = new HashMap<>();
+        data = new LinkedHashMap<>();
         source.readHashMap(HashMap.class.getClassLoader());
     }
 
@@ -40,7 +57,7 @@ public class FileRes implements Parcelable{
         return data;
     }
 
-    public void setData(HashMap<String, String> data) {
+    public void setData(LinkedHashMap<String, String> data) {
         this.data = data;
     }
 
