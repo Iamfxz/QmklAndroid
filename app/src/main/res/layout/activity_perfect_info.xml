@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/splash"
+    tools:context="com.android.papers.qmkl_android.activity.LoginActivity">
+
+    <ImageView
+        android:id="@+id/back"
+        android:background="@mipmap/back_gray"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="40dp"
+        android:contentDescription="返回按钮"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="用户注册"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:layout_above="@+id/user_info"
+        android:layout_marginBottom="40dp"
+        tools:ignore="HardcodedText" />
+
+    <LinearLayout
+        android:id="@+id/user_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:layout_centerInParent="true">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/head_img"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/register_avatar"
+        app:civ_border_color="#D7EFFF"
+        app:civ_border_width="4dp" />
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:id="@+id/user_phone"
+            android:layout_height="wrap_content"
+            >
+            <android.support.design.widget.TextInputEditText
+                android:focusable="false"
+                android:enabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="帐号(手机号)"
+                android:inputType="phone"
+                android:textSize="18sp"
+                tools:ignore="HardcodedText"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:id="@+id/user_psw"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="密码"
+                android:inputType="textPassword"
+                android:textSize="18sp"
+                tools:ignore="HardcodedText" />
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:id="@+id/confirm_psw"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="确认密码"
+                android:inputType="textPassword"
+                android:textSize="18sp"
+                tools:ignore="HardcodedText" />
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+        android:id="@+id/user_nickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="昵称"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText"
+            android:inputType="textFilter"/>
+        </android.support.design.widget.TextInputLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/user_gender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/gender_tiLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/gender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="性别"
+                    android:textSize="18sp"
+                    tools:ignore="HardcodedText"
+                    android:focusable="false"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/gender_next"
+                android:layout_width="20sp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@mipmap/next"
+                tools:ignore="NotSibling" />
+        </RelativeLayout>
+
+        <RelativeLayout
+        android:id="@+id/user_college"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/college_tiLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/college_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="选择学校"
+                        android:inputType="number"
+                        android:textSize="18sp"
+                        tools:ignore="HardcodedText"
+                        android:focusable="false"/>
+            </android.support.design.widget.TextInputLayout>
+            <ImageView
+            android:id="@+id/college_next"
+            android:layout_width="20sp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@mipmap/next"
+            tools:ignore="NotSibling" />
+        </RelativeLayout>
+
+
+
+        <RelativeLayout
+            android:id="@+id/user_academy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/academy_tiLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/academy_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="选择学院"
+                    android:inputType="number"
+                    android:textSize="18sp"
+                    tools:ignore="HardcodedText"
+                    android:focusable="false"/>
+            </android.support.design.widget.TextInputLayout>
+            <ImageView
+                android:id="@+id/academy_next"
+                android:layout_width="20sp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@mipmap/next"
+                tools:ignore="NotSibling" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/user_enterYear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/enterYear_tiLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/enterYear_num"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="入学年份"
+                    android:inputType="number"
+                    android:textSize="18sp"
+                    tools:ignore="HardcodedText"
+                    android:focusable="false"/>
+            </android.support.design.widget.TextInputLayout>
+            <ImageView
+                android:id="@+id/enterYear_next"
+                android:layout_width="20sp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@mipmap/next"
+                tools:ignore="NotSibling" />
+        </RelativeLayout>
+
+
+
+
+        <Button
+            android:id="@+id/next"
+            android:layout_margin="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="下一步"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@color/btn_unable"
+            tools:ignore="HardcodedText"
+            />
+
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>

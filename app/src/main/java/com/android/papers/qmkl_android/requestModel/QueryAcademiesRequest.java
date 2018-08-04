@@ -1,11 +1,10 @@
 package com.android.papers.qmkl_android.requestModel;
 
 public class QueryAcademiesRequest {
-    private String collegeName,token;
+    private String collegeName;
 
-    public QueryAcademiesRequest(String collegeName, String token) {
+    public QueryAcademiesRequest(String collegeName) {
         this.collegeName = collegeName;
-        this.token = token;
     }
 
     public String getCollegeName() {
@@ -16,11 +15,4 @@ public class QueryAcademiesRequest {
         this.collegeName = collegeName;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

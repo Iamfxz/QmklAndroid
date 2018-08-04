@@ -32,6 +32,10 @@
         <activity android:name=".activity.FileDetailActivity"/>
         <activity android:name=".activity.FileFolderActivity"/>
         <activity android:name=".activity.UserInfoActivity"/>
+        <activity android:name=".activity.ForgetPswActivity"/>
+        <activity android:name=".activity.SetNewPswActivity"/>
+        <activity android:name=".activity.RegisterActivity"/>
+        <activity android:name=".activity.PerfectInfoActivity"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

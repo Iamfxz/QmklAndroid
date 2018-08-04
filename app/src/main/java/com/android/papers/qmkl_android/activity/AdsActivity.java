@@ -70,18 +70,20 @@ public class AdsActivity extends Activity {
             }
         });
 
-        new Thread(new CountDownTimer(3,skip)).start();
+        new Thread(new CountDownTimer(3,skip,0)).start();
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "点击跳过");
                 isSkip=true;
-                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
-                    nextActivity(LoginActivity.class);
-                }
-                else {
-                    nextActivity(MainActivity.class);
-                }
+//因为测试忘记密码界面和注册而注释
+//                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+//                    nextActivity(LoginActivity.class);
+//                }
+//                else {
+//                    nextActivity(MainActivity.class);
+//                }
+                nextActivity(LoginActivity.class);
             }
         });
         new Thread(new Runnable() {
@@ -96,12 +98,14 @@ public class AdsActivity extends Activity {
                     @Override
                     public void run() {
                         if(isSkip==false && isClicked==false){
-                            if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
-                                nextActivity(LoginActivity.class);
-                            }
-                            else {
-                                nextActivity(MainActivity.class);
-                            }
+//因为测试忘记密码界面和注册而注释
+//                            if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+//                                nextActivity(LoginActivity.class);
+//                            }
+//                            else {
+//                                nextActivity(MainActivity.class);
+//                            }
+                            nextActivity(LoginActivity.class);
                         }
                     }
                 });

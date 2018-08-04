@@ -19,7 +19,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="帐号登录"
+        android:text="用户注册"
         android:layout_centerHorizontal="true"
         android:textColor="@color/black"
         android:textSize="22sp"
@@ -35,12 +35,12 @@
         android:padding="5dp"
         android:layout_centerInParent="true">
 
+
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:id="@+id/user_phone_num"
+            android:id="@+id/user_phone"
             android:layout_height="wrap_content">
             <EditText
-                android:id="@+id/user_phone_num_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="帐号(手机号)"
@@ -49,28 +49,44 @@
                 tools:ignore="HardcodedText" />
 
         </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:id="@+id/user_psw"
-            android:layout_height="wrap_content">
-            <EditText
+            android:layout_height="wrap_content"
+            >
 
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/verification_code"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="密码"
-                android:inputType="textPassword"
-                android:textSize="18sp"
-                tools:ignore="HardcodedText" />
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="验证码"
+                    android:inputType="number"
+                    android:textSize="18sp"
+                    tools:ignore="HardcodedText" />
 
-        </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/send_code"
+                android:layout_width="140sp"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="发送验证码"
+                android:background="@color/green1"
+                android:layout_alignEnd="@id/verification_code"
+                />
+        </RelativeLayout>
 
         <Button
-            android:id="@+id/login_btn"
+            android:id="@+id/next"
             android:layout_margin="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="登录"
+            android:text="下一步"
             android:textSize="16sp"
             android:textColor="@color/white"
             android:background="@color/btn_unable"
@@ -78,36 +94,6 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_centerInParent="true"
-        android:layout_below="@+id/user_info"
-        >
-
-        <TextView
-            android:id="@+id/forget_psw"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="20dp"
-            android:text="忘记密码?"
-            android:textColor="@color/blue"
-            android:textSize="13sp"
-            tools:ignore="HardcodedText" />
-
-        <TextView
-            android:id="@+id/register"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
-            android:text="注册新用户"
-            android:textColor="@color/blue"
-            android:textSize="13sp"
-            tools:ignore="HardcodedText" />
-    </LinearLayout>
 
 
 

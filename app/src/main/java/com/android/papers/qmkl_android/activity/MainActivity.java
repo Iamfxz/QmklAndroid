@@ -26,6 +26,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
         View navHeaderView = navigationView.getHeaderView(0);
-<<<<<<< HEAD
+
         //初始化头像等内容
         LinearLayout userInfo = (LinearLayout) navHeaderView.findViewById(R.id.user_info);
         CircleImageView headImg=navHeaderView.findViewById(R.id.head_img);
@@ -162,10 +163,7 @@ public class MainActivity extends AppCompatActivity
         userName.setText(SharedPreferencesUtils.getStoredMessage(this,"nickname"));
         userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this,"college"));
         //设置监听事件
-=======
-        //设置监听事件
-        LinearLayout userInfo = navHeaderView.findViewById(R.id.user_info);
->>>>>>> 08f294477622c4d002c692454568e79cbf368744
+
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

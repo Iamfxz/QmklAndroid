@@ -9,5 +9,5 @@ import retrofit2.http.POST;
 
 public interface PostAllColleges {
     @POST("college/list")
-    Call<AcademiesOrCollegesRes> getCall(@Body TokenRequest tokenRequest);
+    Call<AcademiesOrCollegesRes> getCall();
 }

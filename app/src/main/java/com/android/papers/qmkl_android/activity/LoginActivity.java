@@ -8,6 +8,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.util.ActManager;
+import com.android.papers.qmkl_android.util.MyTextWatcher;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
 import com.zyao89.view.zloading.ZLoadingDialog;
@@ -50,12 +52,14 @@ public class LoginActivity extends BaseActivity {
     LinearLayout userInfo;
     @BindView(R.id.forget_psw)
     TextView forgetPsw;
+    @BindView(R.id.register)
+    TextView register;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActManager.addActivity(this);
-        setBarColor(R.color.white); //沉浸式状态栏设置颜色
+//        setBarColor(R.color.white); //沉浸式状态栏设置颜色
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
@@ -63,62 +67,21 @@ public class LoginActivity extends BaseActivity {
         forgetPsw.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
         forgetPsw.getPaint().setAntiAlias(true);//抗锯齿
 
+        //"注册新用户" 加下划线
+        register.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
+        register.getPaint().setAntiAlias(true);//抗锯齿
+
+
+        loginBtn.setEnabled(false);
         //帐号密码都不为空时,登录按钮变色
-        Objects.requireNonNull(userPhoneNum.getEditText()).addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if ((userPhoneNum.getEditText().getText().toString().length()>0) &&
-                        (Objects.requireNonNull(userPsw.getEditText()).getText().toString().length()>0))
-                {
-                    loginBtn.setBackgroundColor(getResources().getColor(R.color.blue));
-                    loginBtn.setEnabled(true);
-                }
-                else {
-                    loginBtn.setBackgroundColor(getResources().getColor(R.color.btn_unable));
-                    loginBtn.setEnabled(false);
-                }
-            }
-        });
-
-        Objects.requireNonNull(userPsw.getEditText()).addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if ((userPhoneNum.getEditText().getText().toString().length()>0) &&
-                        (userPsw.getEditText().getText().toString().length()>0)){
-                    loginBtn.setBackgroundColor(getResources().getColor(R.color.blue));
-                    loginBtn.setEnabled(true);
-                }else{
-                    loginBtn.setBackgroundColor(getResources().getColor(R.color.btn_unable));
-                    loginBtn.setEnabled(false);
-                }
-            }
-        });
+        Objects.requireNonNull(userPhoneNum.getEditText()).addTextChangedListener(new MyTextWatcher(this,loginBtn,userPhoneNum,userPsw));
+        Objects.requireNonNull(userPsw.getEditText()).addTextChangedListener(new MyTextWatcher(this,loginBtn,userPhoneNum,userPsw));
 
     }
 
 
 
-    @OnClick({R.id.back, R.id.user_phone_num, R.id.user_psw, R.id.login_btn, R.id.user_info, R.id.forget_psw})
+    @OnClick({R.id.back, R.id.user_phone_num, R.id.user_psw, R.id.login_btn, R.id.user_info, R.id.forget_psw,R.id.register})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.back:
@@ -155,6 +118,7 @@ public class LoginActivity extends BaseActivity {
                         (userPsw.getEditText().getText().toString().length()>16)) {
                     Toast.makeText(getApplicationContext(),"密码要 6至16 位",Toast.LENGTH_SHORT).show();
                 } else {
+                    Log.d(TAG, "点击登录");
                     doLogin(Objects.requireNonNull(userPhoneNum.getEditText()).getText().toString(),
                             Objects.requireNonNull(userPsw.getEditText()).getText().toString());
 
@@ -163,7 +127,10 @@ public class LoginActivity extends BaseActivity {
             case R.id.user_info:
                 break;
             case R.id.forget_psw://TODO 未实现
-                startActivity(new Intent(LoginActivity.this,WebViewActivity.class));  //忘记密码 进入短信验证并找回
+                startActivity(new Intent(LoginActivity.this,ForgetPswActivity.class));  //忘记密码 进入短信验证并找回
+                break;
+            case R.id.register:
+                startActivity(new Intent(LoginActivity.this,RegisterActivity.class));  //用户注册 进入短信验证
                 break;
         }
     }

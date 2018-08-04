@@ -50,7 +50,7 @@ public class UserInfoActivity extends BaseActivity {
     //保存学院信息
     public static String[] academies=null;
     //保存学校信息
-    public static String[] collgees=null;
+    public static String[] colleges=null;
 
     @BindView(R.id.user_avatar)
     RelativeLayout user_avatar;
@@ -95,7 +95,7 @@ public class UserInfoActivity extends BaseActivity {
         // 创建对话框构建器
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         // 获取布局
-        View view = View.inflate(UserInfoActivity.this, R.layout.dialog_nickname, null);
+        final View view = View.inflate(UserInfoActivity.this, R.layout.dialog_nickname, null);
         // 获取布局中的控件
         final EditText username = view.findViewById(R.id.nickname);
         username.setText(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"nickname"));
@@ -108,18 +108,26 @@ public class UserInfoActivity extends BaseActivity {
 
         Button confirm=view.findViewById(R.id.btn_confirm);
         Button cancel=view.findViewById(R.id.btn_cancel);
+
+
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //使用com.zyao89:zloading:1.1.2引用別人的加载动画
-                ZLoadingDialog dialog = new ZLoadingDialog(v.getContext());
-                dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                        .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                        .setHintText("loading...")
-                        .setCanceledOnTouchOutside(false)
-                        .show();
-                UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),username.getText().toString(),NICKNAME);
-                RetrofitUtils.postUpdateUser(NICKNAME,getApplicationContext(),userRequest,alertDialog,nickname,dialog,false);
+                if(!username.getText().toString().equals(SharedPreferencesUtils.getStoredMessage(view.getContext(),"nickname"))){
+                    //使用com.zyao89:zloading:1.1.2引用別人的加载动画
+                    ZLoadingDialog dialog = new ZLoadingDialog(v.getContext());
+                    dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                            .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                            .setHintText("loading...")
+                            .setCanceledOnTouchOutside(false)
+                            .show();
+                    UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),username.getText().toString(),NICKNAME);
+                    RetrofitUtils.postUpdateUser(NICKNAME,getApplicationContext(),userRequest,alertDialog,nickname,dialog,false);
+                }
+                else {
+                    alertDialog.dismiss();
+                }
+
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -142,8 +150,7 @@ public class UserInfoActivity extends BaseActivity {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         QueryAcademiesRequest academiesRequest=new QueryAcademiesRequest(
-                SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"college"),
-                SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"token")
+                SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"college")
         );
         RetrofitUtils.postAllAcademies(getApplicationContext(),academiesRequest,builder,college,academy,dialog,false);
     }

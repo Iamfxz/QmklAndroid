@@ -1,7 +1,11 @@
 package com.android.papers.qmkl_android.util;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.widget.Button;
+
+import com.android.papers.qmkl_android.R;
 
 /**
  * 自定义倒计时类，实现Runnable接口
@@ -10,21 +14,47 @@ public class CountDownTimer implements Runnable{
 
 
     private Handler mHandler = new Handler();
-    private Button skip;
-    private int time=3;
+    private Button button;
+    private int time;
+    private int flag;
+    private Context context;
 
-    public CountDownTimer(int time, Button skip){
+    //flag为0时，该倒计时类控制跳过广告界面按钮
+    //flag为1时，该倒计时类控制发送短信验证码界面按钮
+    public CountDownTimer(int time, Button button,int flag){
         this.time=time;
-        this.skip=skip;
+        this.button=button;
+        this.flag=flag;
+    }
+    public CountDownTimer(int time, Button button, int flag, Context context){
+        this.time=time;
+        this.button=button;
+        this.flag=flag;
+        this.context=context;
     }
     @Override
     public void run() {
+        if(flag==1){
+            button.post(new Runnable() {
+                @Override
+                public void run() {
+                    button.setEnabled(false);
+                    button.setBackgroundColor(context.getResources().getColor(R.color.btn_unable));
+                }
+            });
+        }
         //倒计时开始，循环
         while (time > 0) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    skip.setText("跳过(" + time + "秒)");
+                    if(flag==0){
+                        button.setText("跳过(" + time + "秒)");
+                    }
+                    else if(flag==1){
+                        button.setText(time + "秒后重新发送");
+                    }
+
                 }
             });
             try {
@@ -34,5 +64,17 @@ public class CountDownTimer implements Runnable{
             }
             time--;
         }
+        if(flag==1){
+            button.post(new Runnable() {
+                @Override
+                public void run() {
+                    button.setText("重新发送");
+                    button.setEnabled(true);
+                    button.setBackgroundColor(context.getResources().getColor(R.color.green1));
+
+                }
+            });
+        }
+
     }
 }
