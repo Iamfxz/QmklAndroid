@@ -508,13 +508,7 @@ public class ResourceFragment extends Fragment
             if (mData == null) {
                 return 0;
             }
-<<<<<<< HEAD
-            int size = mData.getData().keySet().size();
             return mData.getData().keySet().size();
-
-=======
-            return mData.getData().keySet().size();
->>>>>>> e485c94f03e738fc1b3b07cebef17e48028d8f3b
         }
 
         @Override
