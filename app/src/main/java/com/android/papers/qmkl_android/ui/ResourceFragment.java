@@ -2,8 +2,6 @@ package com.android.papers.qmkl_android.ui;
 
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,11 +9,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -26,11 +20,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -127,6 +119,7 @@ public class ResourceFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         System.out.println("initData");
+
         setHasOptionsMenu(true);
     }
 
@@ -198,9 +191,9 @@ public class ResourceFragment extends Fragment
             }
         });
 
-        //下拉刷新
-        //StoreHouse风格的头部实现
+        //下拉刷新,StoreHouse风格的头部实现
         final StoreHouseHeader header = new StoreHouseHeader(getActivity());
+
         //显示相关工具类，用于获取用户屏幕宽度、高度以及屏幕密度。同时提供了dp和px的转化方法。
         header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, 0);
         header.initWithString("finalExam");//刷新时候的字样
@@ -506,14 +499,15 @@ public class ResourceFragment extends Fragment
         return false;
     }
 
-    private class FolderAdapter extends BaseAdapter {
+    private class FolderAdapter extends BaseAdapter{
 
         @Override
         public int getCount() {
             if (mData == null) {
                 return 0;
             }
-            return mData.getData().keySet().size();
+            int size = mData.getData().keySet().size();
+            return size <= 10 ? 10 : size;
         }
 
         @Override
@@ -609,9 +603,23 @@ public class ResourceFragment extends Fragment
             @Override
             public boolean onQueryTextChange(String newText) {
                 searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
+                if(queryIsExist(newText)){
+                    loadPaperData(newText,0,collegeName);
+                    searchView.closeSearch();
+                }
                 return false;
             }
         });
+        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Do something when the suggestion list is clicked.
+                String suggestion = "C语言";
+
+                searchView.setQuery(suggestion, true);
+            }
+        });
+
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {

@@ -76,14 +76,12 @@ public class AdsActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "点击跳过");
                 isSkip=true;
-//因为测试忘记密码界面和注册而注释
-//                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
-//                    nextActivity(LoginActivity.class);
-//                }
-//                else {
-//                    nextActivity(MainActivity.class);
-//                }
-                nextActivity(LoginActivity.class);
+                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                    nextActivity(LoginActivity.class);
+                }
+                else {
+                    nextActivity(MainActivity.class);
+                }
             }
         });
         new Thread(new Runnable() {
@@ -97,15 +95,13 @@ public class AdsActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(isSkip==false && isClicked==false){
-//因为测试忘记密码界面和注册而注释
-//                            if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
-//                                nextActivity(LoginActivity.class);
-//                            }
-//                            else {
-//                                nextActivity(MainActivity.class);
-//                            }
-                            nextActivity(LoginActivity.class);
+                        if(!isSkip && !isClicked){
+                            if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                                nextActivity(LoginActivity.class);
+                            }
+                            else {
+                                nextActivity(MainActivity.class);
+                            }
                         }
                     }
                 });
