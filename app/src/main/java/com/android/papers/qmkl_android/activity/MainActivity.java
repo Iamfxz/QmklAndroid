@@ -40,8 +40,6 @@ import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
-import com.example.zhouwei.library.CustomPopWindow;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
 import java.util.Objects;
@@ -66,7 +64,13 @@ public class MainActivity extends AppCompatActivity
     private LayoutInflater mLayoutInflater;
     public static Toolbar toolbar;
     private ActionBarDrawerToggle toggle;
-
+    DrawerLayout drawer;
+    NavigationView navigationView;
+    View navHeaderView;
+    LinearLayout userInfo;
+    public static CircleImageView headImg;
+    public static TextView userName;
+    public static TextView userCollegeName;
     //4个切换的页面的fragment.
     private Class mFragmentArray[] = {
             ResourceFragment.class,//资源页面
@@ -117,8 +121,8 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         toolbar.setOnMenuItemClickListener(onMenuItemClick);
 
+        drawer = findViewById(R.id.drawer_layout);
 
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, 0, 0);
         toggle.setDrawerIndicatorEnabled(false);
@@ -132,17 +136,10 @@ public class MainActivity extends AppCompatActivity
         toolbar.setNavigationIcon(circleDrawable);
 
         drawer.addDrawerListener(toggle);
-        //因为修改默认按钮，这个图标的点击事件会消失，点击图标不能打开侧边栏，所以添加点击事件
-        //设置点击事件，点击弹出menu界面
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawer.openDrawer(GravityCompat.START);
-            }
-        });
+
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
 
 //        app:headerLayout="@layout/nav_header"
 //        app:menu="@menu/nav_menu"
@@ -154,29 +151,32 @@ public class MainActivity extends AppCompatActivity
         //设置menu的监听事件
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
-        View navHeaderView = navigationView.getHeaderView(0);
-<<<<<<< HEAD
-
-=======
->>>>>>> 6bfba63f354ba370ea1f4bec39b5712c9c1f6e60
+        navHeaderView = navigationView.getHeaderView(0);
         //初始化头像等内容
-        LinearLayout userInfo = navHeaderView.findViewById(R.id.user_info);
-        CircleImageView headImg = navHeaderView.findViewById(R.id.head_img);
-        TextView userName = navHeaderView.findViewById(R.id.user_name);
-        TextView userCollegeName = navHeaderView.findViewById(R.id.user_college_name);
+        userInfo = navHeaderView.findViewById(R.id.user_info);
+        headImg = navHeaderView.findViewById(R.id.head_img);
+        userName = navHeaderView.findViewById(R.id.user_name);
+        userCollegeName = navHeaderView.findViewById(R.id.user_college_name);
 
         headImg.setImageDrawable(drawable);
-<<<<<<< HEAD
-        userName.setText(SharedPreferencesUtils.getStoredMessage(this,"nickname"));
-        userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this,"college"));
-        //设置监听事件
 
-=======
         userName.setText(SharedPreferencesUtils.getStoredMessage(this, "nickname"));
         userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this, "college"));
-
+        //因为修改默认按钮，这个图标的点击事件会消失，点击图标不能打开侧边栏，所以添加点击事件
+        //设置点击事件，点击弹出menu界面
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //刷新头像等信息
+                Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
+                headImg.setImageDrawable(drawable);
+                userName.setText(SharedPreferencesUtils.getStoredMessage(view.getContext(), "nickname"));
+                userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(view.getContext(), "college"));
+                drawer.openDrawer(GravityCompat.START);
+            }
+        });
         //设置监听事件
->>>>>>> 6bfba63f354ba370ea1f4bec39b5712c9c1f6e60
+
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -246,10 +246,17 @@ public class MainActivity extends AppCompatActivity
         if (getVisibleFragment() instanceof ResourceFragment) {
             ((ResourceFragment) getVisibleFragment()).onKeyDown(keyCode, event);
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            exitBy2Click();
+            if(navigationView.getVisibility()==View.VISIBLE){
+                //当左边的菜单栏是可见的，则关闭
+                drawer.closeDrawer(navigationView);
+            } else {
+                exitBy2Click();
+            }
+
         }
         return true;
     }
+
 
     /**
      * @return 当前显示的fragement

@@ -61,8 +61,8 @@ public class AdsActivity extends Activity {
             @Override
             public void onClick(View v) {
                 isClicked=true;
-                Log.d(TAG, "点击广告");
-                Intent intent=new Intent(AdsActivity.this,AdsDetailsActivity.class);
+                Log.d(TAG, "点击广告"+SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback"));
+                Intent intent=new Intent(AdsActivity.this,WebViewActivity.class);
                 intent.putExtra("url",SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback"));
                 intent.putExtra("title",SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"adtitle"));
                 startActivity(intent);
@@ -76,14 +76,12 @@ public class AdsActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "点击跳过");
                 isSkip=true;
-//因为测试忘记密码界面和注册而注释
-//                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
-//                    nextActivity(LoginActivity.class);
-//                }
-//                else {
-//                    nextActivity(MainActivity.class);
-//                }
-                nextActivity(LoginActivity.class);
+                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                    nextActivity(LoginActivity.class);
+                }
+                else {
+                    nextActivity(MainActivity.class);
+                }
             }
         });
         new Thread(new Runnable() {
@@ -98,14 +96,12 @@ public class AdsActivity extends Activity {
                     @Override
                     public void run() {
                         if(isSkip==false && isClicked==false){
-//因为测试忘记密码界面和注册而注释
-//                            if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
-//                                nextActivity(LoginActivity.class);
-//                            }
-//                            else {
-//                                nextActivity(MainActivity.class);
-//                            }
-                            nextActivity(LoginActivity.class);
+                            if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                                nextActivity(LoginActivity.class);
+                            }
+                            else {
+                                nextActivity(MainActivity.class);
+                            }
                         }
                     }
                 });

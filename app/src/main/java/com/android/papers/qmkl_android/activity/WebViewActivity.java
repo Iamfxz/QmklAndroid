@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.util.ActManager;
+import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
 //"校内服务"页面上的所有web链接打开的webview
 public class WebViewActivity extends BaseActivity {
@@ -213,6 +215,42 @@ public class WebViewActivity extends BaseActivity {
         mUploadCallbackAboveL.onReceiveValue(results);
         mUploadCallbackAboveL = null;
         return;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent keyEvent) {
+        if (keyCode == keyEvent.KEYCODE_BACK) {//监听返回键，如果可以后退就后退
+            if (webView.canGoBack()) {
+                webView.goBack();
+                return true;
+            }
+            else if(getIntent().getStringExtra("title").equals("广告页")){
+                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                    nextActivity(LoginActivity.class);
+                }
+                else {
+                    nextActivity(MainActivity.class);
+                }
+            }
+        }
+
+        return super.onKeyDown(keyCode, keyEvent);
+    }
+
+    public void nextActivity(Class clazz) {
+        final Intent intent = new Intent(WebViewActivity.this, clazz);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+            }
+        }).start();
     }
 
 }

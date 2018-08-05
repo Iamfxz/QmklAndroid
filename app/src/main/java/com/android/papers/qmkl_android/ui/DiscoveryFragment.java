@@ -68,19 +68,7 @@ public class DiscoveryFragment extends Fragment {
 
 
         setUserInfo();
-//        if(firstLoad){
-//            //使用com.zyao89:zloading:1.1.2引用別人的加载动画
-//            ZLoadingDialog dialog = new ZLoadingDialog(getContext());
-//            dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-//                    .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-//                    .setHintText("loading...")
-//                    .show();
-//            RetrofitUtils.postUserInfo(getContext(), SharedPreferencesUtils.getStoredMessage(getContext(),"token"),headImg,userName,userCollege,dialog);
-//            firstLoad=false;
-//        }
-//        else{
-//            setUserInfo();
-//        }
+
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
