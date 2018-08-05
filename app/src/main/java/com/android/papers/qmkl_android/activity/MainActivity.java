@@ -20,10 +20,12 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
@@ -57,8 +59,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = "MainActivity";
-
-
+    private MaterialSearchView searchView;
     //底部的tab控件
     private FragmentTabHost mTabHost;
     private LayoutInflater mLayoutInflater;
@@ -100,7 +101,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initView(getApplicationContext());
 
-
 //        //友盟升级, 已失效
 //        UmengUpdateAgent.setUpdateOnlyWifi(false);
 //        UmengUpdateAgent.update(this);
@@ -130,10 +130,13 @@ public class MainActivity extends AppCompatActivity
 
         Log.d("头像路径", SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
 
-        //获取头像文件，先转化为100*100的drawable文件，然后通过工具类转换为圆形头像并显示
+        //获取头像文件，先转化为100*100的drawable文件
         Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
-        CircleDrawable circleDrawable = new CircleDrawable(drawable, MainActivity.this, 44);
+//        CircleDrawable circleDrawable = new CircleDrawable(drawable,this,48);
+//        circleDrawable.setBounds(10,10,10,10);
+        CircleDrawable circleDrawable = new CircleDrawable(drawable,this,44);
         toolbar.setNavigationIcon(circleDrawable);
+
 
         drawer.addDrawerListener(toggle);
 
@@ -151,7 +154,12 @@ public class MainActivity extends AppCompatActivity
         //设置menu的监听事件
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
+<<<<<<< HEAD
         navHeaderView = navigationView.getHeaderView(0);
+=======
+        View navHeaderView = navigationView.getHeaderView(0);
+
+>>>>>>> 0c4d8766accb83038fb378375a4c7e616731cafa
         //初始化头像等内容
         userInfo = navHeaderView.findViewById(R.id.user_info);
         headImg = navHeaderView.findViewById(R.id.head_img);
@@ -176,7 +184,10 @@ public class MainActivity extends AppCompatActivity
             }
         });
         //设置监听事件
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0c4d8766accb83038fb378375a4c7e616731cafa
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -230,7 +241,6 @@ public class MainActivity extends AppCompatActivity
             mTabHost.addTab(tabSpec, mFragmentArray[i], null);
             mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_background);
         }
-
 
     }
 
