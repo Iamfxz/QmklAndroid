@@ -155,8 +155,12 @@ public class MainActivity extends AppCompatActivity
         //设置menu的监听事件
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
+<<<<<<< HEAD
         navHeaderView = navigationView.getHeaderView(0);
 
+=======
+        View navHeaderView = navigationView.getHeaderView(0);
+>>>>>>> e485c94f03e738fc1b3b07cebef17e48028d8f3b
         //初始化头像等内容
         userInfo = navHeaderView.findViewById(R.id.user_info);
         headImg = navHeaderView.findViewById(R.id.head_img);

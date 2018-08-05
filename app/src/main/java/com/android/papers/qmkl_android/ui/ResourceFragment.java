@@ -354,7 +354,9 @@ public class ResourceFragment extends Fragment
                             System.out.println("文件请求失败");
                         } else if (resultCode == successCode) {
                             System.out.println("文件请求成功");
-                            mData.sort();
+                            if(mData != null){
+                                mData.sort();
+                            }
                             handler.sendEmptyMessage(1);
                         } else {
                             System.out.println("文件请求发生未知错误");
@@ -506,9 +508,13 @@ public class ResourceFragment extends Fragment
             if (mData == null) {
                 return 0;
             }
+<<<<<<< HEAD
             int size = mData.getData().keySet().size();
             return mData.getData().keySet().size();
 
+=======
+            return mData.getData().keySet().size();
+>>>>>>> e485c94f03e738fc1b3b07cebef17e48028d8f3b
         }
 
         @Override
