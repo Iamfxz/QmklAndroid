@@ -29,6 +29,7 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.PerfectInfoRequest;
 import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
+import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.MyTextWatcher;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
@@ -356,6 +357,7 @@ public class PerfectInfoActivity extends BaseActivity {
 //            Toast.makeText(this,"图片获取失败",Toast.LENGTH_SHORT).show();
 //        }
         if(imagePath!=null){
+            imagePath= CircleDrawable.compressImage(imagePath);
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
             headImg.setImageBitmap(bitmap);
             hasSetImg=true;

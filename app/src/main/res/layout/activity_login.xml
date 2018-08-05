@@ -55,7 +55,6 @@
             android:id="@+id/user_psw"
             android:layout_height="wrap_content">
             <EditText
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="密码"

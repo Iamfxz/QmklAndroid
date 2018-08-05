@@ -61,8 +61,8 @@ public class AdsActivity extends Activity {
             @Override
             public void onClick(View v) {
                 isClicked=true;
-                Log.d(TAG, "点击广告");
-                Intent intent=new Intent(AdsActivity.this,AdsDetailsActivity.class);
+                Log.d(TAG, "点击广告"+SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback"));
+                Intent intent=new Intent(AdsActivity.this,WebViewActivity.class);
                 intent.putExtra("url",SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback"));
                 intent.putExtra("title",SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"adtitle"));
                 startActivity(intent);
@@ -95,6 +95,8 @@ public class AdsActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
+
                         if(!isSkip && !isClicked){
                             if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
                                 nextActivity(LoginActivity.class);

@@ -424,6 +424,7 @@ public class RetrofitUtils {
                         //修改昵称
                         case NICKNAME:
                             textView.setText(userInfo.getUser().getNickname());
+                            MainActivity.userName.setText(userInfo.getUser().getNickname());
                             SharedPreferencesUtils.setStoredMessage(context,"nickname",userInfo.getUser().getNickname());
                             alertDialog.dismiss();
                             break;
@@ -442,12 +443,13 @@ public class RetrofitUtils {
                             //返回上一学校
                             if(isBackSchool){
                                 textView.setText(SharedPreferencesUtils.getStoredMessage(context,"lastCollege"));
+                                MainActivity.userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(context,"lastCollege"));
                                 SharedPreferencesUtils.setStoredMessage(context,"college",SharedPreferencesUtils.getStoredMessage(context,"lastCollege"));
-
                             }
                             //修改为新学校
                             else{
                                 textView.setText(userInfo.getUser().getCollege());
+                                MainActivity.userCollegeName.setText(userInfo.getUser().getCollege());
                                 SharedPreferencesUtils.setStoredMessage(context,"lastCollege",
                                         SharedPreferencesUtils.getStoredMessage(context,"college"));
                                 SharedPreferencesUtils.setStoredMessage(context,"college",userInfo.getUser().getCollege());
@@ -785,13 +787,21 @@ public class RetrofitUtils {
                                     avatarView.setImageBitmap(bitmap);
                                 }
                             });
+                            final Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context,"avatar")));
+                            final  CircleDrawable circleDrawable = new CircleDrawable(drawable, context, 44);
+//                            final Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context, "avatar")));
+
                             MainActivity.toolbar.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context,"avatar")));
-                                    drawable=CircleDrawable.zoomDrawable(drawable,100,100);
-                                    CircleDrawable circleDrawable = new CircleDrawable(drawable, context, 44);
                                     MainActivity.toolbar.setNavigationIcon(circleDrawable);
+                                }
+                            });
+                            MainActivity.headImg.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.d(TAG, "设置头像");
+                                    MainActivity.headImg.setImageDrawable(drawable);
                                 }
                             });
                             dialog.dismiss();
@@ -978,6 +988,7 @@ public class RetrofitUtils {
                             .show();
                     postUserInfo(context,startAct,token,dialog);
                     String imagePath= SharedPreferencesUtils.getStoredMessage(context,"imagePath");
+                    imagePath=CircleDrawable.compressImage(imagePath);
                     postUserAvatar(context,imagePath,dialog2);
                 }
                 else {

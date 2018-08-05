@@ -22,6 +22,7 @@ import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.MyTextWatcher;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
+import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -70,7 +71,15 @@ public class LoginActivity extends BaseActivity {
         register.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
         register.getPaint().setAntiAlias(true);//抗锯齿
 
+        if(SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")
+                ||SharedPreferencesUtils.getStoredMessage(this,"phone")==null){
+            //设置默认账号
+            userPhoneNum.getEditText().setText(SharedPreferencesUtils.getStoredMessage(this,"phone"));
+            //初始焦点位于输入密码位置
+            userPsw.getEditText().requestFocus();
+        }
 
+        //初始时登录按钮不可用
         loginBtn.setEnabled(false);
         //帐号密码都不为空时,登录按钮变色
         Objects.requireNonNull(userPhoneNum.getEditText()).addTextChangedListener(new MyTextWatcher(this,loginBtn,userPhoneNum,userPsw));

@@ -71,14 +71,14 @@
             </android.support.design.widget.TextInputLayout>
 
             <Button
+
                 android:id="@+id/send_code"
                 android:layout_width="140sp"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:text="发送验证码"
                 android:background="@color/green1"
-                android:layout_alignEnd="@id/verification_code"
-                />
+                android:text="发送验证码"
+                android:textSize="18sp"
+                android:layout_alignEnd="@id/verification_code"/>
         </RelativeLayout>
 
         <Button

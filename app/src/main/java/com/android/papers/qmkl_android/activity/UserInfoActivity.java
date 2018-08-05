@@ -24,12 +24,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.requestModel.PerfectInfoRequest;
 import com.android.papers.qmkl_android.requestModel.QueryAcademiesRequest;
 import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
 import com.android.papers.qmkl_android.util.ActManager;
+import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
+import com.android.papers.qmkl_android.util.SHAArithmetic;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
@@ -239,13 +242,31 @@ public class UserInfoActivity extends BaseActivity {
 
     @OnClick(R.id.user_exit)
     public void clickExit(){
-        final ZLoadingDialog dialog = new ZLoadingDialog(this);
-        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                .setHintText("exiting...")
-                .setCanceledOnTouchOutside(false)
-                .show();
-        RetrofitUtils.postExitLogin(getApplicationContext(),SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"username"),UserInfoActivity.this,dialog);
+        AlertDialog.Builder builder  = new AlertDialog.Builder(this);
+        builder.setTitle("退出当前账号");
+        builder.setMessage("退出登录后下次登录需重新输入账号与密码，确定退出？");
+        builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                final ZLoadingDialog dialog = new ZLoadingDialog(UserInfoActivity.this);
+                dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                        .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                        .setHintText("exiting...")
+                        .setCanceledOnTouchOutside(false)
+                        .show();
+                RetrofitUtils.postExitLogin(getApplicationContext(),SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"username"),UserInfoActivity.this,dialog);
+            }
+        });
+        builder.setNegativeButton("取消", null);
+        builder.show();
+        }
+
+    @OnClick(R.id.join_us)
+    public void clickJoinUs(){
+        Intent intent=new Intent(UserInfoActivity.this,WebViewActivity.class);
+        intent.putExtra("url","http://cn.mikecrm.com/6lMhybb");
+        intent.putExtra("title","加入我们");
+        startActivity(intent);
     }
 
     @OnClick(R.id.iv_back)
@@ -346,6 +367,7 @@ public class UserInfoActivity extends BaseActivity {
      */
     private void displayImage(String imagePath){
         if (imagePath != null){
+            imagePath=CircleDrawable.compressImage(imagePath);
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
 
             final ZLoadingDialog dialog = new ZLoadingDialog(this);
