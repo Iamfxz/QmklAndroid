@@ -30,7 +30,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="20dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/avatar" />
 
                 <TextView
                     android:id="@+id/avatar_name"
@@ -82,7 +82,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="20dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/nickname" />
 
                 <TextView
                     android:id="@+id/nickname_name"
@@ -134,7 +134,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="20dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/phone" />
 
                 <TextView
                     android:id="@+id/phone_name"
@@ -180,7 +180,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="20dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/college" />
 
                 <TextView
                     android:id="@+id/college_name"
@@ -232,7 +232,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="20dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/academy" />
 
                 <TextView
                     android:id="@+id/academy_name"
@@ -284,7 +284,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="20dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/gender" />
 
                 <TextView
                     android:id="@+id/gender_name"
@@ -336,10 +336,10 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="20dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/enteryear" />
 
                 <TextView
-                    android:id="@+id/enterYearr_name"
+                    android:id="@+id/enterYear_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"

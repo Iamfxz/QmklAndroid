@@ -42,6 +42,7 @@ import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
 import java.util.Objects;
@@ -132,8 +133,6 @@ public class MainActivity extends AppCompatActivity
 
         //获取头像文件，先转化为100*100的drawable文件
         Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
-//        CircleDrawable circleDrawable = new CircleDrawable(drawable,this,48);
-//        circleDrawable.setBounds(10,10,10,10);
         CircleDrawable circleDrawable = new CircleDrawable(drawable,this,44);
         toolbar.setNavigationIcon(circleDrawable);
 
@@ -151,15 +150,13 @@ public class MainActivity extends AppCompatActivity
         navigationView.inflateHeaderView(R.layout.nav_header);
         navigationView.inflateMenu(R.menu.nav_menu);
 
+
+        navigationView.setItemIconTintList(null);
         //设置menu的监听事件
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
-<<<<<<< HEAD
         navHeaderView = navigationView.getHeaderView(0);
-=======
-        View navHeaderView = navigationView.getHeaderView(0);
 
->>>>>>> 0c4d8766accb83038fb378375a4c7e616731cafa
         //初始化头像等内容
         userInfo = navHeaderView.findViewById(R.id.user_info);
         headImg = navHeaderView.findViewById(R.id.head_img);
@@ -184,10 +181,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
         //设置监听事件
-<<<<<<< HEAD
-
-=======
->>>>>>> 0c4d8766accb83038fb378375a4c7e616731cafa
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

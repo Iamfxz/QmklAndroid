@@ -2,24 +2,32 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_call"
-            android:icon="@mipmap/ic_launcher"
-            android:title="Call" />
+            android:id="@+id/my_dynamic"
+            android:icon="@drawable/my_dynamic"
+            android:title="我的动态" />
         <item
-            android:id="@+id/friend_item"
-            android:icon="@mipmap/ic_launcher"
-            android:title="Friends" />
+            android:id="@+id/my_collection"
+            android:icon="@drawable/my_collection"
+            android:title="我的收藏" />
         <item
-            android:id="@+id/nav_location"
-            android:icon="@mipmap/ic_launcher"
-            android:title="Location" />
+            android:id="@+id/my_comment"
+            android:icon="@drawable/my_comment"
+            android:title="我的评论" />
         <item
-            android:id="@+id/nav_mail"
-            android:icon="@mipmap/ic_launcher"
-            android:title="Mail" />
+            android:id="@+id/my_praise"
+            android:icon="@drawable/my_praise"
+            android:title="赞我的" />
+    </group>
+
+    <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_task"
-            android:icon="@mipmap/ic_launcher"
-            android:title="Tasks" />
+            android:id="@+id/feedback"
+            android:icon="@drawable/feedback"
+            android:title="意见反馈" />
+        <item
+            android:id="@+id/join_us"
+            android:icon="@drawable/join_us"
+            android:title="加入我们" />
+
     </group>
 </menu>

@@ -133,7 +133,7 @@ public class LoginActivity extends BaseActivity {
                 break;
             case R.id.user_info:
                 break;
-            case R.id.forget_psw://TODO 未实现
+            case R.id.forget_psw:
                 startActivity(new Intent(LoginActivity.this,ForgetPswActivity.class));  //忘记密码 进入短信验证并找回
                 break;
             case R.id.register:
