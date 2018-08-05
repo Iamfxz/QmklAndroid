@@ -36,9 +36,10 @@
                 android:layout_gravity="bottom|right"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_launcher_background"
-                fab:fab_colorNormal="@color/colorPrimary"
-                fab:fab_colorPressed="@color/blue"
+                android:elevation="10dp"
+                android:src="@drawable/ic_done"
+                fab:fab_colorNormal="@color/blue"
+                fab:fab_colorPressed="@color/colorPrimary"
                 fab:fab_colorRipple="@color/colorAccent"/>
         </FrameLayout>
 
