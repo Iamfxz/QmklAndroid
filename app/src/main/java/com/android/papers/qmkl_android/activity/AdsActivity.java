@@ -54,7 +54,7 @@ public class AdsActivity extends Activity {
         if (adImageFile.exists()) {
             ivAd.setImageURI(Uri.fromFile(adImageFile));
         } else  {
-            getSharedPreferences("AppConfig", MODE_PRIVATE).edit().putInt("ad_version", 0);
+            getSharedPreferences("AppConfig", MODE_PRIVATE).edit().putInt("ad_version", 0).apply();
         }
 
         ivAd.setOnClickListener(new View.OnClickListener() {

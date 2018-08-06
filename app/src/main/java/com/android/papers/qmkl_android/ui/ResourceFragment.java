@@ -126,8 +126,6 @@ public class ResourceFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("initData");
-
         setHasOptionsMenu(true);
     }
 
@@ -138,13 +136,12 @@ public class ResourceFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_resource, container, false);
         ButterKnife.bind(this, view);
 
-        title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
-
         //设置学校名称
+        title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         collegeName = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "college");
         title.setText(collegeName);
 
-        //搜索框设置
+        //文件列表设置
         mAdapter = new FolderAdapter();
         lvFolder.setAdapter(mAdapter);
         lvFolder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -553,7 +550,6 @@ public class ResourceFragment extends Fragment
             String folderName = list.get(position);
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
-
                 convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
                 holder = new ViewHolder(convertView);
                 convertView.setTag(holder);
@@ -562,7 +558,6 @@ public class ResourceFragment extends Fragment
             }
 
             //从Data中取出数据填充到ListView列表项中
-            //创建View
             holder.tvFolderName.setText(folderName);
             holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
             if (!PaperFileUtils.typeWithFileName(folderName).equals("folder")) {
