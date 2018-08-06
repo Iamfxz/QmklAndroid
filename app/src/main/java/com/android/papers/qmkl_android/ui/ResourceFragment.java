@@ -40,6 +40,7 @@ import com.android.papers.qmkl_android.requestModel.FileRequest;
 import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
+import com.github.clans.fab.FloatingActionButton;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
@@ -98,6 +99,13 @@ public class ResourceFragment extends Fragment
     //搜索框，开源框架，github地址https://github.com/MiguelCatalan/MaterialSearchView
     private MaterialSearchView searchView;
 
+    //悬浮按钮，开源框架https://github.com/Clans/FloatingActionButton
+    private FloatingActionButton fab11;
+    private FloatingActionButton fab12;
+
+    //显示学校名称或当前所在文件夹
+    private TextView title;
+
     //是否退出程序，连续点两次返回则退出
     private static Boolean isExit = false;
     /**
@@ -130,24 +138,12 @@ public class ResourceFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_resource, container, false);
         ButterKnife.bind(this, view);
 
-        TextView title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
+        title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
+
         //设置学校名称
         collegeName = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "college");
         title.setText(collegeName);
 
-
-//        //TODO 上传资源按钮
-//        uploadImg = view.findViewById(R.id.uploadImage_Academy);
-//        uploadImg.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //跳转至上传web
-//                Intent toWebIntent = new Intent(getActivity(), WebViewActivity.class);
-//                toWebIntent.putExtra("url", "http://robinchen.mikecrm.com/f.php?t=ZmhFim");
-//                toWebIntent.putExtra("title", "上传你的资源");
-//                startActivity(toWebIntent);
-//            }
-//        });
         //搜索框设置
         mAdapter = new FolderAdapter();
         lvFolder.setAdapter(mAdapter);
@@ -155,8 +151,7 @@ public class ResourceFragment extends Fragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (CommonUtils.isFastDoubleClick()) {
-                    //当快速点击时候，弹出1s的动画
-                    //加载文件的动画
+                    //当快速点击时候，弹出1s的动画 TODO 可否使用锁的方式达到数据同步？
                     final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
                     dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                             .setLoadingColor(getResources().getColor(R.color.blue))//颜色
@@ -241,8 +236,31 @@ public class ResourceFragment extends Fragment
             }
         });
 
+
         return view;
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+        super.onViewCreated(view,savedInstanceState);
+
+        fab11 = view.findViewById(R.id.fab11);
+        fab12 = view.findViewById(R.id.fab12);
+        //悬浮菜单及按钮监听
+        fab11.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"FAB11 Clicked!",Toast.LENGTH_SHORT).show();;
+            }
+        });
+        fab12.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"FAB12 Clicked!",Toast.LENGTH_SHORT).show();;
+            }
+        });
+    }
+
 
     //TODO 设置手势识别监听器，暂时无法使用成功，以后回头来看
     private class MyOnGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -267,7 +285,6 @@ public class ResourceFragment extends Fragment
 
 
     public void onKeyDown(int keyCode, KeyEvent event) {
-        // TODO Auto-generated method stub
         if (keyCode == KeyEvent.KEYCODE_BACK && path.toString().equals("/")) {
             exitBy2Click();
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -325,6 +342,12 @@ public class ResourceFragment extends Fragment
         }
         System.out.println("当前路径：" + path);
 
+        if(!path.toString().equals("/")&& folder!=null){
+            if(PaperFileUtils.typeWithFileName(folder).equals("folder"))
+                title.setText(folder);
+        }else {
+            title.setText(collegeName);
+        }
 
         if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")) {
             System.out.println("正在加载文件夹资源");
@@ -354,9 +377,6 @@ public class ResourceFragment extends Fragment
                             System.out.println("文件请求失败");
                         } else if (resultCode == successCode) {
                             System.out.println("文件请求成功");
-                            if(mData != null){
-                                mData.sort();
-                            }
                             handler.sendEmptyMessage(1);
                         } else {
                             System.out.println("文件请求发生未知错误");
@@ -366,7 +386,7 @@ public class ResourceFragment extends Fragment
                     //请求失败时回调
                     @Override
                     public void onFailure(@NonNull Call<FileRes> call, @NonNull Throwable t) {
-                        System.out.println("文件资源请求失败");
+                        System.out.println("服务器请求失败");
                     }
                 });
             } else {
@@ -380,11 +400,15 @@ public class ResourceFragment extends Fragment
 
     }
 
+    //TODO The content of the adapter has changed but ListView did not receive a notification 闪退BUG
     //handler为线程之间通信的桥梁
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:  //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
+                    if(mData != null){
+                        mData.sort();
+                    }
                     mAdapter.notifyDataSetChanged();//这个方法一旦调用，UI界面就刷新了
                     break;
 
@@ -632,6 +656,8 @@ public class ResourceFragment extends Fragment
                 //Do some magic
             }
         });
+
+
 
     }
 

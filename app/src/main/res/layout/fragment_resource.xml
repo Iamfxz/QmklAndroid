@@ -32,18 +32,38 @@
 
         </in.srain.cube.views.ptr.PtrFrameLayout>
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab"
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/fab_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:elevation="10dp"
-            android:src="@drawable/ic_done"
-            fab:fab_colorNormal="@color/blue"
-            fab:fab_colorPressed="@color/colorPrimary"
-            fab:fab_colorRipple="@color/colorAccent" />
+            fab:menu_labels_showAnimation="@anim/fab_scale_up"
+            fab:elevation="10dp"
+            fab:menu_colorNormal="@color/blue"
+            fab:menu_colorPressed="@color/btn_blue">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/upload_white"
+                fab:fab_size="mini"
+                fab:fab_label="上传资料"
+                fab:fab_colorNormal="@color/blue"
+                fab:fab_colorPressed="@color/btn_blue" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/change_sort_white"
+                fab:fab_size="mini"
+                fab:fab_label="修改学校"
+                fab:fab_colorNormal="@color/blue"
+                fab:fab_colorPressed="@color/btn_blue" />
+        </com.github.clans.fab.FloatingActionMenu>
     </FrameLayout>
 
 </LinearLayout>
