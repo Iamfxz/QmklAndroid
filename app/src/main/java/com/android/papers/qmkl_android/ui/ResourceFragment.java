@@ -19,6 +19,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -70,7 +73,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * 主页面四个tab之一: 资源页面
  */
 public class ResourceFragment extends Fragment
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,AbsListView.OnScrollListener{
 
     //为方便将Fragment在Tag中改为Activity,方便LogCat的过滤
     private static final String TAG = "ResourceActivityTag";
@@ -79,10 +82,12 @@ public class ResourceFragment extends Fragment
     private FileRes mData;
     private List<String> list;//文件名列表
 
+    //记录上次滚动之后的第一个可见item和最后一个item
+    int mFirstVisibleItem = -1;
+    int mLastVisibleItem = -1;
+
     //数据适配器
     private FolderAdapter mAdapter;
-
-//    private ImageView uploadImg;
 
     //地址变化
     private String BasePath = "/";
@@ -111,17 +116,11 @@ public class ResourceFragment extends Fragment
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
      */
-//    @BindView(R.id.uploadImage_Academy)
-//    ImageView uploadImageAcademy;
     @BindView(R.id.lv_folder)
     ListView lvFolder;
     @BindView(R.id.ptr_frame)
     PtrFrameLayout ptrFrame;
 
-//    @OnClick(R.id.uploadImage_Academy)
-//    public void clickUploadImage() {
-//        // TODO: 16/5/6 在这里添加打开上传网页
-//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -233,6 +232,7 @@ public class ResourceFragment extends Fragment
             }
         });
 
+        lvFolder.setOnScrollListener(this);
 
         return view;
     }
@@ -258,6 +258,55 @@ public class ResourceFragment extends Fragment
         });
     }
 
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        //listview第一次载入时，两者都为-1
+        boolean shouldAnimate = (mFirstVisibleItem != -1) && (mLastVisibleItem != -1);
+        //滚动时最后一个item的位置
+        int lastVisibleItem = firstVisibleItem + visibleItemCount -1;
+        if(shouldAnimate){//第一次不需要加载动画
+            int indexAfterFist =0;
+            //如果出现这种情况，说明是在向上scroll，如果scroll比较快的话，一次可能出现多个新的view，我们需要用循环
+            //去获取所有这些view，然后执行动画效果
+            while(firstVisibleItem + indexAfterFist < mFirstVisibleItem){
+                View animateView = view.getChildAt(indexAfterFist);//获取item对应的view
+                doAnimate(animateView, false);
+                indexAfterFist ++;
+            }
+
+            int indexBeforeLast = 0;
+            //向下scroll, 情况类似，只是计算view的位置时不一样
+            while(lastVisibleItem - indexBeforeLast > mLastVisibleItem){
+                View animateView = view.getChildAt(lastVisibleItem - indexBeforeLast - firstVisibleItem);
+                doAnimate(animateView, true);
+                indexBeforeLast ++;
+            }
+        }
+
+        mFirstVisibleItem = firstVisibleItem;
+        mLastVisibleItem = lastVisibleItem;
+    }
+    private void doAnimate(View view, boolean scrollDown)
+    {
+        //我们这里先写一个最简单地动画，GROW
+        try{
+            ViewPropertyAnimator animator = view.animate().setDuration(500)
+                    .setInterpolator(new AccelerateDecelerateInterpolator());
+            view.setPivotX(view.getWidth()/2);
+            view.setPivotY(view.getHeight()/2);
+            view.setScaleX(0.01f);
+            view.setScaleY(0.01f);
+
+            animator.scaleX(1.0f).scaleY(1.0f);
+            animator.start();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     //TODO 设置手势识别监听器，暂时无法使用成功，以后回头来看
     private class MyOnGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -282,10 +331,14 @@ public class ResourceFragment extends Fragment
 
 
     public void onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && path.toString().equals("/")) {
-            exitBy2Click();
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            loadPaperData(null, 1, collegeName);//退回上一个文件夹
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            if (searchView.isSearchOpen()) {
+                searchView.closeSearch();//关闭搜索框
+            }else if (path.toString().equals("/")){
+                exitBy2Click();
+            }else {
+                loadPaperData(null, 1, collegeName);//退回上一个文件夹
+            }
         }
     }
 
@@ -374,6 +427,10 @@ public class ResourceFragment extends Fragment
                             System.out.println("文件请求失败");
                         } else if (resultCode == successCode) {
                             System.out.println("文件请求成功");
+                            if(mData != null){
+                                mData.sort();
+                            }
+                            mAdapter.notifyDataSetChanged();
                             handler.sendEmptyMessage(1);
                         } else {
                             System.out.println("文件请求发生未知错误");
@@ -402,11 +459,9 @@ public class ResourceFragment extends Fragment
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case 1:  //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
-                    if(mData != null){
-                        mData.sort();
-                    }
-                    mAdapter.notifyDataSetChanged();//这个方法一旦调用，UI界面就刷新了
+                //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
+                case 1:
+                    //UI界面就刷新
                     break;
 
                 default:
@@ -415,7 +470,6 @@ public class ResourceFragment extends Fragment
         }
 
     };
-
 
     private void postFileDetail(final String path, final String collegeName) {
         String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
@@ -526,10 +580,16 @@ public class ResourceFragment extends Fragment
 
         @Override
         public int getCount() {
+            int size = 0;
             if (mData == null) {
-                return 0;
+                return size;
             }
-            return mData.getData().keySet().size();
+            try {
+                size = mData.getData().keySet().size();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return size;
         }
 
         @Override
