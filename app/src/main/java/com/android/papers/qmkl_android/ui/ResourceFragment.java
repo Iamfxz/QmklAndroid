@@ -337,6 +337,83 @@ public class ResourceFragment extends Fragment
         mLastVisibleItem = lastVisibleItem;
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
+
+    /**
+     * 菜单栏
+     *  @param menu     菜单
+     * @param inflater 不知如何解释
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        Objects.requireNonNull(getActivity()).getMenuInflater().inflate(R.menu.fragment_resource_menu, menu);
+
+        //搜索框架的相关设置
+        searchView = getActivity().findViewById(R.id.search_view);
+        MenuItem item = menu.findItem(R.id.search_item);
+        searchView.setMenuItem(item);
+        searchView.setBackground(new ColorDrawable(Objects.requireNonNull(getContext()).getResources().getColor(R.color.bar_color)));
+        searchView.setVoiceSearch(false);
+        searchView.setEllipsize(true);
+        searchView.setHint("课程名称或文件名称");
+        //设置可搜索的内容
+//        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(queryIsExist(query)){
+                    if(PaperFileUtils.typeWithFileName(query).equals("folder"))
+                        loadPaperData(query,loadFolder,collegeName);//加载文件夹
+                    else
+                        loadPaperData(query,loadFile,collegeName);//加载具体文件
+                    Toast.makeText(getContext(),"您搜索的是《"+query+"》",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getContext(),"找不到您搜索的《"+query+"》课程或文件",Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
+                if(queryIsExist(newText)){
+                    if(PaperFileUtils.typeWithFileName(newText).equals("folder"))
+                        loadPaperData(newText,loadFolder,collegeName);//加载文件夹
+                    else
+                        loadPaperData(newText,loadFile,collegeName);//加载具体文件
+                    searchView.closeSearch();
+                }
+                return false;
+            }
+        });
+        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Do something when the suggestion list is clicked.
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
+            }
+        });
+
+
+
+    }
+
     /**
      *      列表的加载动画
      * @param view 视图
@@ -486,83 +563,6 @@ public class ResourceFragment extends Fragment
             postFileUrl(path.toString(), collegeName);
             postFileDetail(path.toString(), collegeName);
         }
-
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
-    }
-
-    /**
-     * 菜单栏
-     *  @param menu     菜单
-     * @param inflater 不知如何解释
-     */
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        Objects.requireNonNull(getActivity()).getMenuInflater().inflate(R.menu.fragment_resource_menu, menu);
-
-        //搜索框架的相关设置
-        searchView = getActivity().findViewById(R.id.search_view);
-        MenuItem item = menu.findItem(R.id.search_item);
-        searchView.setMenuItem(item);
-        searchView.setBackground(new ColorDrawable(Objects.requireNonNull(getContext()).getResources().getColor(R.color.bar_color)));
-        searchView.setVoiceSearch(false);
-        searchView.setEllipsize(true);
-        searchView.setHint("课程名称或文件名称");
-        //设置可搜索的内容
-//        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if(queryIsExist(query)){
-                    if(PaperFileUtils.typeWithFileName(query).equals("folder"))
-                        loadPaperData(query,loadFolder,collegeName);//加载文件夹
-                    else
-                        loadPaperData(query,loadFile,collegeName);//加载具体文件
-                    Toast.makeText(getContext(),"您搜索的是《"+query+"》",Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(getContext(),"找不到您搜索的《"+query+"》课程或文件",Toast.LENGTH_SHORT).show();
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
-                if(queryIsExist(newText)){
-                    if(PaperFileUtils.typeWithFileName(newText).equals("folder"))
-                        loadPaperData(newText,loadFolder,collegeName);//加载文件夹
-                    else
-                        loadPaperData(newText,loadFile,collegeName);//加载具体文件
-                    searchView.closeSearch();
-                }
-                return false;
-            }
-        });
-        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Do something when the suggestion list is clicked.
-            }
-        });
-
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                //Do some magic
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                //Do some magic
-            }
-        });
-
-
 
     }
 
@@ -833,25 +833,5 @@ public class ResourceFragment extends Fragment
         }
     }
 
-    /**
-     *  handler为线程之间通信的桥梁
-     */
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
-                case 1:
-                    if(mData != null){
-                        mData.sort();
-                    }
-                    mAdapter.notifyDataSetChanged();//UI界面就刷新
-                    break;
 
-                default:
-                    break;
-            }
-        }
-
-    };
 }
