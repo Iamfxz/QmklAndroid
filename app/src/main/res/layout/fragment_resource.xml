@@ -88,7 +88,7 @@
                 android:id="@+id/fab15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/return_top"
+                android:src="@drawable/return_bottom"
                 fab:fab_size="mini"
                 fab:fab_label="跳到底部"
                 fab:fab_colorNormal="@color/blue"

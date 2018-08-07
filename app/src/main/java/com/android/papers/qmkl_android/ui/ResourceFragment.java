@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -357,6 +358,7 @@ public class ResourceFragment extends Fragment
         searchView.setVoiceSearch(false);
         searchView.setEllipsize(true);
         searchView.setHint("课程名称或文件名称");
+        searchView.setFocusable(true);
         //设置可搜索的内容
 //        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
@@ -377,24 +379,19 @@ public class ResourceFragment extends Fragment
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                System.out.println("searchView.getBottom():" + searchView.getTag(1));
                 searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
-                if(queryIsExist(newText)){
-                    if(PaperFileUtils.typeWithFileName(newText).equals("folder"))
-                        loadPaperData(newText,loadFolder,collegeName);//加载文件夹
-                    else
-                        loadPaperData(newText,loadFile,collegeName);//加载具体文件
-                    searchView.closeSearch();
-                }
+                searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String query =(String)parent.getItemAtPosition(position);
+                        searchView.setQuery(query,true);
+                        searchView.closeSearch();
+                    }
+                });
                 return false;
             }
         });
-        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Do something when the suggestion list is clicked.
-            }
-        });
-
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
@@ -562,7 +559,7 @@ public class ResourceFragment extends Fragment
     /**
      *  单个item的适配器，不仅仅是文件夹folder，也可以是文件file
      */
-    private class FolderAdapter extends BaseAdapter{
+    private class FolderAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
