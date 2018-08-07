@@ -81,6 +81,7 @@ public class ResourceFragment extends Fragment
     //文件总数据
     private FileRes mData;
     private List<String> list;//文件名列表
+    private boolean isFirst = true;//第一次刷新数据
 
     //记录上次滚动之后的第一个可见item和最后一个item
     int mFirstVisibleItem = -1;
@@ -91,11 +92,18 @@ public class ResourceFragment extends Fragment
 
     //地址变化
     private String BasePath = "/";
-    private StringBuffer path;//临时路径
+    private StringBuffer path;//最终请求路径
 
     //请求结果
     final int errorCode = 404;
     final int successCode = 200;
+
+    //loadPaperData()方法是请求码
+    final int loadFolder = 0;
+    final int loadPreviousFolder = 1;
+    final int loadRefresh = 2;
+    final int loadFile = 3;
+    final int loadMainFolder = 4;
 
     //学校名称
     private String collegeName;
@@ -105,8 +113,7 @@ public class ResourceFragment extends Fragment
     private MaterialSearchView searchView;
 
     //悬浮按钮，开源框架https://github.com/Clans/FloatingActionButton
-    private FloatingActionButton fab11;
-    private FloatingActionButton fab12;
+    private FloatingActionButton fabUpload,fabChangeSchool,fabRefresh,fabReturnTop,fabReturnBottom,fabPreviousMenu;
 
     //显示学校名称或当前所在文件夹
     private TextView title;
@@ -148,19 +155,7 @@ public class ResourceFragment extends Fragment
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (CommonUtils.isFastDoubleClick()) {
                     //当快速点击时候，弹出1s的动画 TODO 可否使用锁的方式达到数据同步？
-                    final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
-                    dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                            .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                            .setHintText("Loading...")
-                            .setCanceledOnTouchOutside(false);
-                    dialog.show();
-                    Timer timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            dialog.dismiss();
-                        }
-                    }, 1000); // 延时1秒
+                    doZLoadingDailog(1000);
                 } else {
                     list = new ArrayList<>(mData.getData().keySet());
                     final String folder = list.get(position);
@@ -169,21 +164,22 @@ public class ResourceFragment extends Fragment
                         ptrFrame.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                loadPaperData(folder, 0, collegeName);//指定文件夹路径
+                                loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
                                 ptrFrame.refreshComplete();
                             }
                         }, 100);
-                    } else {//点击的是具体某个可以下载的文件
-                        loadPaperData(folder, 0, collegeName);
+                    } else {
+                        loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
+                        doZLoadingDailog(1000);
                         System.out.println("你点击了：" + folder);
                     }
                 }
-
             }
         });
 
         //下拉刷新,StoreHouse风格的头部实现
         final StoreHouseHeader header = new StoreHouseHeader(getActivity());
+        isFirst = true;
 
         //显示相关工具类，用于获取用户屏幕宽度、高度以及屏幕密度。同时提供了dp和px的转化方法。
         header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, 0);
@@ -208,8 +204,13 @@ public class ResourceFragment extends Fragment
                 ptrFrame.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        BasePath = "/";
-                        loadPaperData(null, 0, collegeName);//全部文件夹
+                        if(isFirst){
+                            BasePath = "/";
+                            isFirst = false;
+                            loadPaperData(null, loadMainFolder, collegeName);//主界面文件夹
+                        }else {
+                            loadPaperData(null, loadRefresh, collegeName);//刷新页面
+                        }
                         ptrFrame.refreshComplete();
                     }
                 }, 1000);
@@ -237,23 +238,84 @@ public class ResourceFragment extends Fragment
         return view;
     }
 
+    private void doZLoadingDailog(int delay) {
+        final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
+        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                .setHintText("Loading...")
+                .setCanceledOnTouchOutside(false);
+        dialog.show();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                dialog.dismiss();
+            }
+        }, delay); // 延时1秒
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
         super.onViewCreated(view,savedInstanceState);
 
-        fab11 = view.findViewById(R.id.fab11);
-        fab12 = view.findViewById(R.id.fab12);
+        //五个悬浮按钮，从上往下
+        fabUpload = view.findViewById(R.id.fab11);
+        fabChangeSchool = view.findViewById(R.id.fab12);
+        fabRefresh = view.findViewById(R.id.fab13);
+        fabReturnTop = view.findViewById(R.id.fab14);
+        fabReturnBottom = view.findViewById(R.id.fab15);
+        fabPreviousMenu = view.findViewById(R.id.fab16);
+
         //悬浮菜单及按钮监听
-        fab11.setOnClickListener(new View.OnClickListener() {
+        fabUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(),"FAB11 Clicked!",Toast.LENGTH_SHORT).show();;
+                //TODO
+                Toast.makeText(getContext(),"fabUpload Clicked!",Toast.LENGTH_SHORT).show();;
             }
         });
-        fab12.setOnClickListener(new View.OnClickListener() {
+
+        fabChangeSchool.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(),"FAB12 Clicked!",Toast.LENGTH_SHORT).show();;
+                //TODO
+                Toast.makeText(getContext(),"fabChangeSchool Clicked!",Toast.LENGTH_SHORT).show();;
+            }
+        });
+
+        fabRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ptrFrame.autoRefresh();
+            }
+        });
+
+        fabReturnTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lvFolder.setSelection(0);
+            }
+        });
+
+        fabReturnBottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lvFolder.setSelection(mAdapter.getCount());
+            }
+        });
+
+        fabPreviousMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(path.toString().equals("/"))
+                    Toast.makeText(getContext(),"当前已经是根目录了",Toast.LENGTH_SHORT).show();
+                ptrFrame.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadPaperData(null,loadPreviousFolder,collegeName);//返回上级文件夹
+                        ptrFrame.refreshComplete();
+                    }
+                },1000);
             }
         });
     }
@@ -337,7 +399,13 @@ public class ResourceFragment extends Fragment
             }else if (path.toString().equals("/")){
                 exitBy2Click();
             }else {
-                loadPaperData(null, 1, collegeName);//退回上一个文件夹
+                ptrFrame.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadPaperData(null,loadPreviousFolder,collegeName);//返回上级文件夹
+                        ptrFrame.refreshComplete();
+                    }
+                },1000);
             }
         }
     }
@@ -347,7 +415,7 @@ public class ResourceFragment extends Fragment
         Timer tExit = null;
         if (!isExit) {
             isExit = true; // 准备退出
-            Toast.makeText(this.getContext(), "再按一次退出期末考啦", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getContext(), "再点一次可以退出app", Toast.LENGTH_SHORT).show();
             tExit = new Timer();
             tExit.schedule(new TimerTask() {
                 @Override
@@ -367,37 +435,60 @@ public class ResourceFragment extends Fragment
      * 请求并加载文件资源，主要用于主界面的资源页面
      *
      * @param folder "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
-     * @param requestCode 1表示用于回退到上一个文件夹；0表示加载folder
+     * @param requestCode
+     *                    3——加载具体文件；
+     *                    2——刷新当前页面;
+     *                    1——用于回退到上一个文件夹；
+     *                    0——加载folder
      * @param collegeName 学校名字，用于判断获取哪个学校的文件列表
+     *
+     * 区分BasePath和path：
+     *                    前者是当前的地址，后者是改变后的地址
      */
-    private void loadPaperData(final String folder, int requestCode, String collegeName) {
-        if (requestCode == 1) {
-            if (!path.toString().equals("/"))
-                BasePath = path.substring(0, PaperFileUtils.last2IndexOf(path.toString()) + 1);
-            path = new StringBuffer(BasePath);
-        } else {
-            if (folder != null) {
-                if (!PaperFileUtils.typeWithFileName(folder).equals("folder")) {
-                    //这是一个具体的文件，不需要以"/"结尾
-                    path = new StringBuffer(BasePath + folder);
-                } else {
-                    //这是一个文件夹，需要改变BasePath的地址
-                    BasePath += folder;
-                    BasePath += "/";
-                    path = new StringBuffer(BasePath);
-                }
-            } else {
+    private void loadPaperData(String folder, int requestCode, String collegeName) {
+
+        switch (requestCode){
+            case loadFolder:
+                //加载文件夹folder，需要改变BasePath的地址
+                BasePath += folder;
+                BasePath += "/";
                 path = new StringBuffer(BasePath);
-            }
+                break;
+            case loadPreviousFolder:
+                //回退前
+                if (!path.toString().equals("/"))
+                    BasePath = path.substring(0, PaperFileUtils.last2IndexOf(path.toString()) + 1);
+                else
+                    BasePath = path.toString();
+                //回退后地址
+                path = new StringBuffer(BasePath);
+                //回退后所在文件夹folder
+                if(!path.toString().equals("/"))
+                    folder = path.substring(PaperFileUtils.last2IndexOf(path.toString()) + 1,path.lastIndexOf("/"));
+                break;
+            case loadRefresh:
+                //刷新
+                path = new StringBuffer(BasePath);
+                break;
+            case loadFile:
+                //这是一个具体的文件file，不需要以"/"结尾，BasePath不变
+                path = new StringBuffer(BasePath + folder);
+                break;
+            case loadMainFolder:
+                //加载主界面
+                path = new StringBuffer(BasePath);
+                break;
+            default:
+                path = new StringBuffer(BasePath);
+                break;
         }
         System.out.println("当前路径：" + path);
 
-        if(!path.toString().equals("/")&& folder!=null){
-            if(PaperFileUtils.typeWithFileName(folder).equals("folder"))
-                title.setText(folder);
-        }else {
+        //设置页面标题
+        if(path.toString().equals("/"))
             title.setText(collegeName);
-        }
+        else if (requestCode == loadFolder || requestCode == loadPreviousFolder)
+            title.setText(folder);
 
         if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")) {
             System.out.println("正在加载文件夹资源");
@@ -427,10 +518,6 @@ public class ResourceFragment extends Fragment
                             System.out.println("文件请求失败");
                         } else if (resultCode == successCode) {
                             System.out.println("文件请求成功");
-                            if(mData != null){
-                                mData.sort();
-                            }
-                            mAdapter.notifyDataSetChanged();
                             handler.sendEmptyMessage(1);
                         } else {
                             System.out.println("文件请求发生未知错误");
@@ -461,7 +548,10 @@ public class ResourceFragment extends Fragment
             switch (msg.what) {
                 //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
                 case 1:
-                    //UI界面就刷新
+                    if(mData != null){
+                        mData.sort();
+                    }
+                    mAdapter.notifyDataSetChanged();//UI界面就刷新
                     break;
 
                 default:
@@ -671,7 +761,10 @@ public class ResourceFragment extends Fragment
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if(queryIsExist(query)){
-                    loadPaperData(query,0,collegeName);
+                    if(PaperFileUtils.typeWithFileName(query).equals("folder"))
+                        loadPaperData(query,loadFolder,collegeName);//加载文件夹
+                    else
+                        loadPaperData(query,loadFile,collegeName);//加载具体文件
                     Toast.makeText(getContext(),"您搜索的是《"+query+"》",Toast.LENGTH_SHORT).show();
                 }
                 else {
@@ -684,7 +777,10 @@ public class ResourceFragment extends Fragment
             public boolean onQueryTextChange(String newText) {
                 searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
                 if(queryIsExist(newText)){
-                    loadPaperData(newText,0,collegeName);
+                    if(PaperFileUtils.typeWithFileName(newText).equals("folder"))
+                        loadPaperData(newText,loadFolder,collegeName);//加载文件夹
+                    else
+                        loadPaperData(newText,loadFile,collegeName);//加载具体文件
                     searchView.closeSearch();
                 }
                 return false;
@@ -694,9 +790,6 @@ public class ResourceFragment extends Fragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Do something when the suggestion list is clicked.
-                String suggestion = "C语言";
-
-                searchView.setQuery(suggestion, true);
             }
         });
 

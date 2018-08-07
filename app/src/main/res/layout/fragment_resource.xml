@@ -63,6 +63,46 @@
                 fab:fab_label="修改学校"
                 fab:fab_colorNormal="@color/blue"
                 fab:fab_colorPressed="@color/btn_blue" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/refesh_list"
+                fab:fab_size="mini"
+                fab:fab_label="刷新列表"
+                fab:fab_colorNormal="@color/blue"
+                fab:fab_colorPressed="@color/btn_blue" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/return_top"
+                fab:fab_size="mini"
+                fab:fab_label="返回顶部"
+                fab:fab_colorNormal="@color/blue"
+                fab:fab_colorPressed="@color/btn_blue" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/return_top"
+                fab:fab_size="mini"
+                fab:fab_label="跳到底部"
+                fab:fab_colorNormal="@color/blue"
+                fab:fab_colorPressed="@color/btn_blue" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/return_previous_menu"
+                fab:fab_size="mini"
+                fab:fab_label="上级目录"
+                fab:fab_colorNormal="@color/blue"
+                fab:fab_colorPressed="@color/btn_blue" />
         </com.github.clans.fab.FloatingActionMenu>
     </FrameLayout>
 
