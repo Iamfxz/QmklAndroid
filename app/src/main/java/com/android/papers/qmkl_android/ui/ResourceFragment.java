@@ -336,7 +336,7 @@ public class ResourceFragment extends Fragment
         mFirstVisibleItem = firstVisibleItem;
         mLastVisibleItem = lastVisibleItem;
     }
-
+    
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
@@ -403,15 +403,11 @@ public class ResourceFragment extends Fragment
             public void onSearchViewShown() {
                 //Do some magic
             }
-
             @Override
             public void onSearchViewClosed() {
                 //Do some magic
             }
         });
-
-
-
     }
 
     /**
@@ -833,5 +829,25 @@ public class ResourceFragment extends Fragment
         }
     }
 
+    /**
+     *  handler为线程之间通信的桥梁
+     */
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
+                case 1:
+                    if(mData != null){
+                        mData.sort();
+                    }
+                    mAdapter.notifyDataSetChanged();//UI界面就刷新
+                    break;
 
+                default:
+                    break;
+            }
+        }
+
+    };
 }
