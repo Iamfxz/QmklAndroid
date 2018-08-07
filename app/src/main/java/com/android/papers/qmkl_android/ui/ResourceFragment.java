@@ -113,9 +113,6 @@ public class ResourceFragment extends Fragment
     //搜索框，开源框架，github地址https://github.com/MiguelCatalan/MaterialSearchView
     private MaterialSearchView searchView;
 
-    //悬浮按钮，开源框架https://github.com/Clans/FloatingActionButton
-    private FloatingActionButton fabUpload,fabChangeSchool,fabRefresh,fabReturnTop,fabReturnBottom,fabPreviousMenu;
-
     //显示学校名称或当前所在文件夹
     private TextView title;
 
@@ -155,7 +152,7 @@ public class ResourceFragment extends Fragment
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (CommonUtils.isFastDoubleClick()) {
                     //当快速点击时候，弹出1s的动画 TODO 可否使用锁的方式达到数据同步？
-                    doZLoadingDailog(1000);
+                    doZLoadingDailog();
                 } else {
                     list = new ArrayList<>(mData.getData().keySet());
                     final String folder = list.get(position);
@@ -170,7 +167,7 @@ public class ResourceFragment extends Fragment
                         }, 100);
                     } else {
                         loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
-                        doZLoadingDailog(1000);
+                        doZLoadingDailog();
                         System.out.println("你点击了：" + folder);
                     }
                 }
@@ -243,12 +240,12 @@ public class ResourceFragment extends Fragment
         super.onViewCreated(view,savedInstanceState);
 
         //五个悬浮按钮，从上往下
-        fabUpload = view.findViewById(R.id.fab11);
-        fabChangeSchool = view.findViewById(R.id.fab12);
-        fabRefresh = view.findViewById(R.id.fab13);
-        fabReturnTop = view.findViewById(R.id.fab14);
-        fabReturnBottom = view.findViewById(R.id.fab15);
-        fabPreviousMenu = view.findViewById(R.id.fab16);
+        FloatingActionButton fabUpload = view.findViewById(R.id.fab11);
+        FloatingActionButton fabChangeSchool = view.findViewById(R.id.fab12);
+        FloatingActionButton fabRefresh = view.findViewById(R.id.fab13);
+        FloatingActionButton fabReturnTop = view.findViewById(R.id.fab14);
+        FloatingActionButton fabReturnBottom = view.findViewById(R.id.fab15);
+        FloatingActionButton fabPreviousMenu = view.findViewById(R.id.fab16);
 
         //悬浮菜单及按钮监听
         fabUpload.setOnClickListener(new View.OnClickListener() {
@@ -336,7 +333,7 @@ public class ResourceFragment extends Fragment
         mFirstVisibleItem = firstVisibleItem;
         mLastVisibleItem = lastVisibleItem;
     }
-    
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
@@ -656,9 +653,8 @@ public class ResourceFragment extends Fragment
 
     /**
      *      加载动画
-     * @param delay 加载时间
      */
-    private void doZLoadingDailog(int delay) {
+    private void doZLoadingDailog() {
         final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                 .setLoadingColor(getResources().getColor(R.color.blue))//颜色
@@ -671,15 +667,14 @@ public class ResourceFragment extends Fragment
             public void run() {
                 dialog.dismiss();
             }
-        }, delay); // 延时1秒
+        }, 1000); // 延时1秒
     }
 
     /**
      *      处理返回按键事件
      * @param keyCode 事件代码
-     * @param event 事件源
      */
-    public void onKeyDown(int keyCode, KeyEvent event) {
+    public void onKeyDown(int keyCode) {
         if(keyCode == KeyEvent.KEYCODE_BACK){
             if (searchView.isSearchOpen()) {
                 searchView.closeSearch();//关闭搜索框
@@ -701,7 +696,7 @@ public class ResourceFragment extends Fragment
      *     双击返回键退出app
      */
     private void exitBy2Click() {
-        Timer tExit = null;
+        Timer tExit;
         if (!isExit) {
             isExit = true; // 准备退出
             Toast.makeText(this.getContext(), "再点一次可以退出app", Toast.LENGTH_SHORT).show();

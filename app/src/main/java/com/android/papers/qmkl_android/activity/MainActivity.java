@@ -7,12 +7,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,14 +19,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
@@ -48,11 +42,9 @@ import com.android.papers.qmkl_android.util.SystemBarTintManager;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import butterknife.BindView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -240,7 +232,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (getVisibleFragment() instanceof ResourceFragment && navigationView.getVisibility()==View.INVISIBLE) {
-            ((ResourceFragment) getVisibleFragment()).onKeyDown(keyCode, event);
+            ((ResourceFragment) getVisibleFragment()).onKeyDown(keyCode);
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             if(navigationView.getVisibility()==View.VISIBLE){
                 //当左边的菜单栏是可见的，则关闭
