@@ -2,20 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/upload_item"
-        android:icon="@mipmap/upload_white"
-        android:title="Upload"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/search_item"
         android:icon="@mipmap/search_course_white"
-        android:title="Search"
+        android:title="搜索框"
         app:showAsAction="always"
         />
-    <item
-        android:id="@+id/change_item"
-        android:icon="@mipmap/change_sort_white"
-        android:title="Change"
-        app:showAsAction="ifRoom"/>
-
 </menu>

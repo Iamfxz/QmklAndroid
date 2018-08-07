@@ -29,14 +29,18 @@ public class FileRes implements Parcelable{
 
     //默认使用ascii码排序，后期可再更改成将中文转为拼音在按字母排序
     public void sort(){
-        Set<Map.Entry<String,String>> entries =  data.entrySet();
-        List<Map.Entry<String,String>> list = new LinkedList<>(entries);
-        Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
-            @Override
-            public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
+        try {
+            Set<Map.Entry<String,String>> entries =  data.entrySet();
+            List<Map.Entry<String,String>> list = new LinkedList<>(entries);
+            Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
+                @Override
+                public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
                     return o1.getKey().compareTo(o2.getKey());
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public FileRes(Parcel source) {

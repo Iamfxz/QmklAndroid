@@ -19,6 +19,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -40,6 +43,7 @@ import com.android.papers.qmkl_android.requestModel.FileRequest;
 import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
+import com.github.clans.fab.FloatingActionButton;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
@@ -69,7 +73,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * 主页面四个tab之一: 资源页面
  */
 public class ResourceFragment extends Fragment
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,AbsListView.OnScrollListener{
 
     //为方便将Fragment在Tag中改为Activity,方便LogCat的过滤
     private static final String TAG = "ResourceActivityTag";
@@ -78,10 +82,12 @@ public class ResourceFragment extends Fragment
     private FileRes mData;
     private List<String> list;//文件名列表
 
+    //记录上次滚动之后的第一个可见item和最后一个item
+    int mFirstVisibleItem = -1;
+    int mLastVisibleItem = -1;
+
     //数据适配器
     private FolderAdapter mAdapter;
-
-//    private ImageView uploadImg;
 
     //地址变化
     private String BasePath = "/";
@@ -98,28 +104,27 @@ public class ResourceFragment extends Fragment
     //搜索框，开源框架，github地址https://github.com/MiguelCatalan/MaterialSearchView
     private MaterialSearchView searchView;
 
+    //悬浮按钮，开源框架https://github.com/Clans/FloatingActionButton
+    private FloatingActionButton fab11;
+    private FloatingActionButton fab12;
+
+    //显示学校名称或当前所在文件夹
+    private TextView title;
+
     //是否退出程序，连续点两次返回则退出
     private static Boolean isExit = false;
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
      */
-//    @BindView(R.id.uploadImage_Academy)
-//    ImageView uploadImageAcademy;
     @BindView(R.id.lv_folder)
     ListView lvFolder;
     @BindView(R.id.ptr_frame)
     PtrFrameLayout ptrFrame;
 
-//    @OnClick(R.id.uploadImage_Academy)
-//    public void clickUploadImage() {
-//        // TODO: 16/5/6 在这里添加打开上传网页
-//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("initData");
-
         setHasOptionsMenu(true);
     }
 
@@ -130,33 +135,19 @@ public class ResourceFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_resource, container, false);
         ButterKnife.bind(this, view);
 
-        TextView title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         //设置学校名称
+        title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         collegeName = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "college");
         title.setText(collegeName);
 
-
-//        //TODO 上传资源按钮
-//        uploadImg = view.findViewById(R.id.uploadImage_Academy);
-//        uploadImg.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //跳转至上传web
-//                Intent toWebIntent = new Intent(getActivity(), WebViewActivity.class);
-//                toWebIntent.putExtra("url", "http://robinchen.mikecrm.com/f.php?t=ZmhFim");
-//                toWebIntent.putExtra("title", "上传你的资源");
-//                startActivity(toWebIntent);
-//            }
-//        });
-        //搜索框设置
+        //文件列表设置
         mAdapter = new FolderAdapter();
         lvFolder.setAdapter(mAdapter);
         lvFolder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (CommonUtils.isFastDoubleClick()) {
-                    //当快速点击时候，弹出1s的动画
-                    //加载文件的动画
+                    //当快速点击时候，弹出1s的动画 TODO 可否使用锁的方式达到数据同步？
                     final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
                     dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                             .setLoadingColor(getResources().getColor(R.color.blue))//颜色
@@ -241,7 +232,80 @@ public class ResourceFragment extends Fragment
             }
         });
 
+        lvFolder.setOnScrollListener(this);
+
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+        super.onViewCreated(view,savedInstanceState);
+
+        fab11 = view.findViewById(R.id.fab11);
+        fab12 = view.findViewById(R.id.fab12);
+        //悬浮菜单及按钮监听
+        fab11.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"FAB11 Clicked!",Toast.LENGTH_SHORT).show();;
+            }
+        });
+        fab12.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"FAB12 Clicked!",Toast.LENGTH_SHORT).show();;
+            }
+        });
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        //listview第一次载入时，两者都为-1
+        boolean shouldAnimate = (mFirstVisibleItem != -1) && (mLastVisibleItem != -1);
+        //滚动时最后一个item的位置
+        int lastVisibleItem = firstVisibleItem + visibleItemCount -1;
+        if(shouldAnimate){//第一次不需要加载动画
+            int indexAfterFist =0;
+            //如果出现这种情况，说明是在向上scroll，如果scroll比较快的话，一次可能出现多个新的view，我们需要用循环
+            //去获取所有这些view，然后执行动画效果
+            while(firstVisibleItem + indexAfterFist < mFirstVisibleItem){
+                View animateView = view.getChildAt(indexAfterFist);//获取item对应的view
+                doAnimate(animateView, false);
+                indexAfterFist ++;
+            }
+
+            int indexBeforeLast = 0;
+            //向下scroll, 情况类似，只是计算view的位置时不一样
+            while(lastVisibleItem - indexBeforeLast > mLastVisibleItem){
+                View animateView = view.getChildAt(lastVisibleItem - indexBeforeLast - firstVisibleItem);
+                doAnimate(animateView, true);
+                indexBeforeLast ++;
+            }
+        }
+
+        mFirstVisibleItem = firstVisibleItem;
+        mLastVisibleItem = lastVisibleItem;
+    }
+    private void doAnimate(View view, boolean scrollDown)
+    {
+        //我们这里先写一个最简单地动画，GROW
+        try{
+            ViewPropertyAnimator animator = view.animate().setDuration(500)
+                    .setInterpolator(new AccelerateDecelerateInterpolator());
+            view.setPivotX(view.getWidth()/2);
+            view.setPivotY(view.getHeight()/2);
+            view.setScaleX(0.01f);
+            view.setScaleY(0.01f);
+
+            animator.scaleX(1.0f).scaleY(1.0f);
+            animator.start();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     //TODO 设置手势识别监听器，暂时无法使用成功，以后回头来看
@@ -267,11 +331,14 @@ public class ResourceFragment extends Fragment
 
 
     public void onKeyDown(int keyCode, KeyEvent event) {
-        // TODO Auto-generated method stub
-        if (keyCode == KeyEvent.KEYCODE_BACK && path.toString().equals("/")) {
-            exitBy2Click();
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            loadPaperData(null, 1, collegeName);//退回上一个文件夹
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            if (searchView.isSearchOpen()) {
+                searchView.closeSearch();//关闭搜索框
+            }else if (path.toString().equals("/")){
+                exitBy2Click();
+            }else {
+                loadPaperData(null, 1, collegeName);//退回上一个文件夹
+            }
         }
     }
 
@@ -325,6 +392,12 @@ public class ResourceFragment extends Fragment
         }
         System.out.println("当前路径：" + path);
 
+        if(!path.toString().equals("/")&& folder!=null){
+            if(PaperFileUtils.typeWithFileName(folder).equals("folder"))
+                title.setText(folder);
+        }else {
+            title.setText(collegeName);
+        }
 
         if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")) {
             System.out.println("正在加载文件夹资源");
@@ -357,6 +430,7 @@ public class ResourceFragment extends Fragment
                             if(mData != null){
                                 mData.sort();
                             }
+                            mAdapter.notifyDataSetChanged();
                             handler.sendEmptyMessage(1);
                         } else {
                             System.out.println("文件请求发生未知错误");
@@ -366,7 +440,7 @@ public class ResourceFragment extends Fragment
                     //请求失败时回调
                     @Override
                     public void onFailure(@NonNull Call<FileRes> call, @NonNull Throwable t) {
-                        System.out.println("文件资源请求失败");
+                        System.out.println("服务器请求失败");
                     }
                 });
             } else {
@@ -380,12 +454,14 @@ public class ResourceFragment extends Fragment
 
     }
 
+    //TODO The content of the adapter has changed but ListView did not receive a notification 闪退BUG
     //handler为线程之间通信的桥梁
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case 1:  //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
-                    mAdapter.notifyDataSetChanged();//这个方法一旦调用，UI界面就刷新了
+                //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
+                case 1:
+                    //UI界面就刷新
                     break;
 
                 default:
@@ -394,7 +470,6 @@ public class ResourceFragment extends Fragment
         }
 
     };
-
 
     private void postFileDetail(final String path, final String collegeName) {
         String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
@@ -505,12 +580,22 @@ public class ResourceFragment extends Fragment
 
         @Override
         public int getCount() {
+            int size = 0;
             if (mData == null) {
-                return 0;
+                return size;
             }
+<<<<<<< HEAD
 
             return mData.getData().keySet().size();
 
+=======
+            try {
+                size = mData.getData().keySet().size();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return size;
+>>>>>>> 0b187b2aee899faed7b277f076c2188dbc499c26
         }
 
         @Override
@@ -531,7 +616,6 @@ public class ResourceFragment extends Fragment
             String folderName = list.get(position);
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
-
                 convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
                 holder = new ViewHolder(convertView);
                 convertView.setTag(holder);
@@ -540,7 +624,6 @@ public class ResourceFragment extends Fragment
             }
 
             //从Data中取出数据填充到ListView列表项中
-            //创建View
             holder.tvFolderName.setText(folderName);
             holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
             if (!PaperFileUtils.typeWithFileName(folderName).equals("folder")) {
@@ -634,6 +717,8 @@ public class ResourceFragment extends Fragment
                 //Do some magic
             }
         });
+
+
 
     }
 

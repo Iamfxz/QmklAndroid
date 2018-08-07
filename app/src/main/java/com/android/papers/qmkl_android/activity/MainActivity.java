@@ -7,11 +7,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+<<<<<<< HEAD
 import android.support.annotation.UiThread;
+=======
+import android.support.design.widget.FloatingActionButton;
+>>>>>>> 0b187b2aee899faed7b277f076c2188dbc499c26
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,6 +32,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
@@ -103,9 +109,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initView(getApplicationContext());
 
-//        //友盟升级, 已失效
-//        UmengUpdateAgent.setUpdateOnlyWifi(false);
-//        UmengUpdateAgent.update(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //状态栏透明 需要在创建SystemBarTintManager 之前调用。
@@ -121,7 +124,6 @@ public class MainActivity extends AppCompatActivity
         //设置顶部工具栏
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setOnMenuItemClickListener(onMenuItemClick);
 
         drawer = findViewById(R.id.drawer_layout);
 
@@ -144,8 +146,7 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = findViewById(R.id.nav_view);
 
-//        app:headerLayout="@layout/nav_header"
-//        app:menu="@menu/nav_menu"
+
 
         //引入header和menu
         navigationView.inflateHeaderView(R.layout.nav_header);
@@ -156,9 +157,13 @@ public class MainActivity extends AppCompatActivity
         //设置menu的监听事件
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
+<<<<<<< HEAD
 
         navHeaderView = navigationView.getHeaderView(0);
 
+=======
+        View navHeaderView = navigationView.getHeaderView(0);
+>>>>>>> 0b187b2aee899faed7b277f076c2188dbc499c26
         //初始化头像等内容
         userInfo = navHeaderView.findViewById(R.id.user_info);
         headImg = navHeaderView.findViewById(R.id.head_img);
@@ -191,8 +196,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-    }
 
+
+    }
 
     @TargetApi(19)
     private void setTranslucentStatus(boolean on) {
@@ -207,21 +213,10 @@ public class MainActivity extends AppCompatActivity
         win.setAttributes(winParams);
     }
 
-    public void onResume() {
-        super.onResume();
-//        MobclickAgent.onResume(this);原本是友盟的接口，现在已废弃
-    }
-
-    public void onPause() {
-        super.onPause();
-//        MobclickAgent.onPause(this);
-    }
-
     /**
      * 初始化主界面的视图
      */
     private void initView(Context context) {
-        //
         mLayoutInflater = LayoutInflater.from(this);
 
         //设置底部tab控件
@@ -246,9 +241,15 @@ public class MainActivity extends AppCompatActivity
         return view;
     }
 
+    /**
+     *      监听返回按键的事件处理
+     * @param keyCode 点击事件的代码
+     * @param event 事件
+     * @return 有无处理
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (getVisibleFragment() instanceof ResourceFragment) {
+        if (getVisibleFragment() instanceof ResourceFragment && navigationView.getVisibility()==View.INVISIBLE) {
             ((ResourceFragment) getVisibleFragment()).onKeyDown(keyCode, event);
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             if(navigationView.getVisibility()==View.VISIBLE){
@@ -295,7 +296,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    //设置menu的监听事件
+    //设置侧滑页面的监听事件
     @Override
     public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
 
@@ -317,23 +318,4 @@ public class MainActivity extends AppCompatActivity
         }
         return false;
     }
-
-    private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            switch (menuItem.getItemId()) {
-                case R.id.search_item:
-                    Toast.makeText(MainActivity.this,"你点击了搜索按钮",Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.upload_item:
-                    Toast.makeText(MainActivity.this,"你点击了上传按钮",Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.change_item:
-                    Toast.makeText(MainActivity.this,"你点击了改变按钮",Toast.LENGTH_SHORT).show();
-                    return true;
-            }
-            return true;
-        }
-    };
-
 }
