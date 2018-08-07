@@ -1,6 +1,7 @@
 package com.android.papers.qmkl_android.ui;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -128,7 +129,6 @@ public class ResourceFragment extends Fragment
     @BindView(R.id.ptr_frame)
     PtrFrameLayout ptrFrame;
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -238,22 +238,6 @@ public class ResourceFragment extends Fragment
         return view;
     }
 
-    private void doZLoadingDailog(int delay) {
-        final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
-        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                .setHintText("Loading...")
-                .setCanceledOnTouchOutside(false);
-        dialog.show();
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                dialog.dismiss();
-            }
-        }, delay); // 延时1秒
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
         super.onViewCreated(view,savedInstanceState);
@@ -336,7 +320,7 @@ public class ResourceFragment extends Fragment
             //去获取所有这些view，然后执行动画效果
             while(firstVisibleItem + indexAfterFist < mFirstVisibleItem){
                 View animateView = view.getChildAt(indexAfterFist);//获取item对应的view
-                doAnimate(animateView, false);
+                doAnimate(animateView);
                 indexAfterFist ++;
             }
 
@@ -344,7 +328,7 @@ public class ResourceFragment extends Fragment
             //向下scroll, 情况类似，只是计算view的位置时不一样
             while(lastVisibleItem - indexBeforeLast > mLastVisibleItem){
                 View animateView = view.getChildAt(lastVisibleItem - indexBeforeLast - firstVisibleItem);
-                doAnimate(animateView, true);
+                doAnimate(animateView);
                 indexBeforeLast ++;
             }
         }
@@ -352,7 +336,12 @@ public class ResourceFragment extends Fragment
         mFirstVisibleItem = firstVisibleItem;
         mLastVisibleItem = lastVisibleItem;
     }
-    private void doAnimate(View view, boolean scrollDown)
+
+    /**
+     *      列表的加载动画
+     * @param view 视图
+     */
+    private void doAnimate(View view)
     {
         //我们这里先写一个最简单地动画，GROW
         try{
@@ -389,47 +378,6 @@ public class ResourceFragment extends Fragment
             return false;
         }
     }
-
-
-
-    public void onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK){
-            if (searchView.isSearchOpen()) {
-                searchView.closeSearch();//关闭搜索框
-            }else if (path.toString().equals("/")){
-                exitBy2Click();
-            }else {
-                ptrFrame.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadPaperData(null,loadPreviousFolder,collegeName);//返回上级文件夹
-                        ptrFrame.refreshComplete();
-                    }
-                },1000);
-            }
-        }
-    }
-
-    //双击返回键退出app
-    private void exitBy2Click() {
-        Timer tExit = null;
-        if (!isExit) {
-            isExit = true; // 准备退出
-            Toast.makeText(this.getContext(), "再点一次可以退出app", Toast.LENGTH_SHORT).show();
-            tExit = new Timer();
-            tExit.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    isExit = false; // 取消退出
-                }
-            }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
-
-        } else {
-            Objects.requireNonNull(this.getActivity()).finish();
-            System.exit(0);
-        }
-    }
-
 
     /**
      * 请求并加载文件资源，主要用于主界面的资源页面
@@ -541,200 +489,9 @@ public class ResourceFragment extends Fragment
 
     }
 
-    //TODO The content of the adapter has changed but ListView did not receive a notification 闪退BUG
-    //handler为线程之间通信的桥梁
-    private Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
-                case 1:
-                    if(mData != null){
-                        mData.sort();
-                    }
-                    mAdapter.notifyDataSetChanged();//UI界面就刷新
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-    };
-
-    private void postFileDetail(final String path, final String collegeName) {
-        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
-        if (token != null) {
-            //创建Retrofit对象
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
-                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                    .build();
-
-            //创建 网络请求接口 的实例
-            final PostFileDetail request = retrofit.create(PostFileDetail.class);
-
-            //对 发送请求 进行封装(账号和密码)
-            Call<FileDetailRes> call = request.getCall(new FileRequest(path, collegeName, token));
-            //发送网络请求(异步)
-            call.enqueue(new Callback<FileDetailRes>() {
-                //请求成功时回调
-                @Override
-                public void onResponse(@NonNull Call<FileDetailRes> call, @NonNull Response<FileDetailRes> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("文件详细信息请求结果：" + resultCode);
-                    if (resultCode == errorCode) {
-                        System.out.println(Objects.requireNonNull(response.body()).getMsg());
-                    } else if (resultCode == successCode) {
-                        System.out.println("文件详细信息请求成功");
-
-                        String size = Objects.requireNonNull(response.body()).getData().getSize();
-                        Long updateAt = Objects.requireNonNull(response.body()).getData().getUpdateAt();
-                        Long createAt = Objects.requireNonNull(response.body()).getData().getCreateAt();
-                        PaperFile paperFile = new PaperFile(path, size, updateAt, createAt);
-                        //查询数据库是否已经下载过
-                        paperFile.setDownload(DownloadDB.getInstance(getContext()).isDownloaded(path));
-
-                        Intent intent = new Intent(getActivity(), FileDetailActivity.class);
-                        intent.putExtra("FileDetail", paperFile);
-                        startActivity(intent);
-                    } else {
-                        System.out.println("文件详细信息请求异常");
-                    }
-                }
-
-                //请求失败时回调
-                @Override
-                public void onFailure(@NonNull Call<FileDetailRes> call, @NonNull Throwable t) {
-                    SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
-                }
-            });
-        } else {
-            //TODO 重新登陆
-            SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
-        }
-    }
-
-    private void postFileUrl(final String path, final String collegeName) {
-        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
-        if (token != null) {
-            //创建Retrofit对象
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
-                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                    .build();
-
-            //创建 网络请求接口 的实例
-            PostFileUrl request = retrofit.create(PostFileUrl.class);
-
-            //对 发送请求 进行封装(账号和密码)
-            Call<FileUrlRes> call = request.getCall(new FileRequest(path, collegeName, token));
-
-            //发送网络请求(异步)
-            call.enqueue(new Callback<FileUrlRes>() {
-                //请求成功时回调
-                @Override
-                public void onResponse(@NonNull Call<FileUrlRes> call, @NonNull Response<FileUrlRes> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("文件URL请求结果" + resultCode);
-                    if (resultCode == errorCode) {
-                        System.out.println("文件URL请求失败");
-                    } else if (resultCode == successCode) {
-                        String url;
-                        url = Objects.requireNonNull(response.body()).getData().getUrl();
-                        System.out.println("文件URL是" + url);
-                        //存储路径为path的文件的url
-                        SharedPreferencesUtils.setStoredMessage(getContext(), path, url);
-                    } else {
-                        System.out.println("文件URL请求异常");
-                    }
-                }
-
-                //请求失败时回调
-                @Override
-                public void onFailure(@NonNull Call<FileUrlRes> call, @NonNull Throwable t) {
-                    SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
-                }
-            });
-        } else {
-            //TODO 重新登陆
-            SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
-        }
-    }
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
-    }
-
-    private class FolderAdapter extends BaseAdapter{
-
-        @Override
-        public int getCount() {
-            int size = 0;
-            if (mData == null) {
-                return size;
-            }
-            try {
-                size = mData.getData().keySet().size();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            return size;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return new ArrayList<>(mData.getData().keySet()).get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            ViewHolder holder;
-            list = new ArrayList<>(mData.getData().keySet());
-            String folderName = list.get(position);
-            //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
-            if (convertView == null) {
-                convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
-                holder = new ViewHolder(convertView);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            //从Data中取出数据填充到ListView列表项中
-            holder.tvFolderName.setText(folderName);
-            holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
-            if (!PaperFileUtils.typeWithFileName(folderName).equals("folder")) {
-                holder.tvFolderSize.setText(mData.getData().get(folderName));
-                holder.tvFolderSize.setVisibility(View.VISIBLE);
-                holder.imgFolderArrow.setVisibility(View.INVISIBLE);
-            } else {
-                holder.tvFolderSize.setVisibility(View.INVISIBLE);
-                holder.imgFolderArrow.setVisibility(View.VISIBLE);
-            }
-            return convertView;
-        }
-    }
-
-    static class ViewHolder {
-        @BindView(R.id.tv_folder_name)
-        TextView tvFolderName;
-        @BindView(R.id.img_folder_icon)
-        ImageView imgFolderIcon;
-        @BindView(R.id.tv_folder_size)
-        TextView tvFolderSize;
-        @BindView(R.id.img_folder_arrow)
-        ImageView imgFolderArrow;
-
-        ViewHolder(View view) {
-            ButterKnife.bind(this, view);
-        }
     }
 
     /**
@@ -810,6 +567,83 @@ public class ResourceFragment extends Fragment
     }
 
     /**
+     *  单个item的适配器，不仅仅是文件夹folder，也可以是文件file
+     */
+    private class FolderAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            int size = 0;
+            if (mData == null) {
+                return size;
+            }
+            try {
+                size = mData.getData().keySet().size();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return size;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return new ArrayList<>(mData.getData().keySet()).get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            ViewHolder holder;
+            list = new ArrayList<>(mData.getData().keySet());
+            String folderName = list.get(position);
+            //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
+            if (convertView == null) {
+                convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
+                holder = new ViewHolder(convertView);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            //从Data中取出数据填充到ListView列表项中
+            holder.tvFolderName.setText(folderName);
+            holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
+            if (!PaperFileUtils.typeWithFileName(folderName).equals("folder")) {
+                holder.tvFolderSize.setText(mData.getData().get(folderName));
+                holder.tvFolderSize.setVisibility(View.VISIBLE);
+                holder.imgFolderArrow.setVisibility(View.INVISIBLE);
+            } else {
+                holder.tvFolderSize.setVisibility(View.INVISIBLE);
+                holder.imgFolderArrow.setVisibility(View.VISIBLE);
+            }
+            return convertView;
+        }
+    }
+
+    /**
+     *     单个item的视图绑定
+     */
+    static class ViewHolder {
+        @BindView(R.id.tv_folder_name)
+        TextView tvFolderName;
+        @BindView(R.id.img_folder_icon)
+        ImageView imgFolderIcon;
+        @BindView(R.id.tv_folder_size)
+        TextView tvFolderSize;
+        @BindView(R.id.img_folder_arrow)
+        ImageView imgFolderArrow;
+
+        ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    /**
      *      判断query是否在当前目录中
      * @param query 说需要查找的字符串
      * @return 查找结果，true代表有
@@ -824,4 +658,200 @@ public class ResourceFragment extends Fragment
         return false;
     }
 
+    /**
+     *      加载动画
+     * @param delay 加载时间
+     */
+    private void doZLoadingDailog(int delay) {
+        final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
+        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                .setHintText("Loading...")
+                .setCanceledOnTouchOutside(false);
+        dialog.show();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                dialog.dismiss();
+            }
+        }, delay); // 延时1秒
+    }
+
+    /**
+     *      处理返回按键事件
+     * @param keyCode 事件代码
+     * @param event 事件源
+     */
+    public void onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            if (searchView.isSearchOpen()) {
+                searchView.closeSearch();//关闭搜索框
+            }else if (path.toString().equals("/")){
+                exitBy2Click();
+            }else {
+                ptrFrame.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadPaperData(null,loadPreviousFolder,collegeName);//返回上级文件夹
+                        ptrFrame.refreshComplete();
+                    }
+                },1000);
+            }
+        }
+    }
+
+    /**
+     *     双击返回键退出app
+     */
+    private void exitBy2Click() {
+        Timer tExit = null;
+        if (!isExit) {
+            isExit = true; // 准备退出
+            Toast.makeText(this.getContext(), "再点一次可以退出app", Toast.LENGTH_SHORT).show();
+            tExit = new Timer();
+            tExit.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    isExit = false; // 取消退出
+                }
+            }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
+
+        } else {
+            Objects.requireNonNull(this.getActivity()).finish();
+            System.exit(0);
+        }
+    }
+
+    /**
+     *      请求具体可以下载文件的大小等数据，例如某word文件
+     * @param path 文件路径
+     * @param collegeName 文件所属大学名字
+     */
+    private void postFileDetail(final String path, final String collegeName) {
+        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
+        if (token != null) {
+            //创建Retrofit对象
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
+                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                    .build();
+
+            //创建 网络请求接口 的实例
+            final PostFileDetail request = retrofit.create(PostFileDetail.class);
+
+            //对 发送请求 进行封装(账号和密码)
+            Call<FileDetailRes> call = request.getCall(new FileRequest(path, collegeName, token));
+            //发送网络请求(异步)
+            call.enqueue(new Callback<FileDetailRes>() {
+                //请求成功时回调
+                @Override
+                public void onResponse(@NonNull Call<FileDetailRes> call, @NonNull Response<FileDetailRes> response) {
+                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    System.out.println("文件详细信息请求结果：" + resultCode);
+                    if (resultCode == errorCode) {
+                        System.out.println(Objects.requireNonNull(response.body()).getMsg());
+                    } else if (resultCode == successCode) {
+                        System.out.println("文件详细信息请求成功");
+
+                        String size = Objects.requireNonNull(response.body()).getData().getSize();
+                        Long updateAt = Objects.requireNonNull(response.body()).getData().getUpdateAt();
+                        Long createAt = Objects.requireNonNull(response.body()).getData().getCreateAt();
+                        PaperFile paperFile = new PaperFile(path, size, updateAt, createAt);
+                        //查询数据库是否已经下载过
+                        paperFile.setDownload(DownloadDB.getInstance(getContext()).isDownloaded(path));
+
+                        Intent intent = new Intent(getActivity(), FileDetailActivity.class);
+                        intent.putExtra("FileDetail", paperFile);
+                        startActivity(intent);
+                    } else {
+                        System.out.println("文件详细信息请求异常");
+                    }
+                }
+
+                //请求失败时回调
+                @Override
+                public void onFailure(@NonNull Call<FileDetailRes> call, @NonNull Throwable t) {
+                    SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
+                }
+            });
+        } else {
+            //TODO 重新登陆
+            SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
+        }
+    }
+
+    /**
+     *      请求具体可以下载文件的url地址，用于下载，例如某word文件
+     * @param path 文件路径
+     * @param collegeName 文件所属大学名字
+     */
+    private void postFileUrl(final String path, final String collegeName) {
+        String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
+        if (token != null) {
+            //创建Retrofit对象
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
+                    .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                    .build();
+
+            //创建 网络请求接口 的实例
+            PostFileUrl request = retrofit.create(PostFileUrl.class);
+
+            //对 发送请求 进行封装(账号和密码)
+            Call<FileUrlRes> call = request.getCall(new FileRequest(path, collegeName, token));
+
+            //发送网络请求(异步)
+            call.enqueue(new Callback<FileUrlRes>() {
+                //请求成功时回调
+                @Override
+                public void onResponse(@NonNull Call<FileUrlRes> call, @NonNull Response<FileUrlRes> response) {
+                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    System.out.println("文件URL请求结果" + resultCode);
+                    if (resultCode == errorCode) {
+                        System.out.println("文件URL请求失败");
+                    } else if (resultCode == successCode) {
+                        String url;
+                        url = Objects.requireNonNull(response.body()).getData().getUrl();
+                        System.out.println("文件URL是" + url);
+                        //存储路径为path的文件的url
+                        SharedPreferencesUtils.setStoredMessage(getContext(), path, url);
+                    } else {
+                        System.out.println("文件URL请求异常");
+                    }
+                }
+
+                //请求失败时回调
+                @Override
+                public void onFailure(@NonNull Call<FileUrlRes> call, @NonNull Throwable t) {
+                    SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
+                }
+            });
+        } else {
+            //TODO 重新登陆
+            SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
+        }
+    }
+
+    /**
+     *  handler为线程之间通信的桥梁
+     */
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
+                case 1:
+                    if(mData != null){
+                        mData.sort();
+                    }
+                    mAdapter.notifyDataSetChanged();//UI界面就刷新
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+    };
 }
