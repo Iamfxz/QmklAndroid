@@ -34,4 +34,9 @@
         <item name="android:scaleType">centerInside</item>
     </style>
 
+    <style name="myNavigationDrawerStyle" >
+        <item name="android:textSize">18sp</item>
+    </style>
+
+
 </resources>

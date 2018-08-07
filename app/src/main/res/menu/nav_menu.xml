@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group  android:checkableBehavior="single"
+        android:id="@+id/group1"
+        >
         <item
             android:id="@+id/my_dynamic"
             android:icon="@drawable/my_dynamic"
-            android:title="我的动态" />
+            android:title="我的动态"
+            />
         <item
             android:id="@+id/my_collection"
             android:icon="@drawable/my_collection"
@@ -18,8 +21,8 @@
             android:icon="@drawable/my_praise"
             android:title="赞我的" />
     </group>
-
-    <group android:checkableBehavior="single">
+    <group  android:checkableBehavior="single"
+        android:id="@+id/group2">
         <item
             android:id="@+id/feedback"
             android:icon="@drawable/feedback"
@@ -30,4 +33,5 @@
             android:title="加入我们" />
 
     </group>
+
 </menu>

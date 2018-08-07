@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -155,12 +156,9 @@ public class MainActivity extends AppCompatActivity
         //设置menu的监听事件
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
-<<<<<<< HEAD
+
         navHeaderView = navigationView.getHeaderView(0);
 
-=======
-        View navHeaderView = navigationView.getHeaderView(0);
->>>>>>> e485c94f03e738fc1b3b07cebef17e48028d8f3b
         //初始化头像等内容
         userInfo = navHeaderView.findViewById(R.id.user_info);
         headImg = navHeaderView.findViewById(R.id.head_img);
@@ -291,7 +289,6 @@ public class MainActivity extends AppCompatActivity
                     isExit = false; // 取消退出
                 }
             }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
-
         } else {
             Log.d("退出", "退出期末考啦");
             ActManager.AppExit(getApplicationContext());
@@ -300,8 +297,23 @@ public class MainActivity extends AppCompatActivity
 
     //设置menu的监听事件
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+
+        Intent intent;
         switch (item.getItemId()) {
+            case R.id.join_us:
+                intent=new Intent(MainActivity.this,WebViewActivity.class);
+                intent.putExtra("url","http://cn.mikecrm.com/6lMhybb");
+                intent.putExtra("title","加入我们");
+                startActivity(intent);
+                break;
+            case R.id.feedback:
+                intent=new Intent(MainActivity.this,WebViewActivity.class);
+                intent.putExtra("url","http://cn.mikecrm.com/LGpy5Kn");
+                intent.putExtra("title","意见反馈");
+                startActivity(intent);
+
+                break;
         }
         return false;
     }
