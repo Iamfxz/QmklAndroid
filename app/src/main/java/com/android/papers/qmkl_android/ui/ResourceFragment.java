@@ -252,7 +252,7 @@ public class ResourceFragment extends Fragment
             @Override
             public void onClick(View v) {
                 //TODO
-                Toast.makeText(getContext(),"fabUpload Clicked!",Toast.LENGTH_SHORT).show();;
+                Toast.makeText(getContext(),"fabUpload Clicked!",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -260,7 +260,7 @@ public class ResourceFragment extends Fragment
             @Override
             public void onClick(View v) {
                 //TODO
-                Toast.makeText(getContext(),"fabChangeSchool Clicked!",Toast.LENGTH_SHORT).show();;
+                Toast.makeText(getContext(),"fabChangeSchool Clicked!",Toast.LENGTH_SHORT).show();
             }
         });
 
