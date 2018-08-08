@@ -9,16 +9,16 @@ public class FileDetailRes {
     private FileDetail data;
 
     public class FileDetail {
-        Long createAt;
-        String md5;
-        String name;
-        String nick;
-        String size;
-        Long updateAt;
-        int dislikeNum;
-        int likeNum;
-        int uid;
-        int id;
+        Long createAt;//创建时间
+        String md5;//文件的md5
+        String name;//文件名字
+        String nick;//上传文件的用户昵称
+        String size;//文件大小
+        Long updateAt;//更新时间
+        int dislikeNum;//踩的人数
+        int likeNum;//赞的人数
+        int uid;//用户id
+        int id;//文件id
 
 
         public int getId() {

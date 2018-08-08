@@ -70,7 +70,6 @@ public class DownloadedFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Intent intent = new Intent(getActivity(), FileDetailActivity.class);
-                mFiles.get(position).getFile().show();
                 intent.putExtra("FileDetail", mFiles.get(position).getFile());
                 startActivityForResult(intent, 0);
             }

@@ -1,7 +1,5 @@
 package com.android.papers.qmkl_android.model;
 
-import com.google.gson.annotations.SerializedName;
-
 public class ResponseInfo<T> {
 
     private String code;

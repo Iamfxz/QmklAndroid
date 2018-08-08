@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -46,11 +47,13 @@ import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
+import com.github.promeg.pinyinhelper.Pinyin;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -75,7 +78,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * 主页面四个tab之一: 资源页面
  */
 public class ResourceFragment extends Fragment
-        implements NavigationView.OnNavigationItemSelectedListener,AbsListView.OnScrollListener{
+        implements NavigationView.OnNavigationItemSelectedListener, AbsListView.OnScrollListener {
 
     //为方便将Fragment在Tag中改为Activity,方便LogCat的过滤
     private static final String TAG = "ResourceActivityTag";
@@ -159,13 +162,7 @@ public class ResourceFragment extends Fragment
                     final String folder = list.get(position);
                     //点击的是文件夹
                     if (PaperFileUtils.typeWithFileName(folder).equals("folder")) {
-                        ptrFrame.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
-                                ptrFrame.refreshComplete();
-                            }
-                        }, 100);
+                        loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
                     } else {
                         loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
                         doZLoadingDailog();
@@ -202,11 +199,11 @@ public class ResourceFragment extends Fragment
                 ptrFrame.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if(isFirst){
+                        if (isFirst) {
                             BasePath = "/";
                             isFirst = false;
                             loadPaperData(null, loadMainFolder, collegeName);//主界面文件夹
-                        }else {
+                        } else {
                             loadPaperData(null, loadRefresh, collegeName);//刷新页面
                         }
                         ptrFrame.refreshComplete();
@@ -237,8 +234,8 @@ public class ResourceFragment extends Fragment
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
-        super.onViewCreated(view,savedInstanceState);
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         //五个悬浮按钮，从上往下
         FloatingActionButton fabUpload = view.findViewById(R.id.fab11);
@@ -253,7 +250,7 @@ public class ResourceFragment extends Fragment
             @Override
             public void onClick(View v) {
                 //TODO
-                Toast.makeText(getContext(),"fabUpload Clicked!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "fabUpload Clicked!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -261,7 +258,7 @@ public class ResourceFragment extends Fragment
             @Override
             public void onClick(View v) {
                 //TODO
-                Toast.makeText(getContext(),"fabChangeSchool Clicked!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "fabChangeSchool Clicked!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -289,15 +286,9 @@ public class ResourceFragment extends Fragment
         fabPreviousMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(path.toString().equals("/"))
-                    Toast.makeText(getContext(),"当前已经是根目录了",Toast.LENGTH_SHORT).show();
-                ptrFrame.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadPaperData(null,loadPreviousFolder,collegeName);//返回上级文件夹
-                        ptrFrame.refreshComplete();
-                    }
-                },1000);
+                if (path.toString().equals("/"))
+                    Toast.makeText(getContext(), "当前已经是根目录了", Toast.LENGTH_SHORT).show();
+                loadPaperData(null, loadPreviousFolder, collegeName);//返回上级文件夹
             }
         });
     }
@@ -311,23 +302,23 @@ public class ResourceFragment extends Fragment
         //listview第一次载入时，两者都为-1
         boolean shouldAnimate = (mFirstVisibleItem != -1) && (mLastVisibleItem != -1);
         //滚动时最后一个item的位置
-        int lastVisibleItem = firstVisibleItem + visibleItemCount -1;
-        if(shouldAnimate){//第一次不需要加载动画
-            int indexAfterFist =0;
+        int lastVisibleItem = firstVisibleItem + visibleItemCount - 1;
+        if (shouldAnimate) {//第一次不需要加载动画
+            int indexAfterFist = 0;
             //如果出现这种情况，说明是在向上scroll，如果scroll比较快的话，一次可能出现多个新的view，我们需要用循环
             //去获取所有这些view，然后执行动画效果
-            while(firstVisibleItem + indexAfterFist < mFirstVisibleItem){
+            while (firstVisibleItem + indexAfterFist < mFirstVisibleItem) {
                 View animateView = view.getChildAt(indexAfterFist);//获取item对应的view
                 doAnimate(animateView);
-                indexAfterFist ++;
+                indexAfterFist++;
             }
 
             int indexBeforeLast = 0;
             //向下scroll, 情况类似，只是计算view的位置时不一样
-            while(lastVisibleItem - indexBeforeLast > mLastVisibleItem){
+            while (lastVisibleItem - indexBeforeLast > mLastVisibleItem) {
                 View animateView = view.getChildAt(lastVisibleItem - indexBeforeLast - firstVisibleItem);
                 doAnimate(animateView);
-                indexBeforeLast ++;
+                indexBeforeLast++;
             }
         }
 
@@ -342,7 +333,8 @@ public class ResourceFragment extends Fragment
 
     /**
      * 菜单栏
-     *  @param menu     菜单
+     *
+     * @param menu     菜单
      * @param inflater 不知如何解释
      */
     @Override
@@ -364,28 +356,26 @@ public class ResourceFragment extends Fragment
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if(queryIsExist(query)){
-                    if(PaperFileUtils.typeWithFileName(query).equals("folder"))
-                        loadPaperData(query,loadFolder,collegeName);//加载文件夹
+                if (queryIsExist(query)) {
+                    Toast.makeText(getContext(), "您搜索的是《" + query + "》", Toast.LENGTH_SHORT).show();
+                    if (PaperFileUtils.typeWithFileName(query).equals("folder"))
+                        loadPaperData(query, loadFolder, collegeName);//加载文件夹
                     else
-                        loadPaperData(query,loadFile,collegeName);//加载具体文件
-                    Toast.makeText(getContext(),"您搜索的是《"+query+"》",Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(getContext(),"找不到您搜索的《"+query+"》课程或文件",Toast.LENGTH_SHORT).show();
+                        loadPaperData(query, loadFile, collegeName);//加载具体文件
+                } else {
+                    Toast.makeText(getContext(), "找不到您搜索的《" + query + "》课程或文件", Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                System.out.println("searchView.getBottom():" + searchView.getTag(1));
                 searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
                 searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String query =(String)parent.getItemAtPosition(position);
-                        searchView.setQuery(query,true);
+                        String query = (String) parent.getItemAtPosition(position);
+                        searchView.setQuery(query, true);
                         searchView.closeSearch();
                     }
                 });
@@ -397,6 +387,7 @@ public class ResourceFragment extends Fragment
             public void onSearchViewShown() {
                 //Do some magic
             }
+
             @Override
             public void onSearchViewClosed() {
                 //Do some magic
@@ -405,23 +396,23 @@ public class ResourceFragment extends Fragment
     }
 
     /**
-     *      列表的加载动画
+     * 列表的加载动画
+     *
      * @param view 视图
      */
-    private void doAnimate(View view)
-    {
+    private void doAnimate(View view) {
         //我们这里先写一个最简单地动画，GROW
-        try{
+        try {
             ViewPropertyAnimator animator = view.animate().setDuration(500)
                     .setInterpolator(new AccelerateDecelerateInterpolator());
-            view.setPivotX(view.getWidth()/2);
-            view.setPivotY(view.getHeight()/2);
+            view.setPivotX(view.getWidth() / 2);
+            view.setPivotY(view.getHeight() / 2);
             view.setScaleX(0.01f);
             view.setScaleY(0.01f);
 
             animator.scaleX(1.0f).scaleY(1.0f);
             animator.start();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -449,20 +440,19 @@ public class ResourceFragment extends Fragment
     /**
      * 请求并加载文件资源，主要用于主界面的资源页面
      *
-     * @param folder "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
-     * @param requestCode
-     *                    3——加载具体文件；
+     * @param folder      "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
+     * @param requestCode 3——加载具体文件；
      *                    2——刷新当前页面;
      *                    1——用于回退到上一个文件夹；
      *                    0——加载folder
      * @param collegeName 学校名字，用于判断获取哪个学校的文件列表
-     *
-     * 区分BasePath和path：
+     *                    <p>
+     *                    区分BasePath和path：
      *                    前者是当前的地址，后者是改变后的地址
      */
     private void loadPaperData(String folder, int requestCode, String collegeName) {
 
-        switch (requestCode){
+        switch (requestCode) {
             case loadFolder:
                 //加载文件夹folder，需要改变BasePath的地址
                 BasePath += folder;
@@ -478,15 +468,15 @@ public class ResourceFragment extends Fragment
                 //回退后地址
                 path = new StringBuffer(BasePath);
                 //回退后所在文件夹folder
-                if(!path.toString().equals("/"))
-                    folder = path.substring(PaperFileUtils.last2IndexOf(path.toString()) + 1,path.lastIndexOf("/"));
+                if (!path.toString().equals("/"))
+                    folder = path.substring(PaperFileUtils.last2IndexOf(path.toString()) + 1, path.lastIndexOf("/"));
                 break;
             case loadRefresh:
                 //刷新
                 path = new StringBuffer(BasePath);
                 break;
             case loadFile:
-                //这是一个具体的文件file，不需要以"/"结尾，BasePath不变
+                //加载具体的文件file，不需要以"/"结尾，BasePath不变
                 path = new StringBuffer(BasePath + folder);
                 break;
             case loadMainFolder:
@@ -500,7 +490,7 @@ public class ResourceFragment extends Fragment
         System.out.println("当前路径：" + path);
 
         //设置页面标题
-        if(path.toString().equals("/"))
+        if (path.toString().equals("/"))
             title.setText(collegeName);
         else if (requestCode == loadFolder || requestCode == loadPreviousFolder)
             title.setText(folder);
@@ -542,6 +532,7 @@ public class ResourceFragment extends Fragment
                     //请求失败时回调
                     @Override
                     public void onFailure(@NonNull Call<FileRes> call, @NonNull Throwable t) {
+                        //TODO
                         System.out.println("服务器请求失败");
                     }
                 });
@@ -557,7 +548,7 @@ public class ResourceFragment extends Fragment
     }
 
     /**
-     *  单个item的适配器，不仅仅是文件夹folder，也可以是文件file
+     * 单个item的适配器，不仅仅是文件夹folder，也可以是文件file
      */
     private class FolderAdapter extends BaseAdapter {
 
@@ -569,7 +560,7 @@ public class ResourceFragment extends Fragment
             }
             try {
                 size = mData.getData().keySet().size();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return size;
@@ -616,7 +607,7 @@ public class ResourceFragment extends Fragment
     }
 
     /**
-     *     单个item的视图绑定
+     * 单个item的视图绑定
      */
     static class ViewHolder {
         @BindView(R.id.tv_folder_name)
@@ -634,22 +625,23 @@ public class ResourceFragment extends Fragment
     }
 
     /**
-     *      判断query是否在当前目录中
+     * 判断query是否在当前目录中
+     *
      * @param query 说需要查找的字符串
      * @return 查找结果，true代表有
      */
     private boolean queryIsExist(String query) {
         String queryFolder = query.trim();
         Set<String> strings = mData.getData().keySet();
-        for (String key: strings){
-            if(key.equals(queryFolder))
+        for (String key : strings) {
+            if (key.equals(queryFolder))
                 return true;
         }
         return false;
     }
 
     /**
-     *      加载动画
+     * 加载动画
      */
     private void doZLoadingDailog() {
         final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
@@ -668,29 +660,24 @@ public class ResourceFragment extends Fragment
     }
 
     /**
-     *      处理返回按键事件
+     * 处理返回按键事件
+     *
      * @param keyCode 事件代码
      */
     public void onKeyDown(int keyCode) {
-        if(keyCode == KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (searchView.isSearchOpen()) {
                 searchView.closeSearch();//关闭搜索框
-            }else if (path.toString().equals("/")){
+            } else if (path.toString().equals("/")) {
                 exitBy2Click();
-            }else {
-                ptrFrame.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadPaperData(null,loadPreviousFolder,collegeName);//返回上级文件夹
-                        ptrFrame.refreshComplete();
-                    }
-                },1000);
+            } else {
+                loadPaperData(null, loadPreviousFolder, collegeName);//返回上级文件夹
             }
         }
     }
 
     /**
-     *     双击返回键退出app
+     * 双击返回键退出app
      */
     private void exitBy2Click() {
         Timer tExit;
@@ -712,8 +699,9 @@ public class ResourceFragment extends Fragment
     }
 
     /**
-     *      请求具体可以下载文件的大小等数据，例如某word文件
-     * @param path 文件路径
+     * 请求具体可以下载文件的大小等数据，例如某word文件
+     *
+     * @param path        文件路径
      * @param collegeName 文件所属大学名字
      */
     private void postFileDetail(final String path, final String collegeName) {
@@ -743,9 +731,8 @@ public class ResourceFragment extends Fragment
                         System.out.println("文件详细信息请求成功");
 
                         String size = Objects.requireNonNull(response.body()).getData().getSize();
-                        Long updateAt = Objects.requireNonNull(response.body()).getData().getUpdateAt();
-                        Long createAt = Objects.requireNonNull(response.body()).getData().getCreateAt();
-                        PaperFile paperFile = new PaperFile(path, size, updateAt, createAt);
+                        PaperFile paperFile = new PaperFile(path, size, Objects.requireNonNull(response.body()));
+
                         //查询数据库是否已经下载过
                         paperFile.setDownload(DownloadDB.getInstance(getContext()).isDownloaded(path));
 
@@ -753,7 +740,7 @@ public class ResourceFragment extends Fragment
                         intent.putExtra("FileDetail", paperFile);
                         startActivity(intent);
                     } else {
-                        System.out.println("文件详细信息请求异常");
+                        System.out.println("文件详细信息返回码无法解析");
                     }
                 }
 
@@ -770,8 +757,9 @@ public class ResourceFragment extends Fragment
     }
 
     /**
-     *      请求具体可以下载文件的url地址，用于下载，例如某word文件
-     * @param path 文件路径
+     * 请求具体可以下载文件的url地址，用于下载，例如某word文件
+     *
+     * @param path        文件路径
      * @param collegeName 文件所属大学名字
      */
     private void postFileUrl(final String path, final String collegeName) {
@@ -822,7 +810,7 @@ public class ResourceFragment extends Fragment
     }
 
     /**
-     *  handler为线程之间通信的桥梁
+     * handler为线程之间通信的桥梁
      */
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -830,7 +818,7 @@ public class ResourceFragment extends Fragment
             switch (msg.what) {
                 //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
                 case 1:
-                    if(mData != null){
+                    if (mData != null) {
                         mData.sort();
                     }
                     mAdapter.notifyDataSetChanged();//UI界面就刷新
