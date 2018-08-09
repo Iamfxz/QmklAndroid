@@ -9,6 +9,7 @@ import com.github.promeg.pinyinhelper.Pinyin;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,14 +33,20 @@ public class FileRes implements Parcelable{
         try {
             Set<Map.Entry<String,String>> entries =  data.entrySet();
             List<Map.Entry<String,String>> list = new LinkedList<>(entries);
-            Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
-                @Override
-                public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
-                    return o1.getKey().compareTo(o2.getKey());
-                }
-            });
+            Collections.sort(list, new PinYinComparator());
         }catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    public class PinYinComparator implements Comparator<Map.Entry<String,String>>{
+        @Override
+        public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
+            //TODO 不知什么原因失败了
+//            String string1 = Pinyin.toPinyin(o1.getKey().charAt(0)).toLowerCase();
+//            String string2 = Pinyin.toPinyin(o2.getKey().charAt(0)).toLowerCase();
+//            return string1.compareTo(string2);
+            return  o1.getKey().compareTo(o2.getKey());
         }
     }
 
@@ -57,7 +64,7 @@ public class FileRes implements Parcelable{
         this.code = code;
     }
 
-    public HashMap<String, String> getData() {
+    public LinkedHashMap<String, String> getData() {
         return data;
     }
 

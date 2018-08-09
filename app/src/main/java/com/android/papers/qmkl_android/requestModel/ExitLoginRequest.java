@@ -7,5 +7,4 @@ public class ExitLoginRequest {
         this.username = username;
     }
 
-
 }

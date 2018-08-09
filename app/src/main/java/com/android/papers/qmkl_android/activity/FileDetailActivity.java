@@ -1,11 +1,10 @@
 package com.android.papers.qmkl_android.activity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -14,7 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.papers.qmkl_android.BuildConfig;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.model.PaperFile;
@@ -22,10 +20,10 @@ import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.LogUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
+import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.ToastUtils;
-import com.android.papers.qmkl_android.util.UrlUnicode;
 
 import java.io.File;
 
@@ -45,8 +43,6 @@ public class FileDetailActivity extends BaseActivity {
     private DownloadDB downloadDB;
     //文件详细信息
     private PaperFile mFile;
-    //文件名？？
-    private String fileName;
     //是否已经下载
     private boolean isDownloading = false;
     //文件提示
@@ -141,10 +137,10 @@ public class FileDetailActivity extends BaseActivity {
         //显示图标
         imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType().toLowerCase()));
 //        //测试传递的过来的文件是否准确，准确
-//        System.out.println(mFile.getCourse());
-//        System.out.println(mFile.getName());
-//        System.out.println(mFile.getPath());
-//        System.out.println(mFile.getType());
+        System.out.println(mFile.getDislikeNum());
+        System.out.println(mFile.getLikeNum());
+        System.out.println(mFile.getId());
+        System.out.println(mFile.getMd5());
 //        System.out.println("url:"+mFile.getUrl());
         //显示按钮
         btnDownload.setText(mFile.isDownload() ? "打开文件" : "下载到手机");
@@ -165,8 +161,8 @@ public class FileDetailActivity extends BaseActivity {
                         File file = new File(SDCardUtils.getDownloadPath() + downloadDB.getFileName(mFile.getPath()));
                         System.out.println("文件地址"+" :"+file.toString());
                         if (file.exists()) {
-                            file.delete();
-                            LogUtils.d(Tag, "删除文件: " + file.getName());
+                            if(file.delete())
+                                LogUtils.d(Tag, "删除文件: " + file.getName());
                         }
                         downloadDB.removeDownloadInfo(mFile.getPath());
                         LogUtils.d(Tag, "清除数据库信息: " + mFile.getUrl());
@@ -198,6 +194,7 @@ public class FileDetailActivity extends BaseActivity {
                         public void onProgress(final int hasWrite, final int totalExpected) {
 
                             runOnUiThread(new Runnable() {
+                                @SuppressLint("SetTextI18n")
                                 @Override
                                 public void run() {
 
@@ -218,7 +215,6 @@ public class FileDetailActivity extends BaseActivity {
                                     setResult(RESULT_OK);
 
                                     LogUtils.d(Tag, "下载完成: " + successName);
-                                    fileName = successName;
                                     mFile.setName(successName);
                                     mFile.setDownload(true);
 
@@ -259,11 +255,6 @@ public class FileDetailActivity extends BaseActivity {
         } else {
             System.out.println("存储路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
             File file = new File(SDCardUtils.getDownloadPath() + mFile.getName());
-//            Uri uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileProvider", file);
-//            Intent intent = new Intent(Intent.ACTION_VIEW);
-//            intent.setData(uri);
-//            startActivity(intent);
-
             openFile(file);
         }
     }
@@ -272,23 +263,20 @@ public class FileDetailActivity extends BaseActivity {
      *      将文件发送到我的电脑
      */
     private void sendToComputer() {
-
-
         try {
-
             //发送paperurl到我的电脑;
             Intent intent=new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
             intent.setPackage("com.tencent.mobileqq");
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
-            intent.putExtra(Intent.EXTRA_TEXT,  mFile.getName() + ": " + mFile.getUrl());
+            intent.putExtra(Intent.EXTRA_TEXT,  mFile.getName() + ": " +
+                    RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(Intent.createChooser(intent, "选择\"发送到我的电脑\""));
         }catch (Exception e){
             Toast.makeText(getApplicationContext(),"你没有安装QQ",Toast.LENGTH_LONG).show();
         }
-
     }
 
     /**
