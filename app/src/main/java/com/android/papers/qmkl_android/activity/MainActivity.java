@@ -1,5 +1,6 @@
 package com.android.papers.qmkl_android.activity;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -7,16 +8,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-<<<<<<< HEAD
-import android.support.annotation.UiThread;
-=======
-import android.support.design.widget.FloatingActionButton;
->>>>>>> 0b187b2aee899faed7b277f076c2188dbc499c26
+import android.support.constraint.Group;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,13 +22,10 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
@@ -52,11 +45,9 @@ import com.android.papers.qmkl_android.util.SystemBarTintManager;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import butterknife.BindView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -157,21 +148,13 @@ public class MainActivity extends AppCompatActivity
         //设置menu的监听事件
         navigationView.setNavigationItemSelectedListener(this);
         //获取头部布局
-<<<<<<< HEAD
-
         navHeaderView = navigationView.getHeaderView(0);
-
-=======
-        View navHeaderView = navigationView.getHeaderView(0);
->>>>>>> 0b187b2aee899faed7b277f076c2188dbc499c26
         //初始化头像等内容
         userInfo = navHeaderView.findViewById(R.id.user_info);
         headImg = navHeaderView.findViewById(R.id.head_img);
         userName = navHeaderView.findViewById(R.id.user_name);
         userCollegeName = navHeaderView.findViewById(R.id.user_college_name);
-
         headImg.setImageDrawable(drawable);
-
         userName.setText(SharedPreferencesUtils.getStoredMessage(this, "nickname"));
         userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this, "college"));
         //因为修改默认按钮，这个图标的点击事件会消失，点击图标不能打开侧边栏，所以添加点击事件
@@ -195,8 +178,22 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
+            @Override
+            public void onDrawerOpened(View drawerView) {
 
-
+            }
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                Log.d("wyy","侧拉菜单关闭了");
+            }
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
 
     }
 
@@ -299,22 +296,36 @@ public class MainActivity extends AppCompatActivity
     //设置侧滑页面的监听事件
     @Override
     public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
-
         Intent intent;
         switch (item.getItemId()) {
-            case R.id.join_us:
-                intent=new Intent(MainActivity.this,WebViewActivity.class);
-                intent.putExtra("url","http://cn.mikecrm.com/6lMhybb");
-                intent.putExtra("title","加入我们");
-                startActivity(intent);
+            case R.id.my_dynamic:
+                item.setChecked(true);
+                break;
+            case R.id.my_collection:
+                item.setChecked(true);
+                break;
+            case R.id.my_comment:
+                item.setChecked(true);
+                break;
+            case R.id.my_praise:
+                item.setChecked(true);
                 break;
             case R.id.feedback:
+                item.setChecked(true);
                 intent=new Intent(MainActivity.this,WebViewActivity.class);
                 intent.putExtra("url","http://cn.mikecrm.com/LGpy5Kn");
                 intent.putExtra("title","意见反馈");
                 startActivity(intent);
+                break;
+            case R.id.join_us:
+                item.setChecked(true);
+                intent=new Intent(MainActivity.this,WebViewActivity.class);
+                intent.putExtra("url","http://cn.mikecrm.com/6lMhybb");
+                intent.putExtra("title","加入我们");
+                startActivity(intent);
 
                 break;
+
         }
         return false;
     }

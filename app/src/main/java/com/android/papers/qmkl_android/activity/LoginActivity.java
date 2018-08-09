@@ -2,6 +2,7 @@ package com.android.papers.qmkl_android.activity;
 import android.content.DialogInterface;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -18,15 +19,21 @@ import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
+import com.android.papers.qmkl_android.umengUtil.MyUMAuthListener;
 import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.MyTextWatcher;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
+import com.umeng.socialize.UMAuthListener;
+import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -63,16 +70,12 @@ public class LoginActivity extends BaseActivity {
 //        setBarColor(R.color.white); //沉浸式状态栏设置颜色
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        //"忘记密码" 加下划线
-        forgetPsw.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
-        forgetPsw.getPaint().setAntiAlias(true);//抗锯齿
 
-        //"注册新用户" 加下划线
-        register.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
+        forgetPsw.getPaint().setAntiAlias(true);//抗锯齿
         register.getPaint().setAntiAlias(true);//抗锯齿
 
-        if(SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")
-                ||SharedPreferencesUtils.getStoredMessage(this,"phone")==null){
+        if(SharedPreferencesUtils.getStoredMessage(this,"phone")!=null
+                && !SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")){
             //设置默认账号
             userPhoneNum.getEditText().setText(SharedPreferencesUtils.getStoredMessage(this,"phone"));
             //初始焦点位于输入密码位置
@@ -89,7 +92,8 @@ public class LoginActivity extends BaseActivity {
 
 
 
-    @OnClick({R.id.back, R.id.user_phone_num, R.id.user_psw, R.id.login_btn, R.id.user_info, R.id.forget_psw,R.id.register})
+    @OnClick({R.id.back, R.id.user_phone_num, R.id.user_psw, R.id.login_btn, R.id.user_info,
+            R.id.forget_psw,R.id.register,R.id.qq_quick_login})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.back:
@@ -139,6 +143,9 @@ public class LoginActivity extends BaseActivity {
             case R.id.register:
                 startActivity(new Intent(LoginActivity.this,RegisterActivity.class));  //用户注册 进入短信验证
                 break;
+            case R.id.qq_quick_login:
+                UMShareAPI.get(LoginActivity.this).getPlatformInfo(LoginActivity.this, SHARE_MEDIA.QQ,new MyUMAuthListener(LoginActivity.this,LoginActivity.this,"qq",true));
+                break;
         }
     }
 
@@ -175,5 +182,12 @@ public class LoginActivity extends BaseActivity {
         } else {
             ActManager.AppExit(getApplicationContext());
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //QQ第三方登录调用
+        UMShareAPI.get(LoginActivity.this).onActivityResult(requestCode,resultCode,data);
     }
 }

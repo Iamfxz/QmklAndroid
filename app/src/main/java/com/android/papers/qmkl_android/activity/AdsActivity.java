@@ -95,10 +95,6 @@ public class AdsActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-<<<<<<< HEAD
-
-=======
->>>>>>> 0b187b2aee899faed7b277f076c2188dbc499c26
                         if(!isSkip && !isClicked){
                             if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
                                 nextActivity(LoginActivity.class);

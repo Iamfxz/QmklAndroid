@@ -58,4 +58,9 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    //友盟通用接口
+    implementation 'com.umeng.sdk:common:latest.integration'
+    implementation 'com.umeng.sdk:utdid:1.1.5.3'
+    //友盟PushSDK
+    implementation 'com.umeng.sdk:push:4.2.0'
 }

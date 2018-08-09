@@ -28,12 +28,15 @@ import com.android.papers.qmkl_android.requestModel.PerfectInfoRequest;
 import com.android.papers.qmkl_android.requestModel.QueryAcademiesRequest;
 import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
+import com.android.papers.qmkl_android.umengUtil.MyUMAuthListener;
 import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
+import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -248,13 +251,18 @@ public class UserInfoActivity extends BaseActivity {
         builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
-                final ZLoadingDialog dialog = new ZLoadingDialog(UserInfoActivity.this);
-                dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                        .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                        .setHintText("exiting...")
-                        .setCanceledOnTouchOutside(false)
-                        .show();
-                RetrofitUtils.postExitLogin(getApplicationContext(),SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"username"),UserInfoActivity.this,dialog);
+                if(SharedPreferencesUtils.getStoredMessage(UserInfoActivity.this,"platform")==null){
+                    final ZLoadingDialog dialog = new ZLoadingDialog(UserInfoActivity.this);
+                    dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                            .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                            .setHintText("exiting...")
+                            .setCanceledOnTouchOutside(false)
+                            .show();
+                    RetrofitUtils.postExitLogin(getApplicationContext(),SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"username"),UserInfoActivity.this,dialog);
+                }
+                else if(SharedPreferencesUtils.getStoredMessage(UserInfoActivity.this,"platform").equals("qq")){
+                    UMShareAPI.get(UserInfoActivity.this).deleteOauth(UserInfoActivity.this, SHARE_MEDIA.QQ,new MyUMAuthListener(UserInfoActivity.this,UserInfoActivity.this,"qq",false));
+                }
             }
         });
         builder.setNegativeButton("取消", null);
@@ -273,6 +281,8 @@ public class UserInfoActivity extends BaseActivity {
     public void clickBack(){
         finish();
     }
+
+
 
     private void initView(){
         Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"avatar")));

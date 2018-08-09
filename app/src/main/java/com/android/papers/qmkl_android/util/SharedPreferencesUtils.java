@@ -19,6 +19,7 @@ public class SharedPreferencesUtils {
      *  nickname:用户昵称
      *  academy:所在学院
      *  avatar:头像名称
+     *  avatarUrl:第三方登录时获取的头像存储路径
      *  college:所在大学
      *  enterYear:入学年份
      *  gender:用户性别
@@ -28,6 +29,9 @@ public class SharedPreferencesUtils {
      *  setPswToken:用户找回密码时使用，作为下次修改用户密码的凭证仅一次有效，修改成功后token就失效，五分钟后也失效
      *  registerToken:用户注册时使用，作为下次添加用户的凭证仅一次有效 添加成功后token就失效
      *  imagePath:上传头像的本地路径
+     *  uid:qq第三方登录ID，即用户上传openid
+     *  platform:存储用户登录平台
+     *
      */
 
 

@@ -42,6 +42,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 //用户注册界面二--完善个人信息
 public class PerfectInfoActivity extends BaseActivity {
@@ -52,7 +53,7 @@ public class PerfectInfoActivity extends BaseActivity {
     private boolean hasSetImg=false;
 
     @BindView(R.id.head_img)
-    ImageView headImg;
+    CircleImageView headImg;
     @BindView(R.id.user_phone)
     TextInputLayout userPhone;
     @BindView(R.id.user_psw)
@@ -113,7 +114,7 @@ public class PerfectInfoActivity extends BaseActivity {
 
 
     @OnClick({R.id.head_img,R.id.user_phone,R.id.user_psw,R.id.confirm_psw,R.id.user_nickname,R.id.gender,
-            R.id.college_name,R.id.academy_name,R.id.enterYear_num,R.id.next})
+            R.id.college_name,R.id.academy_name,R.id.enterYear_num,R.id.next,R.id.back})
     public void onClick(final View view){
         AlertDialog.Builder builder;
         final ZLoadingDialog dialog;
@@ -259,14 +260,12 @@ public class PerfectInfoActivity extends BaseActivity {
                             academyName.getText().toString(),//学院
                             collegeName.getText().toString()//学校
                     );
-
                     RetrofitUtils.postPerfectInfo(view.getContext(),perfectInfoRequest,PerfectInfoActivity.this);
-
                 }
-
-
                 break;
-
+            case R.id.back:
+                finish();
+                break;
         }
     }
 
@@ -342,21 +341,10 @@ public class PerfectInfoActivity extends BaseActivity {
      * @param imagePath
      */
     private void displayImage(String imagePath){
-//        if (imagePath != null){
-//            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-//
-//            final ZLoadingDialog dialog = new ZLoadingDialog(this);
-//            dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-//                    .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-//                    .setHintText("upLoading...")
-//                    .setCanceledOnTouchOutside(false)
-//                    .show();
-//            RetrofitUtils.postUserAvatar(this,imagePath,avatar,bitmap,dialog);
-//        }else{
-//            Toast.makeText(this,"图片获取失败",Toast.LENGTH_SHORT).show();
-//        }
+
         if(imagePath!=null){
             imagePath= CircleDrawable.compressImage(imagePath);
+            Log.d(TAG, "imagePath: "+imagePath);
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
             headImg.setImageBitmap(bitmap);
             hasSetImg=true;

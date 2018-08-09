@@ -51,7 +51,7 @@ public class ForgetPswActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.submit,R.id.send_code})
+    @OnClick({R.id.submit,R.id.send_code,R.id.back})
     public void clickNext(View view){
         switch (view.getId()){
             case R.id.submit:
@@ -79,6 +79,9 @@ public class ForgetPswActivity extends BaseActivity {
                 else{
                     Toast.makeText(getApplicationContext(),"手机号长度不正确",Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case R.id.back:
+                finish();
                 break;
         }
     }

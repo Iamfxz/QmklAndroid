@@ -2,10 +2,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.papers.qmkl_android">
 
+
+
+    <!-- 必须的权限 -->
     <!-- 检测网络状态 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- 允许应用程序联网，以便向我们的服务器端发送数据 -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- 推荐的权限 -->
+    <!-- 添加如下权限，以便使用更多的第三方SDK和更精准的统计数据 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <!-- 缓存资源优先存入SDcard -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -15,6 +26,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
+        android:name=".umengUtil.umengApplication.UMapplication"
         android:theme="@style/AppTheme">
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
@@ -38,6 +50,31 @@
         <activity android:name=".activity.SetNewPswActivity"/>
         <activity android:name=".activity.RegisterActivity"/>
         <activity android:name=".activity.PerfectInfoActivity"/>
+        <activity android:name=".activity.AuthPerUserInfo"/>
+
+
+        <!--友盟配置-->
+        <meta-data android:value="5b694daf8f4a9d591a000013" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="umeng_test" android:name="UMENG_CHANNEL"/>
+        <!--qq第三方登录配置-->
+        <activity
+            android:name="com.tencent.tauth.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tencent1107433093" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tencent.connect.common.AssistActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
+
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -48,6 +85,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+
     </application>
 
 

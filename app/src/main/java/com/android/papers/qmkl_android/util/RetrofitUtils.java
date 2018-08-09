@@ -14,12 +14,14 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.AdsActivity;
+import com.android.papers.qmkl_android.activity.AuthPerUserInfo;
 import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.activity.PerfectInfoActivity;
@@ -27,6 +29,8 @@ import com.android.papers.qmkl_android.activity.UserInfoActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
 import com.android.papers.qmkl_android.impl.PostAllAcademies;
 import com.android.papers.qmkl_android.impl.PostAllColleges;
+import com.android.papers.qmkl_android.impl.PostAuthLogin;
+import com.android.papers.qmkl_android.impl.PostAuthPerInfo;
 import com.android.papers.qmkl_android.impl.PostExitLogin;
 import com.android.papers.qmkl_android.impl.PostGetCode;
 import com.android.papers.qmkl_android.impl.PostLogin;
@@ -40,6 +44,7 @@ import com.android.papers.qmkl_android.model.AcademiesOrCollegesRes;
 import com.android.papers.qmkl_android.model.AdData;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.model.UserInfoRes;
+import com.android.papers.qmkl_android.requestModel.AuthPerInfoRequest;
 import com.android.papers.qmkl_android.requestModel.ExitLoginRequest;
 import com.android.papers.qmkl_android.requestModel.GetCodeRequest;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
@@ -48,6 +53,7 @@ import com.android.papers.qmkl_android.requestModel.QueryAcademiesRequest;
 import com.android.papers.qmkl_android.requestModel.RegisterRequest;
 import com.android.papers.qmkl_android.requestModel.SetNewPswRequest;
 import com.android.papers.qmkl_android.requestModel.TokenRequest;
+import com.android.papers.qmkl_android.requestModel.UMengLoginRequest;
 import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
@@ -627,7 +633,7 @@ public class RetrofitUtils {
 
 
     //用户注册界面获取学校信息
-    public static void postAllColleges(final Context context, final AlertDialog.Builder builder, final TextInputEditText college, final TextInputEditText academy,  final ZLoadingDialog dialog) {
+    public static void postAllColleges(final Context context, final AlertDialog.Builder builder, final EditText college, final EditText academy, final ZLoadingDialog dialog) {
         //监听返回键
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -690,7 +696,7 @@ public class RetrofitUtils {
 
     //用户注册界面获取学院信息
     //传入用户token值该学校所有专业
-    public static void postAllAcademies(final Context context, String collegeName, final AlertDialog.Builder builder, final TextInputEditText academy,final ZLoadingDialog dialog ){
+    public static void postAllAcademies(final Context context, String collegeName, final AlertDialog.Builder builder, final EditText academy,final ZLoadingDialog dialog ){
         PostAllAcademies request = retrofit.create(PostAllAcademies.class);
         Call<AcademiesOrCollegesRes> call = request.getCall(new QueryAcademiesRequest(collegeName));
         call.enqueue(new Callback<AcademiesOrCollegesRes>() {
@@ -990,6 +996,61 @@ public class RetrofitUtils {
                     String imagePath= SharedPreferencesUtils.getStoredMessage(context,"imagePath");
                     imagePath=CircleDrawable.compressImage(imagePath);
                     postUserAvatar(context,imagePath,dialog2);
+                }
+                else {
+                    Toast.makeText(context,response.body().getMsg(),Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
+                Toast.makeText(context,"服务器请求失败，请检查网络连接",Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+
+            }
+        });
+    }
+
+
+    //用户第三方登录接口，传入uid，判断用户信息是否完整以及登录
+    public static void postAuthLogin(final Context context, final UMengLoginRequest uMengLoginRequest, final Activity startAct){
+        PostAuthLogin request = retrofit.create(PostAuthLogin.class);
+
+        Call<ResponseInfo<String>> call = request.getCall(uMengLoginRequest);
+        call.enqueue(new Callback<ResponseInfo<String>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
+                int responseCode = Integer.parseInt(response.body().getCode());
+                if(responseCode==successCode){
+                    SharedPreferencesUtils.setStoredMessage(context,"token",response.body().getData());
+                    SharedPreferencesUtils.setStoredMessage(context,"platform",uMengLoginRequest.getPlatform());
+                    nextActivity(context,startAct,MainActivity.class);
+                }
+                else {
+                    Toast.makeText(context,response.body().getMsg(),Toast.LENGTH_SHORT).show();
+                    nextActivity(context,startAct, AuthPerUserInfo.class);
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
+                Toast.makeText(context,"服务器请求失败，请检查网络连接",Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    //用户第三方登录接口，完善用户信息
+    public static void postAuthPerInfo(final Context context, AuthPerInfoRequest authPerInfoRequest, final Activity startAct){
+        PostAuthPerInfo request = retrofit.create(PostAuthPerInfo.class);
+
+        Call<ResponseInfo<String>> call = request.getCall(authPerInfoRequest);
+        call.enqueue(new Callback<ResponseInfo<String>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
+                int responseCode = Integer.parseInt(response.body().getCode());
+                if(responseCode==successCode){
+                    SharedPreferencesUtils.setStoredMessage(context,"token",response.body().getData());
+                    SharedPreferencesUtils.setStoredMessage(context,"hasLogin","true");
+                    nextActivity(context,startAct);
                 }
                 else {
                     Toast.makeText(context,response.body().getMsg(),Toast.LENGTH_SHORT).show();

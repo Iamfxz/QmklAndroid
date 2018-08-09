@@ -46,7 +46,7 @@ public class RegisterActivity extends BaseActivity{
 
     }
 
-    @OnClick({R.id.next,R.id.send_code})
+    @OnClick({R.id.next,R.id.send_code,R.id.back})
     public void clickNext(View view){
         switch (view.getId()){
             case R.id.next:
@@ -68,6 +68,9 @@ public class RegisterActivity extends BaseActivity{
                 else{
                     Toast.makeText(getApplicationContext(),"手机号长度不正确",Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case R.id.back:
+                finish();
                 break;
         }
     }
