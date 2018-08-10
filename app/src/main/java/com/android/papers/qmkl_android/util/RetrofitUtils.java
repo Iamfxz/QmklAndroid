@@ -109,25 +109,25 @@ public class RetrofitUtils {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            nextActivity(context, startAct);
+                            nextActivity(UMapplication.getContext(), startAct);
                         }
                     }).start();
                     Log.d(TAG, "广告不可用");
                     return;
                 }
                 //广告页当前可用
-                oldAdName = SharedPreferencesUtils.getStoredMessage(context, "AdName");
+                oldAdName = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "AdName");
                 newAdName = Objects.requireNonNull(response.body()).getData().getUpdatedAt();
                 adPath = Objects.requireNonNull(response.body()).getData().getUrl();
-                SharedPreferencesUtils.setStoredMessage(context, "fallback",
+                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "fallback",
                         Objects.requireNonNull(response.body()).getData().getFallback());
-                SharedPreferencesUtils.setStoredMessage(context, "adtitle",
+                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "adtitle",
                         response.body().getData().getTitle());
                 Log.d(TAG, response.body().getData().getTitle());
 
                 //此前尚未缓存过广告数据、广告数据已更新、广告数据被删除，重新缓存
                 if (oldAdName == null || !oldAdName.equals(newAdName) || !checkLocalADImage()) {
-                    SharedPreferencesUtils.setStoredMessage(context, "AdName", newAdName);
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "AdName", newAdName);
                     Log.d(TAG, "此前尚未缓存过广告数据或者广告数据已更新，重新缓存");
                     //下载广告页
                     new Thread(new Runnable() {
@@ -151,7 +151,7 @@ public class RetrofitUtils {
                                                 e.printStackTrace();
                                             }
                                             Log.d(TAG, "run: ");
-                                            nextActivity(context, startAct, AdsActivity.class);
+                                            nextActivity(UMapplication.getContext(), startAct, AdsActivity.class);
 
                                         }
                                     }).start();
@@ -164,20 +164,20 @@ public class RetrofitUtils {
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
                                             }
-                                            nextActivity(context, startAct);
+                                            nextActivity(UMapplication.getContext(), startAct);
                                         }
                                     }).start();
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 //缓存失败，进入登录界面或者主界面
-                                Toast.makeText(startAct.getApplicationContext(), "缓存广告失败,请反馈给开发者", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(UMapplication.getContext(), "缓存广告失败,请反馈给开发者", Toast.LENGTH_SHORT).show();
                                 try {
                                     Thread.sleep(2000);
                                 } catch (InterruptedException e2) {
                                     e2.printStackTrace();
                                 }
-                                nextActivity(context, startAct);
+                                nextActivity(UMapplication.getContext(), startAct);
                             }
                         }
                     }).start();
@@ -193,7 +193,7 @@ public class RetrofitUtils {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            nextActivity(context, startAct, AdsActivity.class);
+                            nextActivity(UMapplication.getContext(), startAct, AdsActivity.class);
                         }
                     }).start();
                 }
@@ -201,7 +201,7 @@ public class RetrofitUtils {
 
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<AdData>> call, @NonNull Throwable t) {
-                Toast.makeText(context, "服务器请求失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), "服务器请求失败", Toast.LENGTH_SHORT).show();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -210,7 +210,7 @@ public class RetrofitUtils {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        nextActivity(context, startAct, LoginActivity.class);
+                        nextActivity(UMapplication.getContext(), startAct, LoginActivity.class);
                     }
                 }).start();
             }
@@ -229,19 +229,19 @@ public class RetrofitUtils {
                 int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 System.out.println(resultCode);
                 if (resultCode == LOGIN_ERROR) {
-                    Toast.makeText(context, "请检查账号密码是否准确", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), "请检查账号密码是否准确", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 } else if (resultCode == successCode) {
                     //token存储到本地
                     String token = Objects.requireNonNull(response.body()).getData().toString();
                     //接下来进入登录界面
-                    SharedPreferencesUtils.setStoredMessage(context, "token", token);
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", token);
                     Log.d(TAG, "已保存正确token值");
                     //获取用户信息
-                    RetrofitUtils.postUserInfo(context, startActivity, token, dialog);
+                    RetrofitUtils.postUserInfo(UMapplication.getContext(), startActivity, token, dialog);
                 } else {
                     //TODO 子线程更新UI界面
-                    Toast.makeText(context, response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
             }
@@ -250,7 +250,7 @@ public class RetrofitUtils {
             @Override
             public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
                 Log.d(TAG, "PostLogin请求失败");
-                Toast.makeText(context, "服务器请求失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), "服务器请求失败", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
@@ -258,7 +258,6 @@ public class RetrofitUtils {
 
     //判断当前token是否可以登录
     public static void postLogin(final Context context, String token) {
-        Toast.makeText(UMapplication.getContext(),"报错么",Toast.LENGTH_SHORT).show();
         if (token != null) {
             PostLogin request = retrofit.create(PostLogin.class);
             Call<ResponseInfo> call = request.getTokenCall(new TokenRequest(token));
@@ -268,22 +267,22 @@ public class RetrofitUtils {
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                     System.out.println(resultCode);
                     if (resultCode == successCode) {
-                        SharedPreferencesUtils.setStoredMessage(context, "token", Objects.requireNonNull(response.body()).getData().toString());
-                        SharedPreferencesUtils.setStoredMessage(context, "hasLogin", "true");
-                        postUserInfo(context, SharedPreferencesUtils.getStoredMessage(context, "token"));
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", Objects.requireNonNull(response.body()).getData().toString());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "true");
+                        postUserInfo(UMapplication.getContext(), SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "token"));
                     } else {
-                        SharedPreferencesUtils.setStoredMessage(context, "hasLogin", "false");
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
                     Log.d(TAG, "请求失败");
-                    SharedPreferencesUtils.setStoredMessage(context, "hasLogin", "false");
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
                 }
             });
         } else {
-            SharedPreferencesUtils.setStoredMessage(context, "hasLogin", "false");
+            SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
         }
     }
 
@@ -297,31 +296,31 @@ public class RetrofitUtils {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
                     //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
-                    if (!checkLocalAvatarImage(context) || SharedPreferencesUtils.getStoredMessage(context, "avatar") == null
-                            || (SharedPreferencesUtils.getStoredMessage(context, "avatar") != null
-                            && !SharedPreferencesUtils.getStoredMessage(context, "avatar").equals(response.body().getData().getAcademy()))) {
-                        SharedPreferencesUtils.setStoredMessage(context, "nickname", response.body().getData().getNickname());
-                        SharedPreferencesUtils.setStoredMessage(context, "academy", response.body().getData().getAcademy());
-                        SharedPreferencesUtils.setStoredMessage(context, "avatar", response.body().getData().getAvatar());
-                        SharedPreferencesUtils.setStoredMessage(context, "college", response.body().getData().getCollege());
-                        SharedPreferencesUtils.setStoredMessage(context, "enterYear", response.body().getData().getEnteYear());
-                        SharedPreferencesUtils.setStoredMessage(context, "gender", response.body().getData().getGender());
-                        SharedPreferencesUtils.setStoredMessage(context, "phone", response.body().getData().getPhone());
-                        SharedPreferencesUtils.setStoredMessage(context, "username", response.body().getData().getUsername());
-                        avatarPath = context.getString(R.string.user_info_url) + response.body().getData().getAvatar();
+                    if (!checkLocalAvatarImage(UMapplication.getContext()) || SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") == null
+                            || (SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") != null
+                            && !SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar").equals(response.body().getData().getAcademy()))) {
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "nickname", response.body().getData().getNickname());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "academy", response.body().getData().getAcademy());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "avatar", response.body().getData().getAvatar());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "college", response.body().getData().getCollege());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "enterYear", response.body().getData().getEnteYear());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "gender", response.body().getData().getGender());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "phone", response.body().getData().getPhone());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "username", response.body().getData().getUsername());
+                        avatarPath = UMapplication.getContext().getString(R.string.user_info_url) + response.body().getData().getAvatar();
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
                                     Log.d(TAG, SDCardUtils.getAvatarImage(response.body().getData().getAvatar() + "\navatarPath:" + avatarPath));
-                                    Log.d(TAG, "用户头像名称：" + SharedPreferencesUtils.getStoredMessage(context, "avatar"));
+                                    Log.d(TAG, "用户头像名称：" + SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar"));
                                     DownLoader.downloadFile(new File(SDCardUtils.getAvatarImage(response.body().getData().getAvatar())),
                                             avatarPath);
                                     dialog.dismiss();
                                     //TODO token每次登陆要刷新
                                     Intent intent = new Intent(startActivity, MainActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    context.startActivity(intent);
+                                    UMapplication.getContext().startActivity(intent);
                                     startActivity.finish();
 
                                 } catch (Exception e) {
@@ -348,12 +347,12 @@ public class RetrofitUtils {
                 @Override
                 public void onFailure(@NonNull Call<UserInfoRes> call, @NonNull Throwable t) {
                     Log.d(TAG, "PostUserInfo请求失败");
-                    Toast.makeText(context, "服务器请求失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), "服务器请求失败", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
             });
         } else {
-            Toast.makeText(context, "请先登录", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UMapplication.getContext(), "请先登录", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         }
     }
@@ -367,24 +366,24 @@ public class RetrofitUtils {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
                     //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
-                    if (!checkLocalAvatarImage(context) || SharedPreferencesUtils.getStoredMessage(context, "avatar") == null
-                            || (SharedPreferencesUtils.getStoredMessage(context, "avatar") != null
-                            && !SharedPreferencesUtils.getStoredMessage(context, "avatar").equals(response.body().getData().getAcademy()))) {
-                        SharedPreferencesUtils.setStoredMessage(context, "nickname", response.body().getData().getNickname());
-                        SharedPreferencesUtils.setStoredMessage(context, "academy", response.body().getData().getAcademy());
-                        SharedPreferencesUtils.setStoredMessage(context, "avatar", response.body().getData().getAvatar());
-                        SharedPreferencesUtils.setStoredMessage(context, "college", response.body().getData().getCollege());
-                        SharedPreferencesUtils.setStoredMessage(context, "enterYear", response.body().getData().getEnteYear());
-                        SharedPreferencesUtils.setStoredMessage(context, "gender", response.body().getData().getGender());
-                        SharedPreferencesUtils.setStoredMessage(context, "phone", response.body().getData().getPhone());
-                        SharedPreferencesUtils.setStoredMessage(context, "username", response.body().getData().getUsername());
-                        avatarPath = context.getString(R.string.user_info_url) + response.body().getData().getAvatar();
+                    if (!checkLocalAvatarImage(UMapplication.getContext()) || SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") == null
+                            || (SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") != null
+                            && !SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar").equals(response.body().getData().getAcademy()))) {
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "nickname", response.body().getData().getNickname());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "academy", response.body().getData().getAcademy());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "avatar", response.body().getData().getAvatar());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "college", response.body().getData().getCollege());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "enterYear", response.body().getData().getEnteYear());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "gender", response.body().getData().getGender());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "phone", response.body().getData().getPhone());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "username", response.body().getData().getUsername());
+                        avatarPath = UMapplication.getContext().getString(R.string.user_info_url) + response.body().getData().getAvatar();
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
                                     Log.d(TAG, SDCardUtils.getAvatarImage(response.body().getData().getAvatar() + "\navatarPath:" + avatarPath));
-                                    Log.d(TAG, "用户头像名称：" + SharedPreferencesUtils.getStoredMessage(context, "avatar"));
+                                    Log.d(TAG, "用户头像名称：" + SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar"));
                                     DownLoader.downloadFile(new File(SDCardUtils.getAvatarImage(response.body().getData().getAvatar())),
                                             avatarPath);
                                 } catch (Exception e) {
@@ -404,11 +403,11 @@ public class RetrofitUtils {
                 @Override
                 public void onFailure(@NonNull Call<UserInfoRes> call, @NonNull Throwable t) {
                     Log.d(TAG, "请求失败");
-                    Toast.makeText(context, "服务器请求失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), "服务器请求失败", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            Toast.makeText(context, "请先登录", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UMapplication.getContext(), "请先登录", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -428,45 +427,45 @@ public class RetrofitUtils {
                         case NICKNAME:
                             textView.setText(userInfo.getUser().getNickname());
                             MainActivity.userName.setText(userInfo.getUser().getNickname());
-                            SharedPreferencesUtils.setStoredMessage(context, "nickname", userInfo.getUser().getNickname());
+                            SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "nickname", userInfo.getUser().getNickname());
                             alertDialog.dismiss();
                             break;
                         //修改性别
                         case GENDER:
                             textView.setText(userInfo.getUser().getGender());
-                            SharedPreferencesUtils.setStoredMessage(context, "gender", userInfo.getUser().getGender());
+                            SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "gender", userInfo.getUser().getGender());
                             break;
                         //修改入学年份
                         case ENTERYEAR:
                             textView.setText(userInfo.getUser().getEnterYear());
-                            SharedPreferencesUtils.setStoredMessage(context, "enterYear", userInfo.getUser().getEnterYear());
+                            SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "enterYear", userInfo.getUser().getEnterYear());
                             break;
                         //修改所在大学
                         case COLLEGE:
                             //返回上一学校
                             if (isBackSchool) {
-                                textView.setText(SharedPreferencesUtils.getStoredMessage(context, "lastCollege"));
-                                MainActivity.userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(context, "lastCollege"));
-                                SharedPreferencesUtils.setStoredMessage(context, "college", SharedPreferencesUtils.getStoredMessage(context, "lastCollege"));
+                                textView.setText(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "lastCollege"));
+                                MainActivity.userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "lastCollege"));
+                                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "college", SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "lastCollege"));
                             }
                             //修改为新学校
                             else {
                                 textView.setText(userInfo.getUser().getCollege());
                                 MainActivity.userCollegeName.setText(userInfo.getUser().getCollege());
-                                SharedPreferencesUtils.setStoredMessage(context, "lastCollege",
-                                        SharedPreferencesUtils.getStoredMessage(context, "college"));
-                                SharedPreferencesUtils.setStoredMessage(context, "college", userInfo.getUser().getCollege());
+                                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "lastCollege",
+                                        SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "college"));
+                                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "college", userInfo.getUser().getCollege());
                             }
 
                             break;
                         //修改所在学院
                         case ACADEMY:
                             textView.setText(userInfo.getUser().getAcademy());
-                            SharedPreferencesUtils.setStoredMessage(context, "academy", userInfo.getUser().getAcademy());
+                            SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "academy", userInfo.getUser().getAcademy());
                             break;
                     }
                 } else {
-                    Toast.makeText(context, response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                 }
                 if (dialog != null) dialog.dismiss();
             }
@@ -474,7 +473,7 @@ public class RetrofitUtils {
             @Override
             public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
                 Log.d(TAG, "请求失败");
-                Toast.makeText(context, "服务器请求失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), "服务器请求失败", Toast.LENGTH_SHORT).show();
                 if (dialog != null) dialog.dismiss();
             }
         });
@@ -488,8 +487,8 @@ public class RetrofitUtils {
                 @Override
                 public boolean onKey(DialogInterface DialogInterface, int keyCode, KeyEvent event) {
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
-                        UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(context, college.getText().toString(), COLLEGE);
-                        RetrofitUtils.postUpdateUser(COLLEGE, context, userRequest, null, college, dialog, true);
+                        UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), college.getText().toString(), COLLEGE);
+                        RetrofitUtils.postUpdateUser(COLLEGE, UMapplication.getContext(), userRequest, null, college, dialog, true);
                     }
                     return false;
                 }
@@ -519,8 +518,8 @@ public class RetrofitUtils {
                                 .setItems(UserInfoActivity.academies, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int which) {
-                                        UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(context, UserInfoActivity.academies[which], ACADEMY);
-                                        RetrofitUtils.postUpdateUser(ACADEMY, context, userRequest, null, academy, dialog, false);
+                                        UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.academies[which], ACADEMY);
+                                        RetrofitUtils.postUpdateUser(ACADEMY, UMapplication.getContext(), userRequest, null, academy, dialog, false);
                                     }
                                 });
 
@@ -528,7 +527,7 @@ public class RetrofitUtils {
                         alertDialog.setCanceledOnTouchOutside(false);
                         alertDialog.show();
                     } else {
-                        Toast.makeText(context, "获取学院信息失败", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UMapplication.getContext(), "获取学院信息失败", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
                 }
@@ -536,7 +535,7 @@ public class RetrofitUtils {
                 @Override
                 public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
                     Log.d(TAG, "请求失败");
-                    Toast.makeText(context, "服务器请求失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), "服务器请求失败", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
             });
@@ -546,8 +545,8 @@ public class RetrofitUtils {
                     .setItems(UserInfoActivity.academies, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int which) {
-                            UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(context, UserInfoActivity.academies[which], ACADEMY);
-                            RetrofitUtils.postUpdateUser(ACADEMY, context, userRequest, null, academy, dialog, false);
+                            UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.academies[which], ACADEMY);
+                            RetrofitUtils.postUpdateUser(ACADEMY, UMapplication.getContext(), userRequest, null, academy, dialog, false);
                         }
                     });
             AlertDialog alertDialog = builder.create();
@@ -582,20 +581,20 @@ public class RetrofitUtils {
                                 .setItems(UserInfoActivity.colleges, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int which) {
-                                        UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(context, UserInfoActivity.colleges[which], COLLEGE);
-                                        RetrofitUtils.postUpdateUser(COLLEGE, context, userRequest, null, college, dialog, false);
+                                        UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.colleges[which], COLLEGE);
+                                        RetrofitUtils.postUpdateUser(COLLEGE, UMapplication.getContext(), userRequest, null, college, dialog, false);
                                         UserInfoActivity.academies = null;
                                         QueryAcademiesRequest academiesRequest = new QueryAcademiesRequest(
-                                                SharedPreferencesUtils.getStoredMessage(context, "college")
+                                                SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "college")
                                         );
-                                        postAllAcademies(context, academiesRequest, builder, college, academy, dialog, true);
+                                        postAllAcademies(UMapplication.getContext(), academiesRequest, builder, college, academy, dialog, true);
                                     }
                                 });
                         AlertDialog alertDialog = builder.create();
                         alertDialog.setCanceledOnTouchOutside(false);
                         alertDialog.show();
                     } else {
-                        Toast.makeText(context, "获取学校信息失败", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UMapplication.getContext(), "获取学校信息失败", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
                 }
@@ -603,7 +602,7 @@ public class RetrofitUtils {
                 @Override
                 public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
                     Log.d(TAG, "请求失败");
-                    Toast.makeText(context, "服务器请求失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), "服务器请求失败", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
             });
@@ -612,13 +611,13 @@ public class RetrofitUtils {
                     .setItems(UserInfoActivity.colleges, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int which) {
-                            UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(context, UserInfoActivity.colleges[which], COLLEGE);
-                            RetrofitUtils.postUpdateUser(COLLEGE, context, userRequest, null, college, dialog, false);
+                            UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.colleges[which], COLLEGE);
+                            RetrofitUtils.postUpdateUser(COLLEGE, UMapplication.getContext(), userRequest, null, college, dialog, false);
                             UserInfoActivity.academies = null;
                             QueryAcademiesRequest academiesRequest = new QueryAcademiesRequest(
                                     UserInfoActivity.colleges[which]
                             );
-                            postAllAcademies(context, academiesRequest, builder, college, academy, dialog, true);
+                            postAllAcademies(UMapplication.getContext(), academiesRequest, builder, college, academy, dialog, true);
                         }
                     });
             AlertDialog alertDialog = builder.create();
@@ -663,7 +662,7 @@ public class RetrofitUtils {
                         alertDialog.setCanceledOnTouchOutside(false);
                         alertDialog.show();
                     } else {
-                        Toast.makeText(context, "获取学校信息失败", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UMapplication.getContext(), "获取学校信息失败", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
                     dialog.dismiss();
@@ -672,7 +671,7 @@ public class RetrofitUtils {
                 @Override
                 public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
                     Log.d(TAG, "请求失败");
-                    Toast.makeText(context, "服务器请求失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), "服务器请求失败", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
             });
@@ -718,7 +717,7 @@ public class RetrofitUtils {
                     alertDialog.show();
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(context, "获取学院信息失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), "获取学院信息失败", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
             }
@@ -726,7 +725,7 @@ public class RetrofitUtils {
             @Override
             public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
                 Log.d(TAG, "请求失败");
-                Toast.makeText(context, "服务器请求失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), "服务器请求失败", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
@@ -743,20 +742,20 @@ public class RetrofitUtils {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                SharedPreferencesUtils.setStoredMessage(context, "hasLogin", "false");
-                SharedPreferencesUtils.setStoredMessage(context, "token", null);
-                Toast.makeText(context, "退出登录", Toast.LENGTH_SHORT).show();
-                nextActivity(context, startAct, LoginActivity.class);
+                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
+                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", null);
+                Toast.makeText(UMapplication.getContext(), "退出登录", Toast.LENGTH_SHORT).show();
+                nextActivity(UMapplication.getContext(), startAct, LoginActivity.class);
                 dialog.dismiss();
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                 Log.d(TAG, "请求失败");
-                Toast.makeText(context, "退出登录", Toast.LENGTH_SHORT).show();
-                SharedPreferencesUtils.setStoredMessage(context, "hasLogin", "false");
-                SharedPreferencesUtils.setStoredMessage(context, "token", null);
-                nextActivity(context, startAct, LoginActivity.class);
+                Toast.makeText(UMapplication.getContext(), "退出登录", Toast.LENGTH_SHORT).show();
+                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
+                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", null);
+                nextActivity(UMapplication.getContext(), startAct, LoginActivity.class);
                 dialog.dismiss();
             }
         });
@@ -766,7 +765,7 @@ public class RetrofitUtils {
     public static void postUserAvatar(final Context context, String imagePath, final ImageView avatarView, final Bitmap bitmap, final ZLoadingDialog dialog) {
         PostUserAvatar request = retrofit.create(PostUserAvatar.class);
         final File avatar = new File(imagePath);
-        String token = SharedPreferencesUtils.getStoredMessage(context, "token");
+        String token = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "token");
 
         //设置Content-Type:application/octet-stream
         RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), avatar);
@@ -778,8 +777,8 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull final Response<ResponseInfo<String>> response) {
-                SharedPreferencesUtils.setStoredMessage(context, "avatar", response.body().getData());
-                avatarPath = context.getString(R.string.user_info_url) + response.body().getData();
+                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "avatar", response.body().getData());
+                avatarPath = UMapplication.getContext().getString(R.string.user_info_url) + response.body().getData();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -793,9 +792,9 @@ public class RetrofitUtils {
                                     avatarView.setImageBitmap(bitmap);
                                 }
                             });
-                            final Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context, "avatar")));
-                            final CircleDrawable circleDrawable = new CircleDrawable(drawable, context, 44);
-//                            final Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context, "avatar")));
+                            final Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar")));
+                            final CircleDrawable circleDrawable = new CircleDrawable(drawable, UMapplication.getContext(), 44);
+//                            final Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar")));
 
                             MainActivity.toolbar.post(new Runnable() {
                                 @Override
@@ -821,7 +820,7 @@ public class RetrofitUtils {
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
                 Log.d(TAG, "请求失败");
-                Toast.makeText(context, "上传头像失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), "上传头像失败", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
@@ -831,7 +830,7 @@ public class RetrofitUtils {
     public static void postUserAvatar(final Context context, String imagePath, final ZLoadingDialog dialog) {
         PostUserAvatar request = retrofit.create(PostUserAvatar.class);
         final File avatar = new File(imagePath);
-        String token = SharedPreferencesUtils.getStoredMessage(context, "token");
+        String token = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "token");
 
         //设置Content-Type:application/octet-stream
         RequestBody photoRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), avatar);
@@ -843,8 +842,8 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull final Response<ResponseInfo<String>> response) {
-                SharedPreferencesUtils.setStoredMessage(context, "avatar", response.body().getData());
-                avatarPath = context.getString(R.string.user_info_url) + response.body().getData();
+                SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "avatar", response.body().getData());
+                avatarPath = UMapplication.getContext().getString(R.string.user_info_url) + response.body().getData();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -864,7 +863,7 @@ public class RetrofitUtils {
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
                 Log.d(TAG, "请求失败");
-                Toast.makeText(context, "上传头像失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), "上传头像失败", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
@@ -884,21 +883,21 @@ public class RetrofitUtils {
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if (responseCode == successCode) {
                     if (msg.equals(FORGET_PSW_MSG)) {
-                        SharedPreferencesUtils.setStoredMessage(context, "setPswToken", response.body().getData());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "setPswToken", response.body().getData());
                     } else if (msg.equals(REGISTER_MSG)) {
-                        SharedPreferencesUtils.setStoredMessage(context, "registerToken", response.body().getData());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "registerToken", response.body().getData());
                     }
-                    Toast.makeText(context, "验证码已发送", Toast.LENGTH_SHORT).show();
-                    new Thread(new CountDownTimer(60, sendCodeBtn, 1, context)).start();
+                    Toast.makeText(UMapplication.getContext(), "验证码已发送", Toast.LENGTH_SHORT).show();
+                    new Thread(new CountDownTimer(60, sendCodeBtn, 1, UMapplication.getContext())).start();
                 } else {
-                    Toast.makeText(context, response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                 }
 
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
-                Toast.makeText(context, "服务器请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), "服务器请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
 
             }
@@ -910,7 +909,7 @@ public class RetrofitUtils {
     //找回密码，传入手机号、验证码和新密码，找回后返回登录界面
     public static void postSetNewPsw(final Context context, final Activity startAct, String phone, String verCode, String newPsw) {
         PostSetNewPsw request = retrofit.create(PostSetNewPsw.class);
-        String setPswToken = SharedPreferencesUtils.getStoredMessage(context, "setPswToken");
+        String setPswToken = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "setPswToken");
         String SHApassword = SHAArithmetic.encode(newPsw);//密码加密
         SetNewPswRequest pswRequest = new SetNewPswRequest(setPswToken, verCode, phone, SHApassword);
 
@@ -920,16 +919,16 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if (responseCode == successCode) {
-                    Toast.makeText(context, "修改成功", Toast.LENGTH_SHORT).show();
-                    nextActivity(context, startAct, LoginActivity.class);
+                    Toast.makeText(UMapplication.getContext(), "修改成功", Toast.LENGTH_SHORT).show();
+                    nextActivity(UMapplication.getContext(), startAct, LoginActivity.class);
                 } else {
-                    Toast.makeText(context, response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
-                Toast.makeText(context, "服务器请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), "服务器请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
 
             }
@@ -940,7 +939,7 @@ public class RetrofitUtils {
     //发送该请求后进入完善资料界面，本接口为测试手机与验证码的正确性
     public static void postRegister(final Context context, final Activity startAct, final String phone, String verCode) {
         PostRegister request = retrofit.create(PostRegister.class);
-        String registerToken = SharedPreferencesUtils.getStoredMessage(context, "registerToken");
+        String registerToken = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "registerToken");
 
         RegisterRequest registerRequest = new RegisterRequest(registerToken, verCode, phone);
 
@@ -950,16 +949,16 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if (responseCode == successCode) {
-                    SharedPreferencesUtils.setStoredMessage(context, "phone", phone);
-                    nextActivity(context, startAct, PerfectInfoActivity.class);
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "phone", phone);
+                    nextActivity(UMapplication.getContext(), startAct, PerfectInfoActivity.class);
                 } else {
-                    Toast.makeText(context, response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
-                Toast.makeText(context, "服务器请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), "服务器请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
 
             }
@@ -979,31 +978,31 @@ public class RetrofitUtils {
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if (responseCode == successCode) {
                     String token = response.body().getData();
-                    SharedPreferencesUtils.setStoredMessage(context, "token", token);
-                    ZLoadingDialog dialog = new ZLoadingDialog(context);
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", token);
+                    ZLoadingDialog dialog = new ZLoadingDialog(UMapplication.getContext());
                     dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                            .setLoadingColor(context.getResources().getColor(R.color.blue))//颜色
+                            .setLoadingColor(UMapplication.getContext().getResources().getColor(R.color.blue))//颜色
                             .setHintText("loading...")
                             .setCanceledOnTouchOutside(false)
                             .show();
-                    ZLoadingDialog dialog2 = new ZLoadingDialog(context);
+                    ZLoadingDialog dialog2 = new ZLoadingDialog(UMapplication.getContext());
                     dialog2.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                            .setLoadingColor(context.getResources().getColor(R.color.blue))//颜色
+                            .setLoadingColor(UMapplication.getContext().getResources().getColor(R.color.blue))//颜色
                             .setHintText("upLoading...")
                             .setCanceledOnTouchOutside(false)
                             .show();
-                    postUserInfo(context, startAct, token, dialog);
-                    String imagePath = SharedPreferencesUtils.getStoredMessage(context, "imagePath");
+                    postUserInfo(UMapplication.getContext(), startAct, token, dialog);
+                    String imagePath = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "imagePath");
                     imagePath = CircleDrawable.compressImage(imagePath);
-                    postUserAvatar(context, imagePath, dialog2);
+                    postUserAvatar(UMapplication.getContext(), imagePath, dialog2);
                 } else {
-                    Toast.makeText(context, response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
-                Toast.makeText(context, "服务器请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), "服务器请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
 
             }
@@ -1021,27 +1020,27 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if(responseCode==successCode){
-                    SharedPreferencesUtils.setStoredMessage(context,"token",response.body().getData());
-                    SharedPreferencesUtils.setStoredMessage(context,"platform",uMengLoginRequest.getPlatform());
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token",response.body().getData());
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"platform",uMengLoginRequest.getPlatform());
                     //使用com.zyao89:zloading:1.1.2引用別人的加载动画
-                    ZLoadingDialog dialog = new ZLoadingDialog(context);
+                    ZLoadingDialog dialog = new ZLoadingDialog(UMapplication.getContext());
                     dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                            .setLoadingColor(context.getResources().getColor(R.color.blue))//颜色
+                            .setLoadingColor(UMapplication.getContext().getResources().getColor(R.color.blue))//颜色
                             .setHintText("Login...")
                             .setCanceledOnTouchOutside(false)
                             .show();
                     Log.d("token值", response.body().getData());
-                    RetrofitUtils.postUserInfo(context, startAct, response.body().getData(), dialog);
-//                    nextActivity(context,startAct,MainActivity.class);
+                    RetrofitUtils.postUserInfo(UMapplication.getContext(), startAct, response.body().getData(), dialog);
+//                    nextActivity(UMapplication.getContext(),startAct,MainActivity.class);
                 }
                 else {
-                    Toast.makeText(context,response.body().getMsg(),Toast.LENGTH_SHORT).show();
-                    nextActivity(context,startAct, AuthPerUserInfo.class);
+                    Toast.makeText(UMapplication.getContext(),response.body().getMsg(),Toast.LENGTH_SHORT).show();
+                    nextActivity(UMapplication.getContext(),startAct, AuthPerUserInfo.class);
                 }
             }
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
-                Toast.makeText(context,"服务器请求失败，请检查网络连接",Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(),"服务器请求失败，请检查网络连接",Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
             }
         });
@@ -1057,26 +1056,26 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if(responseCode==successCode){
-                    SharedPreferencesUtils.setStoredMessage(context,"token",response.body().getData());
-                    SharedPreferencesUtils.setStoredMessage(context,"hasLogin","true");
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token",response.body().getData());
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"hasLogin","true");
                     //使用com.zyao89:zloading:1.1.2引用別人的加载动画
-                    ZLoadingDialog dialog = new ZLoadingDialog(context);
+                    ZLoadingDialog dialog = new ZLoadingDialog(UMapplication.getContext());
                     dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                            .setLoadingColor(context.getResources().getColor(R.color.blue))//颜色
+                            .setLoadingColor(UMapplication.getContext().getResources().getColor(R.color.blue))//颜色
                             .setHintText("Login...")
                             .setCanceledOnTouchOutside(false)
                             .show();
                     Log.d("token值", response.body().getData());
-                    RetrofitUtils.postUserInfo(context, startAct, response.body().getData(), dialog);
-//                    nextActivity(context,startAct);
+                    RetrofitUtils.postUserInfo(UMapplication.getContext(), startAct, response.body().getData(), dialog);
+//                    nextActivity(UMapplication.getContext(),startAct);
                 }
                 else {
-                    Toast.makeText(context,response.body().getMsg(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UMapplication.getContext(),response.body().getMsg(),Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
-                Toast.makeText(context,"服务器请求失败，请检查网络连接",Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(),"服务器请求失败，请检查网络连接",Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
 
             }
@@ -1096,20 +1095,20 @@ public class RetrofitUtils {
     //获取远程信息失败或者广告版本为最新时, 检查本地头像是否存在
     private static boolean checkLocalAvatarImage(Context context) {
         Log.d(TAG, "检测本地头像是否存在");
-        File avatarImageFile = new File(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context, "avatar")));
+        File avatarImageFile = new File(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar")));
         return avatarImageFile.exists();
     }
 
 
     //根据token是否有效决定下一活动
     private static void nextActivity(final Context context, final Activity startAct) {
-        if (SharedPreferencesUtils.getStoredMessage(context, "hasLogin").equals("false")) {
+        if (SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "hasLogin").equals("false")) {
             startAct.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     Intent intent = new Intent(startAct, LoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
+                    UMapplication.getContext().startActivity(intent);
                     startAct.finish();
                 }
             });
@@ -1119,7 +1118,7 @@ public class RetrofitUtils {
                 public void run() {
                     Intent intent = new Intent(startAct, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
+                    UMapplication.getContext().startActivity(intent);
                     startAct.finish();
                 }
             });
@@ -1133,7 +1132,7 @@ public class RetrofitUtils {
             public void run() {
                 Intent intent = new Intent(startAct, endAct);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                UMapplication.getContext().startActivity(intent);
                 startAct.finish();
             }
         });
