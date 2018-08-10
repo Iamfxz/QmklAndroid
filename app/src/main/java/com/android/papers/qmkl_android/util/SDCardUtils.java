@@ -106,7 +106,7 @@ public class SDCardUtils {
     }
 
     /**
-     * 获取本地广告图片路径
+     * 根据广告名字获取本地广告图片路径
      *
      * @param picName 广告名字
      * @return 广告图片路径

@@ -25,8 +25,8 @@ import butterknife.ButterKnife;
 public class AdsActivity extends Activity {
 
     private static final String TAG = "AdsActivity";
-    private String newAdName;
 
+    //点击广告图片，点击跳过按钮
     boolean isClicked=false,isSkip=false;
     @BindView(R.id.iv_ad)
     ImageView ivAd;
@@ -36,6 +36,7 @@ public class AdsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //加载布局，活动压入堆栈
         ActivityManager.addActivity(this);
         setContentView(R.layout.activity_ads);
         ButterKnife.bind(this);
@@ -44,16 +45,18 @@ public class AdsActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        newAdName = SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "AdName");
-
+        //根据广告名称获取广告地址
+        String newAdName = SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "AdName");
         File adImageFile = new File(SDCardUtils.getADImage(newAdName));
 
+        //如果广告地址存在则加载，否则广告版本设置为0
         if (adImageFile.exists()) {
             ivAd.setImageURI(Uri.fromFile(adImageFile));
         } else  {
             getSharedPreferences("AppConfig", MODE_PRIVATE).edit().putInt("ad_version", 0).apply();
         }
 
+        //广告图片点击处理
         ivAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +70,7 @@ public class AdsActivity extends Activity {
             }
         });
 
+        //广告页面跳过按钮点击处理，停留3秒
         new Thread(new CountDownTimer(3,skip,0)).start();
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +97,7 @@ public class AdsActivity extends Activity {
                     @Override
                     public void run() {
                         if(!isSkip && !isClicked){
+                            //未登陆设置进入登陆页面，其他进入程序
                             if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
                                 nextActivity(LoginActivity.class);
                             }
@@ -108,6 +113,10 @@ public class AdsActivity extends Activity {
     }
 
 
+    /**
+     *      进入下一个Activity
+     * @param clazz 活动类名
+     */
     public void nextActivity(Class clazz) {
         final Intent intent = new Intent(AdsActivity.this, clazz);
         new Thread(new Runnable() {
@@ -124,10 +133,12 @@ public class AdsActivity extends Activity {
         }).start();
     }
 
+    @Override
     public void onResume() {
         super.onResume();
     }
 
+    @Override
     public void onPause() {
         super.onPause();
     }
