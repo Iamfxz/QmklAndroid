@@ -2,10 +2,14 @@ package com.android.papers.qmkl_android.util;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -51,6 +55,7 @@ public class PermissionUtils {
     public static final String PERMISSION_READ_EXTERNAL_STORAGE = Manifest.permission.READ_EXTERNAL_STORAGE;
     public static final String PERMISSION_WRITE_EXTERNAL_STORAGE = Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
+    private static final String packageName="com.android.papers.qmkl_android";
     private static final String[] requestPermissions = {
             PERMISSION_RECORD_AUDIO,
             PERMISSION_GET_ACCOUNTS,
@@ -343,44 +348,44 @@ public class PermissionUtils {
     }
 
 
-    public void jumpPermissionPage() {
+    public static void jumpPermissionPage(Context mContext) {
         String name = Build.MANUFACTURER;
         Log.d(TAG, "jumpPermissionPage --- name : " + name);
         switch (name) {
             case "HUAWEI":
-                goHuaWeiMainager();
+                goHuaWeiMainager(mContext);
                 break;
             case "vivo":
-                goVivoMainager();
+                goVivoMainager(mContext);
                 break;
             case "OPPO":
-                goOppoMainager();
+                goOppoMainager(mContext);
                 break;
             case "Coolpad":
-                goCoolpadMainager();
+                goCoolpadMainager(mContext);
                 break;
             case "Meizu":
-                goMeizuMainager();
+                goMeizuMainager(mContext);
                 break;
             case "Xiaomi":
-                goXiaoMiMainager();
+                goXiaoMiMainager(mContext);
                 break;
             case "samsung":
-                goSangXinMainager();
+                goSangXinMainager(mContext);
                 break;
             case "Sony":
-                goSonyMainager();
+                goSonyMainager(mContext);
                 break;
             case "LG":
-                goLGMainager();
+                goLGMainager(mContext);
                 break;
             default:
-                goIntentSetting();
+                goIntentSetting(mContext);
                 break;
         }
     }
 
-    private void goLGMainager(){
+    private static void goLGMainager(Context mContext){
         try {
             Intent intent = new Intent(packageName);
             ComponentName comp = new ComponentName("com.android.settings", "com.android.settings.Settings$AccessLockSummaryActivity");
@@ -389,10 +394,10 @@ public class PermissionUtils {
         } catch (Exception e) {
             Toast.makeText(mContext, "跳转失败", Toast.LENGTH_LONG).show();
             e.printStackTrace();
-            goIntentSetting();
+            goIntentSetting(mContext);
         }
     }
-    private void goSonyMainager(){
+    private static void goSonyMainager(Context mContext){
         try {
             Intent intent = new Intent(packageName);
             ComponentName comp = new ComponentName("com.sonymobile.cta", "com.sonymobile.cta.SomcCTAMainActivity");
@@ -401,11 +406,11 @@ public class PermissionUtils {
         } catch (Exception e) {
             Toast.makeText(mContext, "跳转失败", Toast.LENGTH_LONG).show();
             e.printStackTrace();
-            goIntentSetting();
+            goIntentSetting(mContext);
         }
     }
 
-    private void goHuaWeiMainager() {
+    private static void goHuaWeiMainager(Context mContext) {
         try {
             Intent intent = new Intent(packageName);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -415,11 +420,11 @@ public class PermissionUtils {
         } catch (Exception e) {
             Toast.makeText(mContext, "跳转失败", Toast.LENGTH_LONG).show();
             e.printStackTrace();
-            goIntentSetting();
+            goIntentSetting(mContext);
         }
     }
 
-    private static String getMiuiVersion() {
+    private static String getMiuiVersion(Context mContext) {
         String propName = "ro.miui.ui.version.name";
         String line;
         BufferedReader input = null;
@@ -442,9 +447,9 @@ public class PermissionUtils {
         return line;
     }
 
-    private void goXiaoMiMainager() {
-        String rom = getMiuiVersion();
-        L.e(TAG,"goMiaoMiMainager --- rom : "+rom);
+    private static void goXiaoMiMainager(Context mContext) {
+        String rom = getMiuiVersion(mContext);
+        Log.d(TAG,"goMiaoMiMainager --- rom : "+rom);
         Intent intent=new Intent();
         if ("V6".equals(rom) || "V7".equals(rom)) {
             intent.setAction("miui.intent.action.APP_PERM_EDITOR");
@@ -455,12 +460,12 @@ public class PermissionUtils {
             intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
             intent.putExtra("extra_pkgname", packageName);
         } else {
-            goIntentSetting();
+            goIntentSetting(mContext);
         }
         mContext.startActivity(intent);
     }
 
-    private void goMeizuMainager() {
+    private static void goMeizuMainager(Context mContext) {
         try {
             Intent intent = new Intent("com.meizu.safe.security.SHOW_APPSEC");
             intent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -468,16 +473,16 @@ public class PermissionUtils {
             mContext.startActivity(intent);
         } catch (ActivityNotFoundException localActivityNotFoundException) {
             localActivityNotFoundException.printStackTrace();
-            goIntentSetting();
+            goIntentSetting(mContext);
         }
     }
 
-    private void goSangXinMainager() {
+    private static void goSangXinMainager(Context mContext) {
         //三星4.3可以直接跳转
-        goIntentSetting();
+        goIntentSetting(mContext);
     }
 
-    private void goIntentSetting() {
+    private static void goIntentSetting(Context mContext) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", mContext.getPackageName(), null);
         intent.setData(uri);
@@ -488,8 +493,8 @@ public class PermissionUtils {
         }
     }
 
-    private void goOppoMainager() {
-        doStartApplicationWithPackageName("com.coloros.safecenter");
+    private static void goOppoMainager(Context mContext) {
+        doStartApplicationWithPackageName("com.coloros.safecenter",mContext);
     }
 
     /**
@@ -498,14 +503,14 @@ public class PermissionUtils {
      * startActivity(open);
      * 本质上没有什么区别，通过Intent open...打开比调用doStartApplicationWithPackageName方法更快，也是android本身提供的方法
      */
-    private void goCoolpadMainager() {
-        doStartApplicationWithPackageName("com.yulong.android.security:remote");
+    private static void goCoolpadMainager(Context mContext) {
+        doStartApplicationWithPackageName("com.yulong.android.security:remote",mContext);
       /*  Intent openQQ = getPackageManager().getLaunchIntentForPackage("com.yulong.android.security:remote");
         startActivity(openQQ);*/
     }
 
-    private void goVivoMainager() {
-        doStartApplicationWithPackageName("com.bairenkeji.icaller");
+    private static void goVivoMainager(Context mContext) {
+        doStartApplicationWithPackageName("com.bairenkeji.icaller",mContext);
      /*   Intent openQQ = getPackageManager().getLaunchIntentForPackage("com.vivo.securedaemonservice");
         startActivity(openQQ);*/
     }
@@ -515,7 +520,7 @@ public class PermissionUtils {
      *
      * @return
      */
-    private Intent getAppDetailSettingIntent() {
+    private Intent getAppDetailSettingIntent(Context mContext) {
         Intent localIntent = new Intent();
         localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (Build.VERSION.SDK_INT >= 9) {
@@ -529,7 +534,7 @@ public class PermissionUtils {
         return localIntent;
     }
 
-    private void doStartApplicationWithPackageName(String packagename) {
+    private static void doStartApplicationWithPackageName(String packagename, Context mContext) {
         // 通过包名获取此APP详细信息，包括Activities、services、versioncode、name等等
         PackageInfo packageinfo = null;
         try {
@@ -566,10 +571,9 @@ public class PermissionUtils {
             try {
                 mContext.startActivity(intent);
             } catch (Exception e) {
-                goIntentSetting();
+                goIntentSetting(mContext);
                 e.printStackTrace();
             }
         }
     }
-}
 }

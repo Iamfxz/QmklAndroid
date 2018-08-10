@@ -358,6 +358,7 @@ public class UserInfoActivity extends BaseActivity {
     private String getImagePath(Uri uri, String selection){
         if(PermissionUtils.isHaveWritePer(UserInfoActivity.this,PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE)){
             Toast.makeText(this,"没有权限",Toast.LENGTH_SHORT).show();
+            PermissionUtils.jumpPermissionPage(UserInfoActivity.this);
         }else {
             String path = null;
             Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
