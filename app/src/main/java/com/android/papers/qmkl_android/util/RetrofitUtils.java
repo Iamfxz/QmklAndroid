@@ -121,7 +121,7 @@ public class RetrofitUtils {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<AdData>> call, @NonNull Response<ResponseInfo<AdData>> response) {
                 //广告页当前不可用
-                if (Integer.parseInt(Objects.requireNonNull(response.body()).getCode()) != successCode ||
+                if (Objects.requireNonNull(response.body()).getCode() != successCode ||
                         !Objects.requireNonNull(response.body()).getData().isEnabled()) {
                     new Thread(new Runnable() {
                         @Override
@@ -248,7 +248,7 @@ public class RetrofitUtils {
             //请求成功时回调
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                int resultCode = Objects.requireNonNull(response.body()).getCode();
                 System.out.println(resultCode);
                 if (resultCode == LOGIN_ERROR) {
                     Toast.makeText(UMapplication.getContext(), "请检查账号密码是否准确", Toast.LENGTH_SHORT).show();
@@ -286,7 +286,7 @@ public class RetrofitUtils {
             call.enqueue(new Callback<ResponseInfo>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    int resultCode = Objects.requireNonNull(response.body()).getCode();
                     System.out.println(resultCode);
                     if (resultCode == successCode) {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", Objects.requireNonNull(response.body()).getData().toString());
@@ -442,7 +442,7 @@ public class RetrofitUtils {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
                 Log.d(TAG, response.body().getMsg());
-                int responseCode = Integer.parseInt(response.body().getCode());
+                int responseCode = response.body().getCode();
                 if (responseCode == successCode) {
                     switch (flag) {
                         //修改昵称
@@ -900,7 +900,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
-                int responseCode = Integer.parseInt(response.body().getCode());
+                int responseCode = response.body().getCode();
                 if (responseCode == successCode) {
                     if (msg.equals(FORGET_PSW_MSG)) {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "setPswToken", response.body().getData());
@@ -937,7 +937,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                int responseCode = Integer.parseInt(response.body().getCode());
+                int responseCode = response.body().getCode();
                 if (responseCode == successCode) {
                     Toast.makeText(UMapplication.getContext(), "修改成功", Toast.LENGTH_SHORT).show();
                     nextActivity(UMapplication.getContext(), startAct, LoginActivity.class);
@@ -967,7 +967,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                int responseCode = Integer.parseInt(response.body().getCode());
+                int responseCode = response.body().getCode();
                 if (responseCode == successCode) {
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "phone", phone);
                     nextActivity(UMapplication.getContext(), startAct, PerfectInfoActivity.class);
@@ -995,7 +995,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
-                int responseCode = Integer.parseInt(response.body().getCode());
+                int responseCode = response.body().getCode();
                 if (responseCode == successCode) {
                     String token = response.body().getData();
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", token);
@@ -1038,7 +1038,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
-                int responseCode = Integer.parseInt(response.body().getCode());
+                int responseCode = response.body().getCode();
                 if(responseCode==successCode){
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token",response.body().getData());
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"platform",uMengLoginRequest.getPlatform());
@@ -1074,7 +1074,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
-                int responseCode = Integer.parseInt(response.body().getCode());
+                int responseCode = response.body().getCode();
                 if(responseCode==successCode){
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token",response.body().getData());
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"hasLogin","true");
