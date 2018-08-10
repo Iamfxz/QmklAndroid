@@ -8,10 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-<<<<<<< HEAD
-import android.support.constraint.Group;
-=======
->>>>>>> bb3b67c72564c397734b6e372ea2ff360408e5da
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,19 +20,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-<<<<<<< HEAD
-import android.view.Menu;
-=======
->>>>>>> bb3b67c72564c397734b6e372ea2ff360408e5da
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-<<<<<<< HEAD
-=======
-import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
->>>>>>> bb3b67c72564c397734b6e372ea2ff360408e5da
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;

@@ -45,7 +45,7 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
         //获取SD卡读写权限
         PermissionUtils.requestPermission(this, PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
 
-        RetrofitUtils.postLogin(getApplicationContext(),SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
+        RetrofitUtils.postLogin(this,SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
 
         //若已获取SD卡读写权限
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED){

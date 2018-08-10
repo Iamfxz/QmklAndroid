@@ -24,7 +24,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".umengUtil.umengApplication.UMapplication"
         android:theme="@style/AppTheme">
@@ -47,7 +47,6 @@
         <activity android:name=".activity.FileFolderActivity"/>
         <activity android:name=".activity.UserInfoActivity"/>
         <activity android:name=".activity.ForgetPswActivity"/>
-        <activity android:name=".activity.SetNewPswActivity"/>
         <activity android:name=".activity.RegisterActivity"/>
         <activity android:name=".activity.PerfectInfoActivity"/>
         <activity android:name=".activity.AuthPerUserInfo"/>

@@ -47,9 +47,11 @@
 
                     <TextView
                         android:id="@+id/user_name"
-                        android:layout_width="100dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Robin"
+                        android:singleLine="true"
+                        android:maxEms="10"
+                        android:text="期末考啦"
                         android:textColor="@color/blue"
                         android:textSize="18sp" />
 

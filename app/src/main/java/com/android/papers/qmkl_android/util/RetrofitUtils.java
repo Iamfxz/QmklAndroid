@@ -54,6 +54,7 @@ import com.android.papers.qmkl_android.requestModel.SetNewPswRequest;
 import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.requestModel.UMengLoginRequest;
 import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
+import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -257,6 +258,7 @@ public class RetrofitUtils {
 
     //判断当前token是否可以登录
     public static void postLogin(final Context context, String token) {
+        Toast.makeText(UMapplication.getContext(),"报错么",Toast.LENGTH_SHORT).show();
         if (token != null) {
             PostLogin request = retrofit.create(PostLogin.class);
             Call<ResponseInfo> call = request.getTokenCall(new TokenRequest(token));
@@ -627,11 +629,8 @@ public class RetrofitUtils {
 
 
     //用户注册界面获取学校信息
-<<<<<<< HEAD
+
     public static void postAllColleges(final Context context, final AlertDialog.Builder builder, final EditText college, final EditText academy, final ZLoadingDialog dialog) {
-=======
-    public static void postAllColleges(final Context context, final AlertDialog.Builder builder, final TextInputEditText college, final TextInputEditText academy, final ZLoadingDialog dialog) {
->>>>>>> bb3b67c72564c397734b6e372ea2ff360408e5da
         //监听返回键
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -695,11 +694,8 @@ public class RetrofitUtils {
 
     //用户注册界面获取学院信息
     //传入用户token值该学校所有专业
-<<<<<<< HEAD
     public static void postAllAcademies(final Context context, String collegeName, final AlertDialog.Builder builder, final EditText academy,final ZLoadingDialog dialog ){
-=======
-    public static void postAllAcademies(final Context context, String collegeName, final AlertDialog.Builder builder, final TextInputEditText academy, final ZLoadingDialog dialog) {
->>>>>>> bb3b67c72564c397734b6e372ea2ff360408e5da
+
         PostAllAcademies request = retrofit.create(PostAllAcademies.class);
         Call<AcademiesOrCollegesRes> call = request.getCall(new QueryAcademiesRequest(collegeName));
         call.enqueue(new Callback<AcademiesOrCollegesRes>() {
@@ -1027,7 +1023,16 @@ public class RetrofitUtils {
                 if(responseCode==successCode){
                     SharedPreferencesUtils.setStoredMessage(context,"token",response.body().getData());
                     SharedPreferencesUtils.setStoredMessage(context,"platform",uMengLoginRequest.getPlatform());
-                    nextActivity(context,startAct,MainActivity.class);
+                    //使用com.zyao89:zloading:1.1.2引用別人的加载动画
+                    ZLoadingDialog dialog = new ZLoadingDialog(context);
+                    dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                            .setLoadingColor(context.getResources().getColor(R.color.blue))//颜色
+                            .setHintText("Login...")
+                            .setCanceledOnTouchOutside(false)
+                            .show();
+                    Log.d("token值", response.body().getData());
+                    RetrofitUtils.postUserInfo(context, startAct, response.body().getData(), dialog);
+//                    nextActivity(context,startAct,MainActivity.class);
                 }
                 else {
                     Toast.makeText(context,response.body().getMsg(),Toast.LENGTH_SHORT).show();
@@ -1054,7 +1059,16 @@ public class RetrofitUtils {
                 if(responseCode==successCode){
                     SharedPreferencesUtils.setStoredMessage(context,"token",response.body().getData());
                     SharedPreferencesUtils.setStoredMessage(context,"hasLogin","true");
-                    nextActivity(context,startAct);
+                    //使用com.zyao89:zloading:1.1.2引用別人的加载动画
+                    ZLoadingDialog dialog = new ZLoadingDialog(context);
+                    dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                            .setLoadingColor(context.getResources().getColor(R.color.blue))//颜色
+                            .setHintText("Login...")
+                            .setCanceledOnTouchOutside(false)
+                            .show();
+                    Log.d("token值", response.body().getData());
+                    RetrofitUtils.postUserInfo(context, startAct, response.body().getData(), dialog);
+//                    nextActivity(context,startAct);
                 }
                 else {
                     Toast.makeText(context,response.body().getMsg(),Toast.LENGTH_SHORT).show();
