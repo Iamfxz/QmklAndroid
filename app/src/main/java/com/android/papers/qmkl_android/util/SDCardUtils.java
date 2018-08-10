@@ -117,6 +117,7 @@ public class SDCardUtils {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         try {
             String strings[] = picName.split("\\.");
             int length = strings.length;
@@ -136,6 +137,8 @@ public class SDCardUtils {
 >>>>>>> parent of 3b4201b... 2018/8/10
 =======
 >>>>>>> parent of 3b4201b... 2018/8/10
+=======
+>>>>>>> parent of 3b4201b... 2018/8/10
         String strings[]=picName.split("\\.");
         int length=strings.length;
         if(strings[length-1].equals("jpg") || strings[length-1].equals("png")) {
@@ -145,6 +148,9 @@ public class SDCardUtils {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 3b4201b... 2018/8/10
+=======
 >>>>>>> parent of 3b4201b... 2018/8/10
 =======
 >>>>>>> parent of 3b4201b... 2018/8/10
@@ -169,6 +175,7 @@ public class SDCardUtils {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         try{
             String strings[] = avatarName.split("\\.");
             int length = strings.length;
@@ -178,6 +185,8 @@ public class SDCardUtils {
         }catch (Exception e){
             e.printStackTrace();
 =======
+=======
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
 >>>>>>> parent of 3b4201b... 2018/8/10
 =======
