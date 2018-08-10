@@ -11,7 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.android.papers.qmkl_android.R;
-import com.android.papers.qmkl_android.util.ActManager;
+import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 
@@ -40,7 +40,7 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ActManager.addActivity(this);
+        ActivityManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 

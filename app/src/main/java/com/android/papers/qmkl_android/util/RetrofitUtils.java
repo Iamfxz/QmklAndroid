@@ -62,6 +62,7 @@ import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -72,6 +73,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class RetrofitUtils {
+<<<<<<< HEAD
+=======
+    final public static String BaseUrl = "http://120.77.32.233/qmkl1.0.0/";//后端服务器版本
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
 
     //实例化Retrofit对象
     private static Retrofit retrofit = new Retrofit.Builder()
@@ -85,6 +90,27 @@ public class RetrofitUtils {
     private static String oldAdName, newAdName, adPath, avatarPath;
 
 
+
+        /**
+        异步请求通用方法
+        PostXXXX是指接口
+        Response指返回数据的模板类
+        Request指请求数据的模板类
+         Retrofit retrofit = new Retrofit.Builder()
+         .baseUrl(BaseUrl)// 设置 网络请求 Url,1.0.0版本
+         .addConverterFactory(GsonConverterFactory.create())//设置使用Gson解析
+         .build()
+        PostXXXX request = retrofit.create(PostXXXX.class);
+        Call<Response> call = request.getCall(Request);
+        call.enqueue(new Callback<Response>() {
+            @Override
+            public void onResponse(@NonNull Call<Response> call, @NonNull final Response<Response> response) {
+            }
+            @Override
+            public void onFailure(@NonNull Call<Response> call, @NonNull Throwable t) {
+            }
+        });*/
+
     //获取广告
     public static void postAd(final Context context, final Activity startAct) {
         PostAds request = retrofit.create(PostAds.class);
@@ -92,7 +118,11 @@ public class RetrofitUtils {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<AdData>> call, @NonNull Response<ResponseInfo<AdData>> response) {
                 //广告页当前不可用
+<<<<<<< HEAD
                 if (Integer.parseInt(Objects.requireNonNull(response.body()).getCode()) != ConstantUtils.SUCCESS_CODE ||
+=======
+                if (Objects.requireNonNull(response.body()).getCode() != successCode ||
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
                         !Objects.requireNonNull(response.body()).getData().isEnabled()) {
                     new Thread(new Runnable() {
                         @Override
@@ -211,15 +241,15 @@ public class RetrofitUtils {
     }
 
     //登录调用API发送登录数据给服务器
-    public static void postLogin(final Activity startActivity, final Context context, LoginRequest r, final ZLoadingDialog dialog) {
+    public static void postLogin(final Activity startActivity, final Context context, LoginRequest loginRequest, final ZLoadingDialog dialog) {
         //创建 网络请求接口 的实例
         PostLogin request = retrofit.create(PostLogin.class);
-        Call<ResponseInfo> call = request.getCall(r);
+        Call<ResponseInfo> call = request.getCall(loginRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             //请求成功时回调
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                int resultCode = Objects.requireNonNull(response.body()).getCode();
                 System.out.println(resultCode);
                 if (resultCode == ConstantUtils.ERROR_CODE) {
                     Toast.makeText(UMapplication.getContext(),ConstantUtils.CHECK_ACCOUNT_AND_PSW , Toast.LENGTH_SHORT).show();
@@ -233,7 +263,12 @@ public class RetrofitUtils {
                     //获取用户信息
                     RetrofitUtils.postUserInfo(UMapplication.getContext(), startActivity, token, dialog);
                 } else {
+<<<<<<< HEAD
                     Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+=======
+                    //TODO 子线程更新UI界面会崩溃，使用handler方法
+                    Toast.makeText(context, response.body().getMsg(), Toast.LENGTH_SHORT).show();
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
                     dialog.dismiss();
                 }
             }
@@ -256,7 +291,7 @@ public class RetrofitUtils {
             call.enqueue(new Callback<ResponseInfo>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    int resultCode = Objects.requireNonNull(response.body()).getCode();
                     System.out.println(resultCode);
                     if (resultCode == ConstantUtils.SUCCESS_CODE) {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", Objects.requireNonNull(response.body()).getData().toString());
@@ -407,9 +442,15 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+<<<<<<< HEAD
                 Log.d(TAG, Objects.requireNonNull(response.body()).getMsg());
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
+=======
+                Log.d(TAG, response.body().getMsg());
+                int responseCode = response.body().getCode();
+                if (responseCode == successCode) {
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
                     switch (flag) {
                         //修改昵称
                         case ConstantUtils.NICKNAME:
@@ -512,6 +553,7 @@ public class RetrofitUtils {
                                 });
 
                         AlertDialog alertDialog = builder.create();
+                        //TODO 修改成可以取消
                         alertDialog.setCanceledOnTouchOutside(false);
                         alertDialog.show();
                     } else {
@@ -616,7 +658,6 @@ public class RetrofitUtils {
 
 
     //用户注册界面获取学校信息
-
     public static void postAllColleges(final Context context, final AlertDialog.Builder builder, final EditText college, final EditText academy, final ZLoadingDialog dialog) {
         //监听返回键
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -682,7 +723,6 @@ public class RetrofitUtils {
     //用户注册界面获取学院信息
     //传入用户token值该学校所有专业
     public static void postAllAcademies(final Context context, String collegeName, final AlertDialog.Builder builder, final EditText academy,final ZLoadingDialog dialog ){
-
         PostAllAcademies request = retrofit.create(PostAllAcademies.class);
         Call<AcademiesOrCollegesRes> call = request.getCall(new QueryAcademiesRequest(collegeName));
         call.enqueue(new Callback<AcademiesOrCollegesRes>() {
@@ -717,7 +757,6 @@ public class RetrofitUtils {
                 dialog.dismiss();
             }
         });
-
     }
 
     //TODO 此函数一直进入onFailure，具体原因未知
@@ -868,11 +907,19 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
                     if (msg.equals(ConstantUtils.FORGET_PSW_MSG)) {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "setPswToken", Objects.requireNonNull(response.body()).getData());
                     } else if (msg.equals(ConstantUtils.REGISTER_MSG)) {
+=======
+                int responseCode = response.body().getCode();
+                if (responseCode == successCode) {
+                    if (msg.equals(FORGET_PSW_MSG)) {
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "setPswToken", response.body().getData());
+                    } else if (msg.equals(REGISTER_MSG)) {
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "registerToken", response.body().getData());
                     }
                     Toast.makeText(UMapplication.getContext(), ConstantUtils.VER_CODE_SEND, Toast.LENGTH_SHORT).show();
@@ -905,8 +952,14 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
+=======
+                int responseCode = response.body().getCode();
+                if (responseCode == successCode) {
+                    Toast.makeText(UMapplication.getContext(), "修改成功", Toast.LENGTH_SHORT).show();
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
                     nextActivity(UMapplication.getContext(), startAct, LoginActivity.class);
                 } else {
                     Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
@@ -934,8 +987,13 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
+=======
+                int responseCode = response.body().getCode();
+                if (responseCode == successCode) {
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "phone", phone);
                     nextActivity(UMapplication.getContext(), startAct, PerfectInfoActivity.class);
                 } else {
@@ -962,9 +1020,15 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
                     String token = Objects.requireNonNull(response.body()).getData();
+=======
+                int responseCode = response.body().getCode();
+                if (responseCode == successCode) {
+                    String token = response.body().getData();
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", token);
                     ZLoadingDialog dialog = new ZLoadingDialog(UMapplication.getContext());
                     dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
@@ -1005,9 +1069,15 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if(responseCode==ConstantUtils.SUCCESS_CODE){
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token", Objects.requireNonNull(response.body()).getData());
+=======
+                int responseCode = response.body().getCode();
+                if(responseCode==successCode){
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token",response.body().getData());
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"platform",uMengLoginRequest.getPlatform());
                     //使用com.zyao89:zloading:1.1.2引用別人的加载动画
                     ZLoadingDialog dialog = new ZLoadingDialog(UMapplication.getContext());
@@ -1041,9 +1111,15 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if(responseCode==ConstantUtils.SUCCESS_CODE){
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token", Objects.requireNonNull(response.body()).getData());
+=======
+                int responseCode = response.body().getCode();
+                if(responseCode==successCode){
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token",response.body().getData());
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"hasLogin","true");
                     //使用com.zyao89:zloading:1.1.2引用別人的加载动画
                     ZLoadingDialog dialog = new ZLoadingDialog(UMapplication.getContext());

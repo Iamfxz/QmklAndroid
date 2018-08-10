@@ -1,17 +1,21 @@
 package com.android.papers.qmkl_android.model;
 
+/**
+ *      通用的请求返回
+ * @param <T>
+ */
 public class ResponseInfo<T> {
 
-    private String code;
+    private int code;
     private T data;
     private String msg;
 
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(int code) {
         this.code = code;
     }
 

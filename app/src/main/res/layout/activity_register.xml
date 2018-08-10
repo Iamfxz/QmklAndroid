@@ -71,7 +71,6 @@
             </android.support.design.widget.TextInputLayout>
 
             <Button
-
                 android:id="@+id/send_code"
                 android:layout_width="140sp"
                 android:layout_height="wrap_content"

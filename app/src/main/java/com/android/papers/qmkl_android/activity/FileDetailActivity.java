@@ -5,6 +5,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -15,22 +18,40 @@ import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.db.DownloadDB;
+import com.android.papers.qmkl_android.impl.PostDislike;
+import com.android.papers.qmkl_android.impl.PostIsDislike;
+import com.android.papers.qmkl_android.impl.PostIsLike;
+import com.android.papers.qmkl_android.impl.PostLike;
 import com.android.papers.qmkl_android.model.PaperFile;
+<<<<<<< HEAD
 import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.ConstantUtils;
+=======
+import com.android.papers.qmkl_android.model.ResponseInfo;
+import com.android.papers.qmkl_android.requestModel.LikeDisLikeRequest;
+import com.android.papers.qmkl_android.util.ActivityManager;
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
 import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.LogUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
-import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.ToastUtils;
+import com.jaren.lib.view.LikeView;
 
 import java.io.File;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.android.papers.qmkl_android.util.RetrofitUtils.BaseUrl;
 
 /**
  *
@@ -50,6 +71,14 @@ public class FileDetailActivity extends BaseActivity {
     public TextView fileOpenTip,fileLocalTip;
     //下载线程
     private Thread downloadTask;
+
+    //发送请求
+    final private Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(BaseUrl)// 设置 网络请求 Url,1.0.0版本
+            .addConverterFactory(GsonConverterFactory.create())//设置使用Gson解析
+            .build();
+    //用于请求点赞/点踩的人数及用户本身是否已经点赞/点踩
+    LikeDisLikeRequest LDRequest;
 
     @BindView(R.id.iv_exit)//后退箭头
     ImageView ivExit;
@@ -73,6 +102,14 @@ public class FileDetailActivity extends BaseActivity {
     ImageButton btnCancel;
     @BindView(R.id.tv_file_size)//文件大小文本
     TextView tvFileSize;
+    @BindView(R.id.likeView)//点赞图
+    LikeView lvLikeNumView;
+    @BindView(R.id.dislikeView)//点踩图
+    LikeView lvDislikeNumView;
+    @BindView(R.id.dislikeTip)//点踩人数
+    TextView tvDislikeTip;
+    @BindView(R.id.likeTip)//点赞人数
+    TextView tvLikeTip;
 
     //监听退出和删除按钮
     @OnClick({R.id.iv_exit, R.id.tv_delete})
@@ -112,7 +149,7 @@ public class FileDetailActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ActManager.addActivity(this);
+        ActivityManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_detail);
         ButterKnife.bind(this);
@@ -128,26 +165,61 @@ public class FileDetailActivity extends BaseActivity {
         mFile = getIntent().getParcelableExtra("FileDetail");//由于端口设置原因url从下面方式获取
         mFile.setUrl(SharedPreferencesUtils.getStoredMessage(this,mFile.getPath()));
 
-
+        //封装请求
+        String token = SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"token");
+        LDRequest = new LikeDisLikeRequest(String.valueOf(mFile.getId()),token);
+        //发送post请求
+        postIsDislike();
+        postIsLike();
 
         //显示文本
         tvTitle.setText(mFile.getCourse());
         tvFileName.setText(mFile.getName());
         tvFileSize.setText(String.valueOf(mFile.getSize()));
+        tvLikeTip.setText(String.valueOf(mFile.getLikeNum()));
+        tvDislikeTip.setText(String.valueOf(mFile.getDislikeNum()));
 
         //显示图标
         imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType().toLowerCase()));
 //        //测试传递的过来的文件是否准确，准确
-        System.out.println(mFile.getDislikeNum());
-        System.out.println(mFile.getLikeNum());
-        System.out.println(mFile.getId());
-        System.out.println(mFile.getMd5());
+//        System.out.println(mFile.getDislikeNum());
+//        System.out.println(mFile.getLikeNum());
+//        System.out.println(mFile.getId());
+//        System.out.println(mFile.getMd5());
 //        System.out.println("url:"+mFile.getUrl());
         //显示按钮
         btnDownload.setText(mFile.isDownload() ? "打开文件" : "下载到手机");
         fileOpenTip.setVisibility(mFile.isDownload()? View.VISIBLE:View.INVISIBLE);
         fileLocalTip.setVisibility(mFile.isDownload()? View.INVISIBLE:View.VISIBLE);
         tvDelete.setVisibility(mFile.isDownload() ? View.VISIBLE : View.INVISIBLE);
+
+        //点赞和点踩的事件监听
+        lvLikeNumView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lvLikeNumView.toggle();
+                postLike();
+                //更新点赞的数量
+                if(lvLikeNumView.isChecked()){
+                    mHandler.sendEmptyMessage(1);
+                }else {
+                    mHandler.sendEmptyMessage(3);
+                }
+            }
+        });
+        lvDislikeNumView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lvDislikeNumView.toggle();
+                postDislike();
+                //更新点踩的数量
+                if(lvDislikeNumView.isChecked()){
+                    mHandler.sendEmptyMessage(2);
+                }else {
+                    mHandler.sendEmptyMessage(4);
+                }
+            }
+        });
     }
 
     private void deleteDownloadedFile() {
@@ -271,7 +343,11 @@ public class FileDetailActivity extends BaseActivity {
             intent.setPackage("com.tencent.mobileqq");
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
             intent.putExtra(Intent.EXTRA_TEXT,  mFile.getName() + ": " +
+<<<<<<< HEAD
                     ConstantUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
+=======
+                    BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
+>>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(Intent.createChooser(intent, "选择\"发送到我的电脑\""));
@@ -316,8 +392,110 @@ public class FileDetailActivity extends BaseActivity {
         btnDownload.setText(mFile.isDownload() ? "打开文件" : "下载到手机");
     }
 
+    private void postDislike(){
+        PostDislike request = retrofit.create(PostDislike.class);
+        Call<ResponseInfo> call = request.getCall(LDRequest);
+        call.enqueue(new Callback<ResponseInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+            }
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+            }
+        });
+    }
+
+    private void postIsDislike(){
+        PostIsDislike request = retrofit.create(PostIsDislike.class);
+        Call<ResponseInfo> call = request.getCall(LDRequest);
+        call.enqueue(new Callback<ResponseInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+                try{
+                    if(Objects.requireNonNull(response.body()).getData().toString().equals("true")){
+                        mHandler.sendEmptyMessage(6);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+            }
+        });
+    }
+
+    private void postLike(){
+        PostLike request = retrofit.create(PostLike.class);
+        Call<ResponseInfo> call = request.getCall(LDRequest);
+        call.enqueue(new Callback<ResponseInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+            }
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+            }
+        });
+    }
+
+    private void postIsLike(){
+        PostIsLike request = retrofit.create(PostIsLike.class);
+        Call<ResponseInfo> call = request.getCall(LDRequest);
+        call.enqueue(new Callback<ResponseInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+                try{
+                    if(Objects.requireNonNull(response.body()).getData().toString().equals("true")){
+                        mHandler.sendEmptyMessage(5);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+            }
+        });
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
+
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            boolean result = false;
+            if (msg.what == 1) {
+                //点赞成功+1
+                mFile.setLikeNum(mFile.getLikeNum()+1);
+                tvLikeTip.setText(String.valueOf(mFile.getLikeNum()));
+                result = true;
+            }else if (msg.what == 2){
+                //点踩成功+1
+                mFile.setDislikeNum(mFile.getDislikeNum()+1);
+                tvDislikeTip.setText(String.valueOf(mFile.getDislikeNum()));
+                result = true;
+            }else if (msg.what == 3){
+                //点赞取消-1
+                mFile.setLikeNum(mFile.getLikeNum()-1);
+                tvLikeTip.setText(String.valueOf(mFile.getLikeNum()));
+                result = true;
+            }else if (msg.what == 4){
+                //点踩取消-1
+                mFile.setDislikeNum(mFile.getDislikeNum()-1);
+                tvDislikeTip.setText(String.valueOf(mFile.getDislikeNum()));
+                result = true;
+            }else if (msg.what == 5){
+                //已经点赞
+                lvLikeNumView.setChecked(true);
+                result = true;
+            }else if(msg.what == 6){
+                //已经点踩
+                lvDislikeNumView.setChecked(true);
+                result = true;
+            }
+            return result;
+        }
+    }) ;
 }

@@ -7,12 +7,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -47,13 +45,11 @@ import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
-import com.github.promeg.pinyinhelper.Pinyin;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -93,7 +89,7 @@ public class ResourceFragment extends Fragment
     int mLastVisibleItem = -1;
 
     //数据适配器
-    private FolderAdapter mAdapter;
+    private FileAdapter mAdapter;
 
     //地址变化
     private String BasePath = "/";
@@ -149,7 +145,7 @@ public class ResourceFragment extends Fragment
         title.setText(collegeName);
 
         //文件列表设置
-        mAdapter = new FolderAdapter();
+        mAdapter = new FileAdapter();
         lvFolder.setAdapter(mAdapter);
         lvFolder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -326,10 +322,6 @@ public class ResourceFragment extends Fragment
         mLastVisibleItem = lastVisibleItem;
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
-    }
 
     /**
      * 菜单栏
@@ -579,16 +571,16 @@ public class ResourceFragment extends Fragment
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            ViewHolder holder;
+            mItemViewHolder holder;
             list = new ArrayList<>(mData.getData().keySet());
             String folderName = list.get(position);
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
                 convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
-                holder = new ViewHolder(convertView);
+                holder = new mItemViewHolder(convertView);
                 convertView.setTag(holder);
             } else {
-                holder = (ViewHolder) convertView.getTag();
+                holder = (mItemViewHolder) convertView.getTag();
             }
 
             //从Data中取出数据填充到ListView列表项中
@@ -809,12 +801,91 @@ public class ResourceFragment extends Fragment
         }
     }
 
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
+
+    private class FileAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            int size = 0;
+            if (mData == null) {
+                return size;
+            }
+            try {
+                size = mData.getData().keySet().size();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return size;
+
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return new ArrayList<>(mData.getData().keySet()).get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            mItemViewHolder holder;
+            list = new ArrayList<>(mData.getData().keySet());
+            String folderName = list.get(position);
+            //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
+            if (convertView == null) {
+                convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
+                holder = new mItemViewHolder(convertView);
+                convertView.setTag(holder);
+            } else {
+                holder = (mItemViewHolder) convertView.getTag();
+            }
+
+            //从Data中取出数据填充到ListView列表项中
+            holder.tvFolderName.setText(folderName);
+            holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
+            if (!PaperFileUtils.typeWithFileName(folderName).equals("folder")) {
+                holder.tvFolderSize.setText(mData.getData().get(folderName));
+                holder.tvFolderSize.setVisibility(View.VISIBLE);
+                holder.imgFolderArrow.setVisibility(View.INVISIBLE);
+            } else {
+                holder.tvFolderSize.setVisibility(View.INVISIBLE);
+                holder.imgFolderArrow.setVisibility(View.VISIBLE);
+            }
+            return convertView;
+        }
+    }
+
+    static class mItemViewHolder {
+        @BindView(R.id.tv_folder_name)
+        TextView tvFolderName;
+        @BindView(R.id.img_folder_icon)
+        ImageView imgFolderIcon;
+        @BindView(R.id.tv_folder_size)
+        TextView tvFolderSize;
+        @BindView(R.id.img_folder_arrow)
+        ImageView imgFolderArrow;
+
+        mItemViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
+
     /**
      * handler为线程之间通信的桥梁
      */
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
+    private Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            boolean result = false;
             switch (msg.what) {
                 //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
                 case 1:
@@ -822,12 +893,12 @@ public class ResourceFragment extends Fragment
                         mData.sort();
                     }
                     mAdapter.notifyDataSetChanged();//UI界面就刷新
+                    result = true;
                     break;
-
                 default:
                     break;
             }
+            return result;
         }
-
-    };
+    });
 }

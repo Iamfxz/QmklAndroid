@@ -2,13 +2,9 @@ package com.android.papers.qmkl_android.activity;
 import android.content.DialogInterface;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,20 +16,17 @@ import android.widget.Toast;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.umengUtil.MyUMAuthListener;
-import com.android.papers.qmkl_android.util.ActManager;
+import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.MyTextWatcher;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
-import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -66,7 +59,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActManager.addActivity(this);
+        ActivityManager.addActivity(this);
 //        setBarColor(R.color.white); //沉浸式状态栏设置颜色
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
@@ -74,13 +67,18 @@ public class LoginActivity extends BaseActivity {
         forgetPsw.getPaint().setAntiAlias(true);//抗锯齿
         register.getPaint().setAntiAlias(true);//抗锯齿
 
+        //闪退的通过try可以解决，但是如果是必要执行的不要使用try
+        try{
+            if(SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")
+                    ||SharedPreferencesUtils.getStoredMessage(this,"phone")==null){
+                //设置默认账号
+                userPhoneNum.getEditText().setText(SharedPreferencesUtils.getStoredMessage(this,"phone"));
+                //初始焦点位于输入密码位置
+                userPsw.getEditText().requestFocus();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
 
-        if(SharedPreferencesUtils.getStoredMessage(this,"phone")!=null
-                && !SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")) {
-            //设置默认账号
-            userPhoneNum.getEditText().setText(SharedPreferencesUtils.getStoredMessage(this, "phone"));
-            //初始焦点位于输入密码位置
-            userPsw.getEditText().requestFocus();
         }
 //        //闪退的通过try可以解决，但是如果是必要执行的不要使用try
 //        try{
@@ -119,7 +117,7 @@ public class LoginActivity extends BaseActivity {
                             @Override
                             public void onClick(DialogInterface dialog,
                                                 int which) {
-                                ActManager.AppExit(getApplicationContext());
+                                ActivityManager.AppExit(getApplicationContext());
                             }
                         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {// 消极
 
@@ -193,7 +191,7 @@ public class LoginActivity extends BaseActivity {
             }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
 
         } else {
-            ActManager.AppExit(getApplicationContext());
+            ActivityManager.AppExit(getApplicationContext());
         }
     }
 
