@@ -32,6 +32,9 @@ import com.android.papers.qmkl_android.util.ActManager;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 3b4201b... 2018/8/10
+=======
 >>>>>>> parent of 3b4201b... 2018/8/10
 =======
 >>>>>>> parent of 3b4201b... 2018/8/10
@@ -355,7 +358,11 @@ public class FileDetailActivity extends BaseActivity {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                     BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
+=======
+                    RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
                     RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
 >>>>>>> parent of 3b4201b... 2018/8/10
