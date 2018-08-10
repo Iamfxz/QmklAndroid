@@ -62,6 +62,7 @@ import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,7 +72,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class RetrofitUtils {
-    final public static String BaseUrl = "http://120.77.32.233/qmkl1.0.0/";//后端版本
+    final public static String BaseUrl = "http://120.77.32.233/qmkl1.0.0/";//后端服务器版本
 
     //实例化Retrofit对象
     private static Retrofit retrofit = new Retrofit.Builder()
@@ -90,6 +91,27 @@ public class RetrofitUtils {
     private static String oldAdName, newAdName, adPath, avatarPath;
     private static final String FORGET_PSW_MSG = "修改密码";
     private static final String REGISTER_MSG = "注册";
+
+
+        /**
+        异步请求通用方法
+        PostXXXX是指接口
+        Response指返回数据的模板类
+        Request指请求数据的模板类
+         Retrofit retrofit = new Retrofit.Builder()
+         .baseUrl(BaseUrl)// 设置 网络请求 Url,1.0.0版本
+         .addConverterFactory(GsonConverterFactory.create())//设置使用Gson解析
+         .build()
+        PostXXXX request = retrofit.create(PostXXXX.class);
+        Call<Response> call = request.getCall(Request);
+        call.enqueue(new Callback<Response>() {
+            @Override
+            public void onResponse(@NonNull Call<Response> call, @NonNull final Response<Response> response) {
+            }
+            @Override
+            public void onFailure(@NonNull Call<Response> call, @NonNull Throwable t) {
+            }
+        });*/
 
     //获取广告
     public static void postAd(final Context context, final Activity startAct) {
@@ -217,10 +239,10 @@ public class RetrofitUtils {
     }
 
     //登录调用API发送登录数据给服务器
-    public static void postLogin(final Activity startActivity, final Context context, LoginRequest r, final ZLoadingDialog dialog) {
+    public static void postLogin(final Activity startActivity, final Context context, LoginRequest loginRequest, final ZLoadingDialog dialog) {
         //创建 网络请求接口 的实例
         PostLogin request = retrofit.create(PostLogin.class);
-        Call<ResponseInfo> call = request.getCall(r);
+        Call<ResponseInfo> call = request.getCall(loginRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             //请求成功时回调
             @Override
@@ -239,7 +261,7 @@ public class RetrofitUtils {
                     //获取用户信息
                     RetrofitUtils.postUserInfo(context, startActivity, token, dialog);
                 } else {
-                    //TODO 子线程更新UI界面
+                    //TODO 子线程更新UI界面会崩溃，使用handler方法
                     Toast.makeText(context, response.body().getMsg(), Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
@@ -523,6 +545,7 @@ public class RetrofitUtils {
                                 });
 
                         AlertDialog alertDialog = builder.create();
+                        //TODO 修改成可以取消
                         alertDialog.setCanceledOnTouchOutside(false);
                         alertDialog.show();
                     } else {
@@ -627,11 +650,7 @@ public class RetrofitUtils {
 
 
     //用户注册界面获取学校信息
-<<<<<<< HEAD
     public static void postAllColleges(final Context context, final AlertDialog.Builder builder, final EditText college, final EditText academy, final ZLoadingDialog dialog) {
-=======
-    public static void postAllColleges(final Context context, final AlertDialog.Builder builder, final TextInputEditText college, final TextInputEditText academy, final ZLoadingDialog dialog) {
->>>>>>> bb3b67c72564c397734b6e372ea2ff360408e5da
         //监听返回键
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -695,11 +714,7 @@ public class RetrofitUtils {
 
     //用户注册界面获取学院信息
     //传入用户token值该学校所有专业
-<<<<<<< HEAD
     public static void postAllAcademies(final Context context, String collegeName, final AlertDialog.Builder builder, final EditText academy,final ZLoadingDialog dialog ){
-=======
-    public static void postAllAcademies(final Context context, String collegeName, final AlertDialog.Builder builder, final TextInputEditText academy, final ZLoadingDialog dialog) {
->>>>>>> bb3b67c72564c397734b6e372ea2ff360408e5da
         PostAllAcademies request = retrofit.create(PostAllAcademies.class);
         Call<AcademiesOrCollegesRes> call = request.getCall(new QueryAcademiesRequest(collegeName));
         call.enqueue(new Callback<AcademiesOrCollegesRes>() {
@@ -734,7 +749,6 @@ public class RetrofitUtils {
                 dialog.dismiss();
             }
         });
-
     }
 
     //传入用户名退出登录

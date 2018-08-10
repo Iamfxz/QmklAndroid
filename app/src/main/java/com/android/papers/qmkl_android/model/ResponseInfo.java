@@ -1,5 +1,9 @@
 package com.android.papers.qmkl_android.model;
 
+/**
+ *      通用的请求返回
+ * @param <T>
+ */
 public class ResponseInfo<T> {
 
     private String code;

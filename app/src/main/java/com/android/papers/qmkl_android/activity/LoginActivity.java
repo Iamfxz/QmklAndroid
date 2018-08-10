@@ -74,14 +74,6 @@ public class LoginActivity extends BaseActivity {
         forgetPsw.getPaint().setAntiAlias(true);//抗锯齿
         register.getPaint().setAntiAlias(true);//抗锯齿
 
-<<<<<<< HEAD
-        if(SharedPreferencesUtils.getStoredMessage(this,"phone")!=null
-                && !SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")){
-            //设置默认账号
-            userPhoneNum.getEditText().setText(SharedPreferencesUtils.getStoredMessage(this,"phone"));
-            //初始焦点位于输入密码位置
-            userPsw.getEditText().requestFocus();
-=======
         //闪退的通过try可以解决，但是如果是必要执行的不要使用try
         try{
             if(SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")
@@ -93,7 +85,6 @@ public class LoginActivity extends BaseActivity {
             }
         }catch (Exception e){
             e.printStackTrace();
->>>>>>> bb3b67c72564c397734b6e372ea2ff360408e5da
         }
 
         //初始时登录按钮不可用

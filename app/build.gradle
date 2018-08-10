@@ -52,6 +52,8 @@ dependencies {
     implementation 'com.github.promeg:tinypinyin:2.0.3'
     //悬浮按钮开源框架
     implementation 'com.github.clans:fab:1.6.4'
+    //点赞动画
+    implementation 'com.jaren:likeview:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
