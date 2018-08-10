@@ -112,6 +112,7 @@ public class SDCardUtils {
      * @return 广告图片路径
      */
     public static String getADImage(String picName) {
+<<<<<<< HEAD
         try {
             String strings[] = picName.split("\\.");
             int length = strings.length;
@@ -122,6 +123,13 @@ public class SDCardUtils {
             e.printStackTrace();
         }
 
+=======
+        String strings[]=picName.split("\\.");
+        int length=strings.length;
+        if(strings[length-1].equals("jpg") || strings[length-1].equals("png")) {
+            return getADImagePath() + picName;
+        }
+>>>>>>> parent of 3b4201b... 2018/8/10
         return getADImagePath() + picName + ".png";
     }
 
@@ -132,6 +140,7 @@ public class SDCardUtils {
      * @return 头像图片路径
      */
     public static String getAvatarImage(String avatarName) {
+<<<<<<< HEAD
         try{
             String strings[] = avatarName.split("\\.");
             int length = strings.length;
@@ -140,6 +149,12 @@ public class SDCardUtils {
             }
         }catch (Exception e){
             e.printStackTrace();
+=======
+        String strings[]=avatarName.split("\\.");
+        int length=strings.length;
+        if(strings[length-1].equals("jpg") || strings[length-1].equals("png")){
+            return getCachePath() + avatarName;
+>>>>>>> parent of 3b4201b... 2018/8/10
         }
         return getCachePath() + avatarName + ".png";
     }
