@@ -60,10 +60,7 @@ public class CircleDrawable extends Drawable {
 
     @Override
     public void draw(@NonNull Canvas canvas) {
-        if(paint!=null){
-            canvas.drawCircle(cx, cy, radius, paint);
-        }
-
+        canvas.drawCircle(cx, cy, radius, paint);
     }
 
     /**

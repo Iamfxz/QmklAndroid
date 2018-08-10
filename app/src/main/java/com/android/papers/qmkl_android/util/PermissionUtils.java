@@ -2,16 +2,18 @@ package com.android.papers.qmkl_android.util;
 
 import android.Manifest;
 import android.app.Activity;
+<<<<<<< HEAD
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
+=======
+>>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -21,9 +23,6 @@ import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +32,7 @@ import java.util.Map;
  * Created by 孟庆豆 on 2018/5/9.
  */
 public class PermissionUtils {
-    private static final String TAG = "PermissionUtils";
+    private static final String TAG = PermissionUtils.class.getSimpleName();
     public static final int CODE_RECORD_AUDIO = 0;
     public static final int CODE_GET_ACCOUNTS = 1;
     public static final int CODE_READ_PHONE_STATE = 2;
@@ -116,7 +115,7 @@ public class PermissionUtils {
              *如果设备规范禁止应用具有该权限，此方法也会返回 false。
              */
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, requestPermission)) {
-                Log.d(TAG, "requestPermission shouldShowRequestPermissionRationale");
+                Log.i(TAG, "requestPermission shouldShowRequestPermissionRationale");
                 shouldShowRationale(activity, requestCode, requestPermission);
 
             } else {
@@ -126,7 +125,7 @@ public class PermissionUtils {
 
         } else {
             Log.d(TAG, "ActivityCompat.checkSelfPermission ==== PackageManager.PERMISSION_GRANTED");
-//            Toast.makeText(activity, "opened:" + requestPermissions[requestCode], Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "opened:" + requestPermissions[requestCode], Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -200,18 +199,15 @@ public class PermissionUtils {
     private static void shouldShowRationale(final Activity activity, final int requestCode, final String requestPermission) {
         //TODO
         String[] permissionsHint = requestPermissions;
-//        showMessageOKCancel(activity, "Rationale: " + permissionsHint[requestCode], new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                ActivityCompat.requestPermissions(activity,
-//                        new String[]{requestPermission},
-//                        requestCode);
-//                Log.d(TAG, "showMessageOKCancel requestPermissions:" + requestPermission);
-//            }
-//        });
-        ActivityCompat.requestPermissions(activity,
-                new String[]{requestPermission},
-                requestCode);
+        showMessageOKCancel(activity, "Rationale: " + permissionsHint[requestCode], new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{requestPermission},
+                        requestCode);
+                Log.d(TAG, "showMessageOKCancel requestPermissions:" + requestPermission);
+            }
+        });
     }
 
     private static void showMessageOKCancel(final Activity context, String message, DialogInterface.OnClickListener okListener) {
@@ -221,6 +217,7 @@ public class PermissionUtils {
                 .setNegativeButton("Cancel", null)
                 .create()
                 .show();
+
     }
 
     /**
@@ -347,6 +344,7 @@ public class PermissionUtils {
         return true;
     }
 
+<<<<<<< HEAD
 
     public static void jumpPermissionPage(Context mContext) {
         String name = Build.MANUFACTURER;
@@ -576,4 +574,6 @@ public class PermissionUtils {
             }
         }
     }
+=======
+>>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
 }
