@@ -85,7 +85,7 @@ public class AdsDetailsActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent keyEvent) {
-        if (keyCode == keyEvent.KEYCODE_BACK) {//监听返回键，如果可以后退就后退
+        if (keyCode == KeyEvent.KEYCODE_BACK) {//监听返回键，如果可以后退就后退
             if (ads_webview.canGoBack()) {
                 ads_webview.goBack();
                 return true;
