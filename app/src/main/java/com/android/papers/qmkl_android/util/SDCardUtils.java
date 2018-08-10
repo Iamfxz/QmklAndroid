@@ -115,12 +115,17 @@ public class SDCardUtils {
      * @return 广告图片路径
      */
     public static String getADImage(String picName) {
-        String strings[]=picName.split("\\.");
-        int length=strings.length;
-        if(strings[length-1].equals("jpg") || strings[length-1].equals("png")) {
-            return getADImagePath() + picName;
+        if(picName!=null && !picName.equals("")){
+            String strings[]=picName.split("\\.");
+            int length=strings.length;
+            if(strings[length-1].equals("jpg") || strings[length-1].equals("png")) {
+                return getADImagePath() + picName;
+            }
+            return getADImagePath() + picName + ".png";
         }
-        return getADImagePath() + picName + ".png";
+        else {
+            return getCachePath() + picName;
+        }
     }
 
     /**
@@ -130,12 +135,17 @@ public class SDCardUtils {
      * @return 头像图片路径
      */
     public static String getAvatarImage(String avatarName) {
-        String strings[]=avatarName.split("\\.");
-        int length=strings.length;
-        if(strings[length-1].equals("jpg") || strings[length-1].equals("png")){
+        if(avatarName!=null && !avatarName.equals("")){
+            String strings[]=avatarName.split("\\.");
+            int length=strings.length;
+            if(strings[length-1].equals("jpg") || strings[length-1].equals("png")){
+                return getCachePath() + avatarName;
+            }
+            return getCachePath() + avatarName + ".png";
+        }
+        else {
             return getCachePath() + avatarName;
         }
-        return getCachePath() + avatarName + ".png";
     }
 
 

@@ -1,9 +1,11 @@
 package com.android.papers.qmkl_android.activity;
 
+import android.Manifest;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,6 +34,8 @@ import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
 import com.android.papers.qmkl_android.umengUtil.MyUMAuthListener;
 import com.android.papers.qmkl_android.util.ActManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
+import com.android.papers.qmkl_android.util.ConstantUtils;
+import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
@@ -48,11 +53,6 @@ import butterknife.OnClick;
 public class UserInfoActivity extends BaseActivity {
 
     public static final String TAG = "UserInfoActivityTag";
-    private static final int NICKNAME=1;
-    private static final int GENDER = 2;
-    private static final int ENTERYEAR=3;
-    private static final int COLLEGE = 4;
-    private static final int ACADEMY=5;
     //保存学院信息
     public static String[] academies=null;
     //保存学校信息
@@ -127,8 +127,8 @@ public class UserInfoActivity extends BaseActivity {
                             .setHintText("loading...")
                             .setCanceledOnTouchOutside(false)
                             .show();
-                    UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),username.getText().toString(),NICKNAME);
-                    RetrofitUtils.postUpdateUser(NICKNAME,getApplicationContext(),userRequest,alertDialog,nickname,dialog,false);
+                    UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),username.getText().toString(),ConstantUtils.NICKNAME);
+                    RetrofitUtils.postUpdateUser(ConstantUtils.NICKNAME,getApplicationContext(),userRequest,alertDialog,nickname,dialog,false);
                 }
                 else {
                     alertDialog.dismiss();
@@ -191,8 +191,8 @@ public class UserInfoActivity extends BaseActivity {
                 .setItems(genderItems, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface DialogInterface, int which) {
-                        UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),genderItems[which],GENDER);
-                        RetrofitUtils.postUpdateUser(GENDER,getApplicationContext(),userRequest,null,gender,dialog,false);
+                        UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),genderItems[which],ConstantUtils.GENDER);
+                        RetrofitUtils.postUpdateUser(ConstantUtils.GENDER,getApplicationContext(),userRequest,null,gender,dialog,false);
                     }
                 });
         //监听返回键
@@ -224,8 +224,8 @@ public class UserInfoActivity extends BaseActivity {
                 .setItems(enterYearItems, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface DialogInterface, int which) {
-                        UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),enterYearItems[which],ENTERYEAR);
-                        RetrofitUtils.postUpdateUser(ENTERYEAR,getApplicationContext(),userRequest,null,enterYear,dialog,false);
+                        UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),enterYearItems[which],ConstantUtils.ENTERYEAR);
+                        RetrofitUtils.postUpdateUser(ConstantUtils.ENTERYEAR,getApplicationContext(),userRequest,null,enterYear,dialog,false);
                     }
                 });
         //监听返回键
@@ -305,19 +305,19 @@ public class UserInfoActivity extends BaseActivity {
         academy=SharedPreferencesUtils.getStoredMessage(context,"academy");
         token=SharedPreferencesUtils.getStoredMessage(context,"token");
         switch (flag){
-            case NICKNAME:
+            case ConstantUtils.NICKNAME:
                 nickname=value;
                 break;
-            case GENDER:
+            case ConstantUtils.GENDER:
                 gender=value;
                 break;
-            case ENTERYEAR:
+            case ConstantUtils.ENTERYEAR:
                 enterYear=value;
                 break;
-            case COLLEGE:
+            case ConstantUtils.COLLEGE:
                 college=value;
                 break;
-            case ACADEMY:
+            case ConstantUtils.ACADEMY:
                 academy=value;
                 break;
         }
@@ -359,15 +359,20 @@ public class UserInfoActivity extends BaseActivity {
      * @return 所在地址
      */
     private String getImagePath(Uri uri, String selection){
-        String path = null;
-        Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
-        if (cursor != null){
-            if (cursor.moveToFirst()) {
-                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        if(PermissionUtils.isHaveWritePer(UserInfoActivity.this,PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE)){
+            Toast.makeText(this,"没有权限",Toast.LENGTH_SHORT).show();
+        }else {
+            String path = null;
+            Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
+            if (cursor != null){
+                if (cursor.moveToFirst()) {
+                    path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                }
+                cursor.close();
             }
-            cursor.close();
-        }
-        return path;
+                return path;
+            }
+        return null;
     }
 
     /**

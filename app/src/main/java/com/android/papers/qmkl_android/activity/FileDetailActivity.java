@@ -17,6 +17,7 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.util.ActManager;
+import com.android.papers.qmkl_android.util.ConstantUtils;
 import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.LogUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
@@ -270,7 +271,7 @@ public class FileDetailActivity extends BaseActivity {
             intent.setPackage("com.tencent.mobileqq");
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
             intent.putExtra(Intent.EXTRA_TEXT,  mFile.getName() + ": " +
-                    RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
+                    ConstantUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(Intent.createChooser(intent, "选择\"发送到我的电脑\""));
