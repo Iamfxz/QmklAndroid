@@ -41,19 +41,19 @@ public class AuthPerUserInfo extends BaseActivity{
 
     final static String TAG="AuthPerUserInfo";
 
-    @BindView(R.id.head_img)
+    @BindView(R.id.head_img)//头像
     CircleImageView headImg;
-    @BindView(R.id.next)
+    @BindView(R.id.next)//下一步按钮
     Button nextBtn;
-    @BindView(R.id.user_nickname)
+    @BindView(R.id.user_nickname)//用户昵称输入
     TextInputLayout userNickname;
-    @BindView(R.id.gender_tiLayout)
+    @BindView(R.id.gender_tiLayout)//用户性别
     TextInputLayout genderLayout;
-    @BindView(R.id.college_tiLayout)
+    @BindView(R.id.college_tiLayout)//用户学校
     TextInputLayout collegeLayout;
-    @BindView(R.id.academy_tiLayout)
+    @BindView(R.id.academy_tiLayout)//用户学院
     TextInputLayout academyLayout;
-    @BindView(R.id.enterYear_tiLayout)
+    @BindView(R.id.enterYear_tiLayout)//用户年级
     TextInputLayout enterYearLayout;
 
 
@@ -67,6 +67,9 @@ public class AuthPerUserInfo extends BaseActivity{
 
     }
 
+    /**
+     *      初始化视图
+     */
     private void initView(){
         final Bitmap[] bitmap = new Bitmap[1];
         new Thread(new Runnable() {
@@ -88,16 +91,32 @@ public class AuthPerUserInfo extends BaseActivity{
                 }
             }
         }).start();
+<<<<<<< HEAD
         //获取第三方昵称
         Objects.requireNonNull(userNickname.getEditText()).setText(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"nickname"));
+=======
+
+        //获取第三方昵称、昵称长度
+        String nickName = SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"nickname");
+        Objects.requireNonNull(userNickname.getEditText()).setText(nickName);
+>>>>>>> 65b3f53c257b36cb69755bc1d6f72bd7f961e5e9
         EditTextFilter.setProhibitEmoji(userNickname.getEditText(),this);
+        userNickname.getEditText().setSelection(nickName.length());//光标
+
         //获取第三方性别
+<<<<<<< HEAD
         Objects.requireNonNull(genderLayout.getEditText()).setText(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"gender"));
 
         userNickname.getEditText().setSelection(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"nickname").length());
+=======
+        String gender = SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"gender");
+        Objects.requireNonNull(genderLayout.getEditText()).setText(gender);
+
+>>>>>>> 65b3f53c257b36cb69755bc1d6f72bd7f961e5e9
         //下一步按钮不可用
         nextBtn.setEnabled(false);
 
+        //添加昵称、性别、大学、专业、入学年级等的监听
         Objects.requireNonNull(userNickname.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
         Objects.requireNonNull(genderLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
         Objects.requireNonNull(collegeLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
@@ -105,19 +124,24 @@ public class AuthPerUserInfo extends BaseActivity{
         Objects.requireNonNull(enterYearLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
     }
 
+    /**
+     *      监听事件，性别选择，大学选择，学院选择，入学年级选择，下一步选择，后退选择
+     * @param view 视图
+     */
     @OnClick({R.id.gender,R.id.college_name,R.id.academy_name,R.id.enterYear_num,R.id.next,R.id.back})
     public void onClick(View view){
         AlertDialog.Builder builder;
         final ZLoadingDialog dialog;
         switch (view.getId()){
             case R.id.gender:
+                //性别选择
                 final String[] genderItems = new String[] { "男","女" };
                 builder = new AlertDialog.Builder(view.getContext());
-                builder.setTitle("选择性别")
+                builder.setTitle("请选择您的性别")
                         .setItems(genderItems, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface DialogInterface, int which) {
-                                genderLayout.getEditText().setText(genderItems[which]);
+                                Objects.requireNonNull(genderLayout.getEditText()).setText(genderItems[which]);
                             }
                         });
                 AlertDialog alertDialog=builder.create();
@@ -125,6 +149,7 @@ public class AuthPerUserInfo extends BaseActivity{
                 alertDialog.show();
                 break;
             case R.id.college_name:
+                //大学选择
                 dialog = new ZLoadingDialog(this);
                 dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                         .setLoadingColor(getResources().getColor(R.color.blue))//颜色
@@ -135,7 +160,8 @@ public class AuthPerUserInfo extends BaseActivity{
                 RetrofitUtils.postAllColleges(builder,collegeLayout.getEditText(),academyLayout.getEditText(),dialog);
                 break;
             case R.id.academy_name:
-                if(collegeLayout.getEditText().getText().toString().equals("")){
+                //专业选择
+                if(Objects.requireNonNull(collegeLayout.getEditText()).getText().toString().equals("")){
                     Toast.makeText(this,"请先选择学校",Toast.LENGTH_SHORT).show();
                 }
                 else {
@@ -150,6 +176,7 @@ public class AuthPerUserInfo extends BaseActivity{
                 }
                 break;
             case R.id.enterYear_num:
+                //入学年级选择
                 dialog = new ZLoadingDialog(this);
                 dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                         .setLoadingColor(getResources().getColor(R.color.blue))//颜色
@@ -162,7 +189,7 @@ public class AuthPerUserInfo extends BaseActivity{
                         .setItems(enterYearItems, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface DialogInterface, int which) {
-                                enterYearLayout.getEditText().setText(enterYearItems[which]);
+                                Objects.requireNonNull(enterYearLayout.getEditText()).setText(enterYearItems[which]);
                                 dialog.dismiss();
                             }
                         });
@@ -181,7 +208,8 @@ public class AuthPerUserInfo extends BaseActivity{
                 alertDialog.show();
                 break;
             case R.id.next:
-                if(EditTextFilter.isIllegal(userNickname.getEditText().getText().toString())){
+                //下一步
+                if(EditTextFilter.isIllegal(Objects.requireNonNull(userNickname.getEditText()).getText().toString())){
                     AuthPerInfoRequest authPerInfoRequest=new AuthPerInfoRequest(
                             SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"uid"),
                             Objects.requireNonNull(userNickname.getEditText()).getText().toString(),
@@ -203,17 +231,19 @@ public class AuthPerUserInfo extends BaseActivity{
                 else {
                     Toast.makeText(this,"您的输入中有非法字符",Toast.LENGTH_SHORT).show();
                 }
-
                 break;
             case R.id.back:
-
+                finish();
+                //TODO 返回？
                 break;
         }
     }
 
-
-
-    //获取远程信息失败或者广告版本为最新时, 检查本地头像是否存在
+    /**
+     *      获取远程信息失败或者广告版本为最新时, 检查本地头像是否存在
+     * @param context 上下文
+     * @return 头像是否存在
+     */
     private static boolean checkLocalAvatarImage(Context context) {
         Log.d(TAG, "检测本地头像是否存在");
         File avatarImageFile = new File(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context,"avatar")));

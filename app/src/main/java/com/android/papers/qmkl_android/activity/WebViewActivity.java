@@ -1,5 +1,6 @@
 package com.android.papers.qmkl_android.activity;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
@@ -37,15 +38,16 @@ public class WebViewActivity extends BaseActivity {
     private final static int FILECHOOSER_RESULTCODE = 1;
     private static final String TAG = "WebViewActivity";
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ActivityManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
-        webViewBack_Iv = (ImageView) findViewById(R.id.xtfy_activity_back_iv);
-        webView = (WebView) findViewById(R.id.web_view);
-        title_tv = (TextView) findViewById(R.id.webview_title);
+        webViewBack_Iv = findViewById(R.id.activity_back_iv);
+        webView = findViewById(R.id.web_view);
+        title_tv = findViewById(R.id.webView_title);
 
         WebSettings settings = webView.getSettings();
 
