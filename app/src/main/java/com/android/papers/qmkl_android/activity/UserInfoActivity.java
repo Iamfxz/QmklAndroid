@@ -29,6 +29,7 @@ import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
 import com.android.papers.qmkl_android.umengUtil.MyUMAuthListener;
 import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
+import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
@@ -356,17 +357,11 @@ public class UserInfoActivity extends BaseActivity {
      * @return 所在地址
      */
     private String getImagePath(Uri uri, String selection){
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        if(PermissionUtils.isHaveWritePer(UserInfoActivity.this,PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE)){
-            Toast.makeText(this,"没有权限",Toast.LENGTH_SHORT).show();
-            PermissionUtils.jumpPermissionPage(UserInfoActivity.this);
-        }else {
+
+//        if(PermissionUtils.isHaveWritePer(UserInfoActivity.this,PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE)){
+//            Toast.makeText(this,"没有权限",Toast.LENGTH_SHORT).show();
+//            PermissionUtils.jumpPermissionPage(UserInfoActivity.this);
+//        }else {
             String path = null;
             Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
             if (cursor != null){
@@ -376,47 +371,7 @@ public class UserInfoActivity extends BaseActivity {
                 cursor.close();
             }
                 return path;
-=======
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-        String path = null;
-        Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
-        if (cursor != null){
-            if (cursor.moveToFirst()) {
-                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-            }
-            cursor.close();
-        }
-        return path;
+
     }
 
     /**

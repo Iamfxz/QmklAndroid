@@ -23,28 +23,11 @@ import com.android.papers.qmkl_android.impl.PostIsDislike;
 import com.android.papers.qmkl_android.impl.PostIsLike;
 import com.android.papers.qmkl_android.impl.PostLike;
 import com.android.papers.qmkl_android.model.PaperFile;
-<<<<<<< HEAD
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LikeDisLikeRequest;
 import com.android.papers.qmkl_android.util.ActivityManager;
-=======
-import com.android.papers.qmkl_android.util.ActManager;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
->>>>>>> parent of 3b4201b... 2018/8/10
+
+import com.android.papers.qmkl_android.util.ConstantUtils;
 import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.LogUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
@@ -65,7 +48,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.android.papers.qmkl_android.util.RetrofitUtils.BaseUrl;
 
 /**
  *
@@ -88,7 +70,7 @@ public class FileDetailActivity extends BaseActivity {
 
     //发送请求
     final private Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(BaseUrl)// 设置 网络请求 Url,1.0.0版本
+            .baseUrl(ConstantUtils.BaseUrl)// 设置 网络请求 Url,1.0.0版本
             .addConverterFactory(GsonConverterFactory.create())//设置使用Gson解析
             .build();
     //用于请求点赞/点踩的人数及用户本身是否已经点赞/点踩
@@ -357,31 +339,8 @@ public class FileDetailActivity extends BaseActivity {
             intent.setPackage("com.tencent.mobileqq");
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
             intent.putExtra(Intent.EXTRA_TEXT,  mFile.getName() + ": " +
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
-=======
-                    RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
-                    RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
-                    RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
-                    RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
-                    RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
->>>>>>> parent of 3b4201b... 2018/8/10
-=======
-                    RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
->>>>>>> parent of 3b4201b... 2018/8/10
+                    ConstantUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
+
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(Intent.createChooser(intent, "选择\"发送到我的电脑\""));
