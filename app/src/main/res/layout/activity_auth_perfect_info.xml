@@ -8,32 +8,32 @@
 
     <ImageView
         android:id="@+id/back"
-        android:background="@mipmap/back_gray"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="40dp"
+        android:background="@mipmap/back_gray"
         android:contentDescription="返回按钮"
         tools:ignore="HardcodedText" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="完善用户资料"
+        android:layout_above="@+id/user_info"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:text="完善用户资料"
         android:textColor="@color/black"
         android:textSize="22sp"
-        android:layout_above="@+id/user_info"
-        android:layout_marginBottom="40dp"
         tools:ignore="HardcodedText" />
 
     <LinearLayout
         android:id="@+id/user_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:orientation="vertical"
-        android:padding="5dp"
-        android:layout_centerInParent="true">
+        android:padding="5dp">
 
 
         <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -50,13 +50,14 @@
             android:id="@+id/user_nickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="昵称"
+                android:inputType="textFilter"
                 android:textSize="18sp"
-                tools:ignore="HardcodedText"
-                android:inputType="textFilter"/>
+                tools:ignore="HardcodedText" />
         </android.support.design.widget.TextInputLayout>
 
 
@@ -64,20 +65,22 @@
             android:id="@+id/user_gender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/gender_tiLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true">
+
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/gender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:hint="性别"
                     android:textSize="18sp"
-                    tools:ignore="HardcodedText"
-                    android:focusable="false"/>
+                    tools:ignore="HardcodedText" />
             </android.support.design.widget.TextInputLayout>
 
             <ImageView
@@ -86,29 +89,33 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:src="@mipmap/next"
-                tools:ignore="NotSibling" />
+                tools:ignore="NotSibling"
+                android:contentDescription="性别选择" />
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/user_college"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/college_tiLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true">
+
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/college_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:hint="选择学校"
                     android:inputType="number"
                     android:textSize="18sp"
-                    tools:ignore="HardcodedText"
-                    android:focusable="false"/>
+                    tools:ignore="HardcodedText" />
             </android.support.design.widget.TextInputLayout>
+
             <ImageView
                 android:id="@+id/college_next"
                 android:layout_width="20sp"
@@ -119,27 +126,29 @@
         </RelativeLayout>
 
 
-
         <RelativeLayout
             android:id="@+id/user_academy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/academy_tiLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true">
+
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/academy_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:hint="选择学院"
                     android:inputType="number"
                     android:textSize="18sp"
-                    tools:ignore="HardcodedText"
-                    android:focusable="false"/>
+                    tools:ignore="HardcodedText" />
             </android.support.design.widget.TextInputLayout>
+
             <ImageView
                 android:id="@+id/academy_next"
                 android:layout_width="20sp"
@@ -154,22 +163,25 @@
             android:id="@+id/user_enterYear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/enterYear_tiLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true">
+
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/enterYear_num"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:hint="入学年份"
                     android:inputType="number"
                     android:textSize="18sp"
-                    tools:ignore="HardcodedText"
-                    android:focusable="false"/>
+                    tools:ignore="HardcodedText" />
             </android.support.design.widget.TextInputLayout>
+
             <ImageView
                 android:id="@+id/enterYear_next"
                 android:layout_width="20sp"
@@ -180,23 +192,18 @@
         </RelativeLayout>
 
 
-
-
         <Button
             android:id="@+id/next"
-            android:layout_margin="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="下一步"
-            android:textSize="16sp"
-            android:textColor="@color/white"
+            android:layout_margin="3dp"
             android:background="@color/btn_unable"
-            tools:ignore="HardcodedText"
-            />
+            android:text="下一步"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
-
-
 
 
 </RelativeLayout>
