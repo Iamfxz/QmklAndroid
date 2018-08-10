@@ -4,11 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 =======
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
 >>>>>>> parent of 3b4201b... 2018/8/10
 import android.content.DialogInterface;
@@ -349,6 +352,7 @@ public class PermissionUtils {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     public static void jumpPermissionPage(Context mContext) {
         String name = Build.MANUFACTURER;
@@ -580,6 +584,8 @@ public class PermissionUtils {
     }
 =======
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
 >>>>>>> parent of 3b4201b... 2018/8/10
 }

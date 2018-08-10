@@ -29,6 +29,9 @@ import com.android.papers.qmkl_android.requestModel.LikeDisLikeRequest;
 import com.android.papers.qmkl_android.util.ActivityManager;
 =======
 import com.android.papers.qmkl_android.util.ActManager;
+<<<<<<< HEAD
+>>>>>>> parent of 3b4201b... 2018/8/10
+=======
 >>>>>>> parent of 3b4201b... 2018/8/10
 import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.LogUtils;
@@ -343,7 +346,11 @@ public class FileDetailActivity extends BaseActivity {
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
             intent.putExtra(Intent.EXTRA_TEXT,  mFile.getName() + ": " +
 <<<<<<< HEAD
+<<<<<<< HEAD
                     BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
+=======
+                    RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
                     RetrofitUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
 >>>>>>> parent of 3b4201b... 2018/8/10

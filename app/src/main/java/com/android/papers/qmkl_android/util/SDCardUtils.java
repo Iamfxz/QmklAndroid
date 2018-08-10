@@ -113,6 +113,7 @@ public class SDCardUtils {
      */
     public static String getADImage(String picName) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         try {
             String strings[] = picName.split("\\.");
             int length = strings.length;
@@ -124,11 +125,16 @@ public class SDCardUtils {
         }
 
 =======
+=======
+>>>>>>> parent of 3b4201b... 2018/8/10
         String strings[]=picName.split("\\.");
         int length=strings.length;
         if(strings[length-1].equals("jpg") || strings[length-1].equals("png")) {
             return getADImagePath() + picName;
         }
+<<<<<<< HEAD
+>>>>>>> parent of 3b4201b... 2018/8/10
+=======
 >>>>>>> parent of 3b4201b... 2018/8/10
         return getADImagePath() + picName + ".png";
     }
@@ -141,6 +147,7 @@ public class SDCardUtils {
      */
     public static String getAvatarImage(String avatarName) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         try{
             String strings[] = avatarName.split("\\.");
             int length = strings.length;
@@ -150,6 +157,8 @@ public class SDCardUtils {
         }catch (Exception e){
             e.printStackTrace();
 =======
+=======
+>>>>>>> parent of 3b4201b... 2018/8/10
         String strings[]=avatarName.split("\\.");
         int length=strings.length;
         if(strings[length-1].equals("jpg") || strings[length-1].equals("png")){

@@ -74,9 +74,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitUtils {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     final public static String BaseUrl = "http://120.77.32.233/qmkl1.0.0/";//后端服务器版本
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+    final public static String BaseUrl = "http://120.77.32.233/qmkl1.0.0/";//后端版本
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
     final public static String BaseUrl = "http://120.77.32.233/qmkl1.0.0/";//后端版本
 >>>>>>> parent of 3b4201b... 2018/8/10
@@ -98,6 +102,7 @@ public class RetrofitUtils {
     private static String oldAdName, newAdName, adPath, avatarPath;
     private static final String FORGET_PSW_MSG = "修改密码";
     private static final String REGISTER_MSG = "注册";
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 
@@ -122,6 +127,8 @@ public class RetrofitUtils {
         });*/
 =======
 >>>>>>> parent of 3b4201b... 2018/8/10
+=======
+>>>>>>> parent of 3b4201b... 2018/8/10
 
     //获取广告
     public static void postAd(final Context context, final Activity startAct) {
@@ -132,11 +139,15 @@ public class RetrofitUtils {
                 //广告页当前不可用
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 if (Integer.parseInt(Objects.requireNonNull(response.body()).getCode()) != ConstantUtils.SUCCESS_CODE ||
 
 =======
                 if (Objects.requireNonNull(response.body()).getCode() != successCode ||
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+                if (Integer.parseInt(Objects.requireNonNull(response.body()).getCode()) != successCode ||
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
                 if (Integer.parseInt(Objects.requireNonNull(response.body()).getCode()) != successCode ||
 >>>>>>> parent of 3b4201b... 2018/8/10
@@ -281,12 +292,17 @@ public class RetrofitUtils {
                     RetrofitUtils.postUserInfo(UMapplication.getContext(), startActivity, token, dialog);
                 } else {
 <<<<<<< HEAD
+<<<<<<< HEAD
                     //TODO 子线程更新UI界面会崩溃，使用handler方法
 <<<<<<< HEAD
                     Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
 =======
                     Toast.makeText(context, response.body().getMsg(), Toast.LENGTH_SHORT).show();
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+                    //TODO 子线程更新UI界面
+                    Toast.makeText(UMapplication.getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
                     //TODO 子线程更新UI界面
                     Toast.makeText(UMapplication.getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
@@ -470,6 +486,7 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 Log.d(TAG, Objects.requireNonNull(response.body()).getMsg());
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
@@ -479,6 +496,11 @@ public class RetrofitUtils {
                 int responseCode = response.body().getCode();
                 if (responseCode == successCode) {
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+                Log.d(TAG, response.body().getMsg());
+                int responseCode = Integer.parseInt(response.body().getCode());
+                if (responseCode == successCode) {
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
                 Log.d(TAG, response.body().getMsg());
                 int responseCode = Integer.parseInt(response.body().getCode());
@@ -942,6 +964,7 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
                     if (msg.equals(ConstantUtils.FORGET_PSW_MSG)) {
@@ -953,12 +976,18 @@ public class RetrofitUtils {
 =======
                 int responseCode = Integer.parseInt(response.body().getCode());
 >>>>>>> parent of 3b4201b... 2018/8/10
+=======
+                int responseCode = Integer.parseInt(response.body().getCode());
+>>>>>>> parent of 3b4201b... 2018/8/10
                 if (responseCode == successCode) {
                     if (msg.equals(FORGET_PSW_MSG)) {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "setPswToken", response.body().getData());
                     } else if (msg.equals(REGISTER_MSG)) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
 >>>>>>> parent of 3b4201b... 2018/8/10
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "registerToken", response.body().getData());
@@ -995,6 +1024,7 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
 =======
@@ -1002,6 +1032,11 @@ public class RetrofitUtils {
                 if (responseCode == successCode) {
                     Toast.makeText(UMapplication.getContext(), "修改成功", Toast.LENGTH_SHORT).show();
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+                int responseCode = Integer.parseInt(response.body().getCode());
+                if (responseCode == successCode) {
+                    Toast.makeText(UMapplication.getContext(), "修改成功", Toast.LENGTH_SHORT).show();
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if (responseCode == successCode) {
@@ -1036,12 +1071,17 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
 =======
                 int responseCode = response.body().getCode();
                 if (responseCode == successCode) {
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+                int responseCode = Integer.parseInt(response.body().getCode());
+                if (responseCode == successCode) {
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if (responseCode == successCode) {
@@ -1074,6 +1114,7 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
                     String token = Objects.requireNonNull(response.body()).getData();
@@ -1082,6 +1123,11 @@ public class RetrofitUtils {
                 if (responseCode == successCode) {
                     String token = response.body().getData();
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+                int responseCode = Integer.parseInt(response.body().getCode());
+                if (responseCode == successCode) {
+                    String token = response.body().getData();
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if (responseCode == successCode) {
@@ -1129,6 +1175,7 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if(responseCode==ConstantUtils.SUCCESS_CODE){
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token", Objects.requireNonNull(response.body()).getData());
@@ -1138,6 +1185,11 @@ public class RetrofitUtils {
                 if(responseCode==successCode){
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token",response.body().getData());
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+                int responseCode = Integer.parseInt(response.body().getCode());
+                if(responseCode==successCode){
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token",response.body().getData());
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if(responseCode==successCode){
@@ -1178,6 +1230,7 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if(responseCode==ConstantUtils.SUCCESS_CODE){
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token", Objects.requireNonNull(response.body()).getData());
@@ -1186,6 +1239,11 @@ public class RetrofitUtils {
                 if(responseCode==successCode){
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token",response.body().getData());
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+                int responseCode = Integer.parseInt(response.body().getCode());
+                if(responseCode==successCode){
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token",response.body().getData());
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
                 int responseCode = Integer.parseInt(response.body().getCode());
                 if(responseCode==successCode){
