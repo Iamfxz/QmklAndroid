@@ -359,6 +359,7 @@ public class UserInfoActivity extends BaseActivity {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         if(PermissionUtils.isHaveWritePer(UserInfoActivity.this,PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE)){
             Toast.makeText(this,"没有权限",Toast.LENGTH_SHORT).show();
             PermissionUtils.jumpPermissionPage(UserInfoActivity.this);
@@ -377,6 +378,8 @@ public class UserInfoActivity extends BaseActivity {
 >>>>>>> parent of 3b4201b... 2018/8/10
 =======
 >>>>>>> parent of 3b4201b... 2018/8/10
+=======
+>>>>>>> parent of 3b4201b... 2018/8/10
         String path = null;
         Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
         if (cursor != null){
@@ -384,7 +387,10 @@ public class UserInfoActivity extends BaseActivity {
                 path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 7cc2f055b1749986796f2a4550adfa01a2bea6cb
+=======
+>>>>>>> parent of 3b4201b... 2018/8/10
 =======
 >>>>>>> parent of 3b4201b... 2018/8/10
 =======
