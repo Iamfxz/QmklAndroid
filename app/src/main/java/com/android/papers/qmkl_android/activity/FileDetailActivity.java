@@ -23,14 +23,9 @@ import com.android.papers.qmkl_android.impl.PostIsDislike;
 import com.android.papers.qmkl_android.impl.PostIsLike;
 import com.android.papers.qmkl_android.impl.PostLike;
 import com.android.papers.qmkl_android.model.PaperFile;
-<<<<<<< HEAD
-import com.android.papers.qmkl_android.util.ActManager;
-import com.android.papers.qmkl_android.util.ConstantUtils;
-=======
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LikeDisLikeRequest;
 import com.android.papers.qmkl_android.util.ActivityManager;
->>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
 import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.LogUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
@@ -343,11 +338,7 @@ public class FileDetailActivity extends BaseActivity {
             intent.setPackage("com.tencent.mobileqq");
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
             intent.putExtra(Intent.EXTRA_TEXT,  mFile.getName() + ": " +
-<<<<<<< HEAD
-                    ConstantUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
-=======
                     BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
->>>>>>> 20d58e76b90fa34f3e18965d5479821e558d0ab3
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(Intent.createChooser(intent, "选择\"发送到我的电脑\""));
