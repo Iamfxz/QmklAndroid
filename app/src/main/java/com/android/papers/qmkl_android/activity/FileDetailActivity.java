@@ -25,7 +25,7 @@ import com.android.papers.qmkl_android.impl.PostLike;
 import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.model.ResponseInfo;
 import com.android.papers.qmkl_android.requestModel.LikeDisLikeRequest;
-import com.android.papers.qmkl_android.util.ActManager;
+import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.LogUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
@@ -144,7 +144,7 @@ public class FileDetailActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ActManager.addActivity(this);
+        ActivityManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_detail);
         ButterKnife.bind(this);

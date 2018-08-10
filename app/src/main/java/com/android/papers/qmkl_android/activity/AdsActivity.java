@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.android.papers.qmkl_android.R;
-import com.android.papers.qmkl_android.util.ActManager;
+import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CountDownTimer;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
@@ -24,11 +24,8 @@ import butterknife.ButterKnife;
 //第二启动页 (放广告的页面 缺省)
 public class AdsActivity extends Activity {
 
-    private static final int errorCode=404;
-    private static final int successCode = 200;
     private static final String TAG = "AdsActivity";
     private String newAdName;
-    private boolean isLogin =false;
 
     boolean isClicked=false,isSkip=false;
     @BindView(R.id.iv_ad)
@@ -39,11 +36,11 @@ public class AdsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActManager.addActivity(this);
+        ActivityManager.addActivity(this);
         setContentView(R.layout.activity_ads);
         ButterKnife.bind(this);
 
-    //设置窗体全屏
+        //设置窗体全屏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 

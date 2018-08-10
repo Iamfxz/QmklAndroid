@@ -1,6 +1,5 @@
 package com.android.papers.qmkl_android.activity;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +34,7 @@ import com.android.papers.qmkl_android.ui.DiscoveryFragment;
 import com.android.papers.qmkl_android.ui.DownloadedFragment;
 import com.android.papers.qmkl_android.ui.ResourceFragment;
 import com.android.papers.qmkl_android.ui.StudentsCircleFragment;
-import com.android.papers.qmkl_android.util.ActManager;
+import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
@@ -93,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ActManager.addActivity(this);
+        ActivityManager.addActivity(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView(getApplicationContext());
@@ -287,7 +286,7 @@ public class MainActivity extends AppCompatActivity
             }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
         } else {
             Log.d("退出", "退出期末考啦");
-            ActManager.AppExit(getApplicationContext());
+            ActivityManager.AppExit(getApplicationContext());
         }
     }
 

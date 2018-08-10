@@ -9,25 +9,25 @@ import java.util.List;
 import java.util.Stack;
 
 
-public class ActManager {
+public class ActivityManager {
 
     private static Stack<Activity> activityStack;
-    private static ActManager instance;
+    private static ActivityManager instance;
 
     /**
      * 单例模式 创建单一实例
      *
-     * @return
+     * @return  活动管理器ActivityManger的实例
      */
-    public static ActManager getAppManager() {
+    public static ActivityManager getAppManager() {
         if (instance == null) {
-            instance = new ActManager();
+            instance = new ActivityManager();
         }
         return instance;
     }
 
     /**
-     * 初始化Stack<Activity>
+     * 初始化Stack<Activity>,活动栈
      */
     private static void initActivityStack() {
         if (activityStack == null) {
@@ -38,7 +38,7 @@ public class ActManager {
     /**
      * 添加Activity到堆栈
      *
-     * @param activity
+     * @param activity 需要添加的Activity
      */
     public static void addActivity(Activity activity) {
         initActivityStack();
@@ -48,17 +48,16 @@ public class ActManager {
     /**
      * 获取当前Activity（堆栈中最后一个压入的）
      *
-     * @return
+     * @return 堆栈中的最后一个Activity即当前的Activity
      */
     public static Activity currentActivity() {
-        Activity activity = activityStack.lastElement();
-        return activity;
+        return activityStack.lastElement();
     }
 
     /**
      * 结束指定的Activity
      */
-    public static void finishActivity(Activity activity) {
+    private static void finishActivity(Activity activity) {
         if (activity != null) {
             activityStack.remove(activity);
             activity.finish();
@@ -97,7 +96,7 @@ public class ActManager {
     /**
      * 结束所有Activity
      */
-    public static void finishAllActivity() {
+    private static void finishAllActivity() {
         for (int i = 0, size = activityStack.size(); i < size; i++) {
             if (null != activityStack.get(i)) {
                 Activity activity = activityStack.get(i);
@@ -123,13 +122,14 @@ public class ActManager {
     public static void AppExit(Context context) {
         try {
             finishAllActivity();
-//            DalvikVM的本地方法
-//             杀死该应用进程
+            // alvikVM的本地方法
+            // 杀死该应用进程
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);
-//            这些方法如果是放到主Activity就可以退出应用，如果不是主Activity
-//            就是退出当前的Activity
+            // 这些方法如果是放到主Activity就可以退出应用，如果不是主Activity
+            //就是退出当前的Activity
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
