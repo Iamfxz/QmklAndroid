@@ -10,13 +10,13 @@
         android:layout_height="25dp"
         android:background="@mipmap/back_white"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:layout_centerVertical="true"
-        android:id="@+id/xtfy_activity_back_iv"
-        />
+        android:id="@+id/activity_back_iv"
+        android:contentDescription="返回按钮" />
 
     <TextView
-        android:id="@+id/webview_title"
+        android:id="@+id/webView_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="标题"

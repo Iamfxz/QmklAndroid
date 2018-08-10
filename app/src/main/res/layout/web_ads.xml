@@ -8,7 +8,7 @@
     <include layout="@layout/bar_activity_web"/>
 
     <WebView
-        android:id="@+id/ads_webview"
+        android:id="@+id/ads_webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
