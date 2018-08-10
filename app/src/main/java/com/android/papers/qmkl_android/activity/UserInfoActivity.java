@@ -29,6 +29,7 @@ import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
 import com.android.papers.qmkl_android.umengUtil.MyUMAuthListener;
 import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
+import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
@@ -356,15 +357,21 @@ public class UserInfoActivity extends BaseActivity {
      * @return 所在地址
      */
     private String getImagePath(Uri uri, String selection){
-        String path = null;
-        Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
-        if (cursor != null){
-            if (cursor.moveToFirst()) {
-                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+
+//        if(PermissionUtils.isHaveWritePer(UserInfoActivity.this,PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE)){
+//            Toast.makeText(this,"没有权限",Toast.LENGTH_SHORT).show();
+//            PermissionUtils.jumpPermissionPage(UserInfoActivity.this);
+//        }else {
+            String path = null;
+            Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
+            if (cursor != null){
+                if (cursor.moveToFirst()) {
+                    path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                }
+                cursor.close();
             }
-            cursor.close();
-        }
-        return path;
+                return path;
+
     }
 
     /**

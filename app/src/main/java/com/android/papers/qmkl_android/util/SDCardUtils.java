@@ -12,7 +12,8 @@ import java.io.File;
  */
 public class SDCardUtils {
 
-    private SDCardUtils() {
+    private SDCardUtils()
+    {
         /* cannot be instantiated */
         throw new UnsupportedOperationException("不能实例化");
     }
@@ -22,7 +23,8 @@ public class SDCardUtils {
      *
      * @return 是否可用
      */
-    public static boolean isSDCardEnable() {
+    public static boolean isSDCardEnable()
+    {
         return Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED);
 
@@ -33,7 +35,8 @@ public class SDCardUtils {
      *
      * @return SD卡绝对路径路径+分隔符
      */
-    public static String getSDCardPath() {
+    public static String getSDCardPath()
+    {
         return Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator;
     }
@@ -106,23 +109,23 @@ public class SDCardUtils {
     }
 
     /**
-     * 根据广告名字获取本地广告图片路径
+     * 获取本地广告图片路径
      *
      * @param picName 广告名字
      * @return 广告图片路径
      */
     public static String getADImage(String picName) {
-        try {
-            String strings[] = picName.split("\\.");
-            int length = strings.length;
-            if (strings[length - 1].equals("jpg") || strings[length - 1].equals("png")) {
+        if(picName!=null && !picName.equals("")){
+            String strings[]=picName.split("\\.");
+            int length=strings.length;
+            if(strings[length-1].equals("jpg") || strings[length-1].equals("png")) {
                 return getADImagePath() + picName;
             }
-        }catch (Exception e){
-            e.printStackTrace();
+            return getADImagePath() + picName + ".png";
         }
-
-        return getADImagePath() + picName + ".png";
+        else {
+            return getCachePath() + picName;
+        }
     }
 
     /**
@@ -132,16 +135,17 @@ public class SDCardUtils {
      * @return 头像图片路径
      */
     public static String getAvatarImage(String avatarName) {
-        try{
-            String strings[] = avatarName.split("\\.");
-            int length = strings.length;
-            if (strings[length - 1].equals("jpg") || strings[length - 1].equals("png")) {
+        if(avatarName!=null && !avatarName.equals("")){
+            String strings[]=avatarName.split("\\.");
+            int length=strings.length;
+            if(strings[length-1].equals("jpg") || strings[length-1].equals("png")){
                 return getCachePath() + avatarName;
             }
-        }catch (Exception e){
-            e.printStackTrace();
+            return getCachePath() + avatarName + ".png";
         }
-        return getCachePath() + avatarName + ".png";
+        else {
+            return getCachePath() + avatarName;
+        }
     }
 
 
@@ -150,8 +154,10 @@ public class SDCardUtils {
      *
      * @return SD卡的剩余容量
      */
-    public static long getSDCardAllSize() {
-        if (isSDCardEnable()) {
+    public static long getSDCardAllSize()
+    {
+        if (isSDCardEnable())
+        {
             StatFs stat = new StatFs(getSDCardPath());
             // 获取空闲的数据块的数量
             long availableBlocks = stat.getAvailableBlocksLong() - 4;
@@ -168,11 +174,14 @@ public class SDCardUtils {
      * @param filePath 指定路径
      * @return 容量字节 SDCard可用空间，内部存储可用空间
      */
-    public static long getFreeBytes(String filePath) {
+    public static long getFreeBytes(String filePath)
+    {
         // 如果是sd卡的下的路径，则获取sd卡可用容量
-        if (filePath.startsWith(getSDCardPath())) {
+        if (filePath.startsWith(getSDCardPath()))
+        {
             filePath = getSDCardPath();
-        } else {// 如果是内部存储的路径，则获取内存存储的可用容量
+        } else
+        {// 如果是内部存储的路径，则获取内存存储的可用容量
             filePath = Environment.getDataDirectory().getAbsolutePath();
         }
         StatFs stat = new StatFs(filePath);
@@ -185,7 +194,8 @@ public class SDCardUtils {
      *
      * @return 系统存储路径
      */
-    public static String getRootDirectoryPath() {
+    public static String getRootDirectoryPath()
+    {
         return Environment.getRootDirectory().getAbsolutePath();
     }
 
