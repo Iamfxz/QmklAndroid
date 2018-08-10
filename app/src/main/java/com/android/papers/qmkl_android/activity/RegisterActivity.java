@@ -57,13 +57,13 @@ public class RegisterActivity extends BaseActivity{
                     Toast.makeText(getApplicationContext(),"验证码不能为空",Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    RetrofitUtils.postRegister(this,RegisterActivity.this,
+                    RetrofitUtils.postRegister(RegisterActivity.this,
                             userPhone.getEditText().getText().toString(),verificationCode.getEditText().getText().toString());
                 }
                 break;
             case R.id.send_code:
                 if(Objects.requireNonNull(userPhone.getEditText()).getText().toString().length()==11) {
-                    RetrofitUtils.postGetCode(this, userPhone.getEditText().getText().toString(), sendCodeBtn,REGISTER_MSG);
+                    RetrofitUtils.postGetCode(userPhone.getEditText().getText().toString(), sendCodeBtn,REGISTER_MSG);
                 }
                 else{
                     Toast.makeText(getApplicationContext(),"手机号长度不正确",Toast.LENGTH_SHORT).show();

@@ -6,6 +6,7 @@ import java.security.MessageDigest;
 
 /**
  * SHA算法
+ * 对密码进行加密上传至服务器
  */
 public class SHAArithmetic {
     private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5',

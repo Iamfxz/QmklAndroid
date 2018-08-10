@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.AuthPerInfoRequest;
+import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.DownLoader;
 import com.android.papers.qmkl_android.util.EditTextFilter;
@@ -72,9 +73,9 @@ public class AuthPerUserInfo extends BaseActivity{
             @Override
             public void run() {
                 try {
-                    String imagePath=SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"avatar"));
+                    String imagePath=SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"avatar"));
                     DownLoader.downloadFile(new File(imagePath),
-                            SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"avatarUrl"));
+                            SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"avatarUrl"));
                     bitmap[0] = BitmapFactory.decodeFile(imagePath);
                     headImg.post(new Runnable() {
                         @Override
@@ -88,12 +89,12 @@ public class AuthPerUserInfo extends BaseActivity{
             }
         }).start();
         //获取第三方昵称
-        userNickname.getEditText().setText(SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"nickname"));
+        Objects.requireNonNull(userNickname.getEditText()).setText(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"nickname"));
         EditTextFilter.setProhibitEmoji(userNickname.getEditText(),this);
         //获取第三方性别
-        genderLayout.getEditText().setText(SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"gender"));
+        Objects.requireNonNull(genderLayout.getEditText()).setText(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"gender"));
 
-        userNickname.getEditText().setSelection(SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"nickname").length());
+        userNickname.getEditText().setSelection(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"nickname").length());
         //下一步按钮不可用
         nextBtn.setEnabled(false);
 
@@ -131,7 +132,7 @@ public class AuthPerUserInfo extends BaseActivity{
                         .setCanceledOnTouchOutside(false)
                         .show();
                 builder = new AlertDialog.Builder(this);
-                RetrofitUtils.postAllColleges(this,builder,collegeLayout.getEditText(),academyLayout.getEditText(),dialog);
+                RetrofitUtils.postAllColleges(builder,collegeLayout.getEditText(),academyLayout.getEditText(),dialog);
                 break;
             case R.id.academy_name:
                 if(collegeLayout.getEditText().getText().toString().equals("")){
@@ -145,7 +146,7 @@ public class AuthPerUserInfo extends BaseActivity{
                             .setCanceledOnTouchOutside(false)
                             .show();
                     builder = new AlertDialog.Builder(this);
-                    RetrofitUtils.postAllAcademies(this,collegeLayout.getEditText().getText().toString(),builder,academyLayout.getEditText(),dialog);
+                    RetrofitUtils.postAllAcademies(collegeLayout.getEditText().getText().toString(),builder,academyLayout.getEditText(),dialog);
                 }
                 break;
             case R.id.enterYear_num:

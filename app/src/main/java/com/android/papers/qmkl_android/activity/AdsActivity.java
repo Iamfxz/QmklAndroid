@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CountDownTimer;
 import com.android.papers.qmkl_android.util.SDCardUtils;
@@ -46,7 +47,7 @@ public class AdsActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         //根据广告名称获取广告地址
-        String newAdName = SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "AdName");
+        String newAdName = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "AdName");
         File adImageFile = new File(SDCardUtils.getADImage(newAdName));
 
         //如果广告地址存在则加载，否则广告版本设置为0
@@ -61,10 +62,10 @@ public class AdsActivity extends Activity {
             @Override
             public void onClick(View v) {
                 isClicked=true;
-                Log.d(TAG, "点击广告"+SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback"));
+                Log.d(TAG, "点击广告"+SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "fallback"));
                 Intent intent=new Intent(AdsActivity.this,WebViewActivity.class);
-                intent.putExtra("url",SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "fallback"));
-                intent.putExtra("title",SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"adtitle"));
+                intent.putExtra("url",SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "fallback"));
+                intent.putExtra("title",SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"adtitle"));
                 startActivity(intent);
                 finish();
             }
@@ -77,7 +78,7 @@ public class AdsActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "点击跳过");
                 isSkip=true;
-                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                if(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"hasLogin").equals("false")){
                     nextActivity(LoginActivity.class);
                 }
                 else {
@@ -98,7 +99,7 @@ public class AdsActivity extends Activity {
                     public void run() {
                         if(!isSkip && !isClicked){
                             //未登陆设置进入登陆页面，其他进入程序
-                            if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                            if(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"hasLogin").equals("false")){
                                 nextActivity(LoginActivity.class);
                             }
                             else {

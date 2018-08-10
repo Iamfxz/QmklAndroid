@@ -65,7 +65,7 @@ public class ForgetPswActivity extends BaseActivity {
                     Toast.makeText(getApplicationContext(),"两次密码输入不一致",Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    RetrofitUtils.postSetNewPsw(this,ForgetPswActivity.this,
+                    RetrofitUtils.postSetNewPsw(ForgetPswActivity.this,
                             Objects.requireNonNull(userPhone.getEditText()).getText().toString(),verificationCode.getEditText().getText().toString(),
                             newPsw.getEditText().getText().toString());
                 }
@@ -73,7 +73,7 @@ public class ForgetPswActivity extends BaseActivity {
                 break;
             case R.id.send_code:
                 if(Objects.requireNonNull(userPhone.getEditText()).getText().toString().length()==11) {
-                    RetrofitUtils.postGetCode(this, userPhone.getEditText().getText().toString(), sendCodeBtn,FORGET_PSW_MSG);
+                    RetrofitUtils.postGetCode(userPhone.getEditText().getText().toString(), sendCodeBtn,FORGET_PSW_MSG);
 
                 }
                 else{

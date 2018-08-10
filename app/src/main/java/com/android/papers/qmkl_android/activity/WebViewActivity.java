@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
@@ -225,7 +226,7 @@ public class WebViewActivity extends BaseActivity {
                 return true;
             }
             else if(getIntent().getStringExtra("title").equals("广告页")){
-                if(SharedPreferencesUtils.getStoredMessage(getApplication(),"hasLogin").equals("false")){
+                if(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"hasLogin").equals("false")){
                     nextActivity(LoginActivity.class);
                 }
                 else {

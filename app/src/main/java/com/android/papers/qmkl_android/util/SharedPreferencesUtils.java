@@ -37,11 +37,13 @@ public class SharedPreferencesUtils {
 
     static SharedPreferences sp;
 
+    //获取SharedPreferences存储内容
     public static String getStoredMessage(Context context,String key){
         sp=context.getSharedPreferences("finalExam",Context.MODE_PRIVATE);
         return sp.getString(key,null);
     }
 
+    //存储信息
     public static void setStoredMessage(Context context,String key,String value){
         sp=context.getSharedPreferences("finalExam",Context.MODE_PRIVATE);
         Editor editor=sp.edit();

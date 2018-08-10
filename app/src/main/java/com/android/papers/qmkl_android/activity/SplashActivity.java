@@ -43,13 +43,13 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
         setContentView(R.layout.activity_splash);
 
         //获取SD卡读写权限
-        PermissionUtils.requestPermission(this, PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
+        PermissionUtils.requestPermission(SplashActivity.this, PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
 
-        RetrofitUtils.postLogin(this,SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
+        RetrofitUtils.postLogin(SharedPreferencesUtils.getStoredMessage(getApplication(),"token"));
 
         //若已获取SD卡读写权限
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED){
-            RetrofitUtils.postAd(this,SplashActivity.this);
+        if(ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED){
+            RetrofitUtils.postAd(SplashActivity.this);
         }
 
 
@@ -75,7 +75,7 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
             for (int i = 0; i < permissions.length; i++) {
                 if (grantResults[i] == PERMISSION_GRANTED) {
                     Log.d(TAG, "成功");
-                    RetrofitUtils.postAd(this,SplashActivity.this);
+                    RetrofitUtils.postAd(SplashActivity.this);
 
                 } else {
                     Log.d(TAG, "失败");
@@ -87,7 +87,7 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            nextActivity(getApplicationContext(), SplashActivity.this);
+                            nextActivity(SplashActivity.this, SplashActivity.this);
                         }
                     }).start();
                 }

@@ -71,6 +71,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 
+/*
+* （一）、postAd(final Activity startAct)
+* 参数：开始任务的活动
+* 功能：向服务发送请求获取广告内容，并判断广告是否可用：
+*       可用下载广告并进入广告页面，不可用直接进入主页面或登录界面
+* （二）、
+*
+*
+*
+* */
+
+
 public class RetrofitUtils {
 
     //实例化Retrofit对象
@@ -80,13 +92,12 @@ public class RetrofitUtils {
             .build();
 
 
-
     private static final String TAG = ".RetrofitUtils";
     private static String oldAdName, newAdName, adPath, avatarPath;
 
 
     //获取广告
-    public static void postAd(final Context context, final Activity startAct) {
+    public static void postAd(final Activity startAct) {
         PostAds request = retrofit.create(PostAds.class);
         request.getCall().enqueue(new Callback<ResponseInfo<AdData>>() {
             @Override
@@ -102,7 +113,7 @@ public class RetrofitUtils {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            nextActivity(UMapplication.getContext(), startAct);
+                            nextActivity(startAct);
                         }
                     }).start();
                     Log.d(TAG, "广告不可用");
@@ -144,7 +155,7 @@ public class RetrofitUtils {
                                                 e.printStackTrace();
                                             }
                                             Log.d(TAG, "run: ");
-                                            nextActivity(UMapplication.getContext(), startAct, AdsActivity.class);
+                                            nextActivity(startAct, AdsActivity.class);
 
                                         }
                                     }).start();
@@ -157,7 +168,7 @@ public class RetrofitUtils {
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
                                             }
-                                            nextActivity(UMapplication.getContext(), startAct);
+                                            nextActivity(startAct);
                                         }
                                     }).start();
                                 }
@@ -170,7 +181,7 @@ public class RetrofitUtils {
                                 } catch (InterruptedException e2) {
                                     e2.printStackTrace();
                                 }
-                                nextActivity(UMapplication.getContext(), startAct);
+                                nextActivity(startAct);
                             }
                         }
                     }).start();
@@ -186,7 +197,7 @@ public class RetrofitUtils {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            nextActivity(UMapplication.getContext(), startAct, AdsActivity.class);
+                            nextActivity(startAct, AdsActivity.class);
                         }
                     }).start();
                 }
@@ -203,7 +214,7 @@ public class RetrofitUtils {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        nextActivity(UMapplication.getContext(), startAct, LoginActivity.class);
+                        nextActivity(startAct, LoginActivity.class);
                     }
                 }).start();
             }
@@ -231,7 +242,7 @@ public class RetrofitUtils {
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", token);
                     Log.d(TAG, "已保存正确token值");
                     //获取用户信息
-                    RetrofitUtils.postUserInfo(UMapplication.getContext(), startActivity, token, dialog);
+                    RetrofitUtils.postUserInfo(context, startActivity, token, dialog);
                 } else {
                     Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
@@ -249,7 +260,7 @@ public class RetrofitUtils {
     }
 
     //判断当前token是否可以登录
-    public static void postLogin(final Context context, String token) {
+    public static void postLogin(String token) {
         if (token != null) {
             PostLogin request = retrofit.create(PostLogin.class);
             Call<ResponseInfo> call = request.getTokenCall(new TokenRequest(token));
@@ -261,12 +272,11 @@ public class RetrofitUtils {
                     if (resultCode == ConstantUtils.SUCCESS_CODE) {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", Objects.requireNonNull(response.body()).getData().toString());
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "true");
-                        postUserInfo(UMapplication.getContext(), SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "token"));
+                        postUserInfo(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "token"));
                     } else {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
                     }
                 }
-
                 @Override
                 public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
                     Log.d(TAG, "请求失败");
@@ -279,7 +289,7 @@ public class RetrofitUtils {
     }
 
     //通过token值返回当前登录用户的信息
-    public static void postUserInfo(final Context context, final Activity startActivity, String token, final ZLoadingDialog dialog) {
+    private static void postUserInfo(final Context context, final Activity startActivity, String token, final ZLoadingDialog dialog) {
 
         if (token != null) {
             PostUserInfo request = retrofit.create(PostUserInfo.class);
@@ -288,7 +298,7 @@ public class RetrofitUtils {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
                     //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
-                    if (!checkLocalAvatarImage(UMapplication.getContext()) || SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") == null
+                    if (!checkLocalAvatarImage() || SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") == null
                             || (SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") != null
                             && !SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar").equals(Objects.requireNonNull(response.body()).getData().getAcademy()))) {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "nickname", Objects.requireNonNull(response.body()).getData().getNickname());
@@ -346,7 +356,7 @@ public class RetrofitUtils {
     }
 
     //通过token值返回当前登录用户的信息
-    public static void postUserInfo(final Context context, String token) {
+    private static void postUserInfo(String token) {
         if (token != null) {
             PostUserInfo request = retrofit.create(PostUserInfo.class);
             Call<UserInfoRes> call = request.getCall(new TokenRequest(token));
@@ -354,7 +364,7 @@ public class RetrofitUtils {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
                     //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
-                    if (!checkLocalAvatarImage(UMapplication.getContext()) || SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") == null
+                    if (!checkLocalAvatarImage() || SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") == null
                             || (SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") != null
                             && !SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar").equals(Objects.requireNonNull(response.body()).getData().getAcademy()))) {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "nickname", Objects.requireNonNull(response.body()).getData().getNickname());
@@ -400,7 +410,7 @@ public class RetrofitUtils {
     }
 
     //传入token值和用户信息并更新
-    public static void postUpdateUser(final int flag, final Context context, final UpdateUserRequest userInfo, final AlertDialog alertDialog, final TextView textView, final ZLoadingDialog dialog, final boolean isBackSchool) {
+    public static void postUpdateUser(final int flag, final UpdateUserRequest userInfo, final AlertDialog alertDialog, final TextView textView, final ZLoadingDialog dialog, final boolean isBackSchool) {
 
         PostUpdateUserInfo request = retrofit.create(PostUpdateUserInfo.class);
         Call<ResponseInfo> call = request.getCall(userInfo);
@@ -468,7 +478,7 @@ public class RetrofitUtils {
     }
 
     //传入用户token值该学校所有专业
-    public static void postAllAcademies(final Context context, QueryAcademiesRequest academiesRequest, final AlertDialog.Builder builder, final TextView college, final TextView academy, final ZLoadingDialog dialog, boolean isUpCollege) {
+    public static void postAllAcademies(QueryAcademiesRequest academiesRequest, final AlertDialog.Builder builder, final TextView college, final TextView academy, final ZLoadingDialog dialog, boolean isUpCollege) {
         //监听返回键
         if (isUpCollege) {
             builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -476,7 +486,7 @@ public class RetrofitUtils {
                 public boolean onKey(DialogInterface DialogInterface, int keyCode, KeyEvent event) {
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), college.getText().toString(), ConstantUtils.COLLEGE);
-                        RetrofitUtils.postUpdateUser(ConstantUtils.COLLEGE, UMapplication.getContext(), userRequest, null, college, dialog, true);
+                        RetrofitUtils.postUpdateUser(ConstantUtils.COLLEGE, userRequest, null, college, dialog, true);
                     }
                     return false;
                 }
@@ -507,7 +517,7 @@ public class RetrofitUtils {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int which) {
                                         UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.academies[which], ConstantUtils.ACADEMY);
-                                        RetrofitUtils.postUpdateUser(ConstantUtils.ACADEMY, UMapplication.getContext(), userRequest, null, academy, dialog, false);
+                                        RetrofitUtils.postUpdateUser(ConstantUtils.ACADEMY, userRequest, null, academy, dialog, false);
                                     }
                                 });
 
@@ -534,7 +544,7 @@ public class RetrofitUtils {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int which) {
                             UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.academies[which], ConstantUtils.ACADEMY);
-                            RetrofitUtils.postUpdateUser(ConstantUtils.ACADEMY, UMapplication.getContext(), userRequest, null, academy, dialog, false);
+                            RetrofitUtils.postUpdateUser(ConstantUtils.ACADEMY, userRequest, null, academy, dialog, false);
                         }
                     });
             AlertDialog alertDialog = builder.create();
@@ -544,7 +554,7 @@ public class RetrofitUtils {
     }
 
     //传入用户token值获取所有学校
-    public static void postAllColleges(final Context context, final TokenRequest tokenRequest, final AlertDialog.Builder builder, final TextView college, final TextView academy, final ZLoadingDialog dialog) {
+    public static void postAllColleges(final AlertDialog.Builder builder, final TextView college, final TextView academy, final ZLoadingDialog dialog) {
         //监听返回键
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -570,12 +580,12 @@ public class RetrofitUtils {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int which) {
                                         UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.colleges[which], ConstantUtils.COLLEGE);
-                                        RetrofitUtils.postUpdateUser(ConstantUtils.COLLEGE, UMapplication.getContext(), userRequest, null, college, dialog, false);
+                                        RetrofitUtils.postUpdateUser(ConstantUtils.COLLEGE, userRequest, null, college, dialog, false);
                                         UserInfoActivity.academies = null;
                                         QueryAcademiesRequest academiesRequest = new QueryAcademiesRequest(
                                                 UserInfoActivity.colleges[which]
                                         );
-                                        postAllAcademies(UMapplication.getContext(), academiesRequest, builder, college, academy, dialog, true);
+                                        postAllAcademies(academiesRequest, builder, college, academy, dialog, true);
                                     }
                                 });
                         AlertDialog alertDialog = builder.create();
@@ -600,12 +610,12 @@ public class RetrofitUtils {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int which) {
                             UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.colleges[which], ConstantUtils.COLLEGE);
-                            RetrofitUtils.postUpdateUser(ConstantUtils.COLLEGE, UMapplication.getContext(), userRequest, null, college, dialog, false);
+                            RetrofitUtils.postUpdateUser(ConstantUtils.COLLEGE, userRequest, null, college, dialog, false);
                             UserInfoActivity.academies = null;
                             QueryAcademiesRequest academiesRequest = new QueryAcademiesRequest(
                                     UserInfoActivity.colleges[which]
                             );
-                            postAllAcademies(UMapplication.getContext(), academiesRequest, builder, college, academy, dialog, true);
+                            postAllAcademies(academiesRequest, builder, college, academy, dialog, true);
                         }
                     });
             AlertDialog alertDialog = builder.create();
@@ -617,7 +627,7 @@ public class RetrofitUtils {
 
     //用户注册界面获取学校信息
 
-    public static void postAllColleges(final Context context, final AlertDialog.Builder builder, final EditText college, final EditText academy, final ZLoadingDialog dialog) {
+    public static void postAllColleges(final AlertDialog.Builder builder, final EditText college, final EditText academy, final ZLoadingDialog dialog) {
         //监听返回键
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -681,7 +691,7 @@ public class RetrofitUtils {
 
     //用户注册界面获取学院信息
     //传入用户token值该学校所有专业
-    public static void postAllAcademies(final Context context, String collegeName, final AlertDialog.Builder builder, final EditText academy,final ZLoadingDialog dialog ){
+    public static void postAllAcademies(String collegeName, final AlertDialog.Builder builder, final EditText academy,final ZLoadingDialog dialog ){
 
         PostAllAcademies request = retrofit.create(PostAllAcademies.class);
         Call<AcademiesOrCollegesRes> call = request.getCall(new QueryAcademiesRequest(collegeName));
@@ -723,7 +733,7 @@ public class RetrofitUtils {
     //TODO 此函数一直进入onFailure，具体原因未知
     //传入用户名退出登录
     //此函数一直进入onFailure，具体原因未知
-    public static void postExitLogin(final Context context, String username, final Activity startAct, final ZLoadingDialog dialog) {
+    public static void postExitLogin(String username, final Activity startAct, final ZLoadingDialog dialog) {
 
         PostExitLogin request = retrofit.create(PostExitLogin.class);
         ExitLoginRequest exitLoginRequest = new ExitLoginRequest(username);
@@ -734,7 +744,7 @@ public class RetrofitUtils {
                 SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
                 SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", null);
 
-                nextActivity(UMapplication.getContext(), startAct, LoginActivity.class);
+                nextActivity(startAct, LoginActivity.class);
                 dialog.dismiss();
             }
 
@@ -743,14 +753,14 @@ public class RetrofitUtils {
                 Log.d(TAG, "请求失败");
                 SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
                 SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", null);
-                nextActivity(UMapplication.getContext(), startAct, LoginActivity.class);
+                nextActivity(startAct, LoginActivity.class);
                 dialog.dismiss();
             }
         });
     }
 
     //传入用户token和图片，上传用户头像
-    public static void postUserAvatar(final Context context, String imagePath, final ImageView avatarView, final Bitmap bitmap, final ZLoadingDialog dialog) {
+    public static void postUserAvatar(String imagePath, final ImageView avatarView, final Bitmap bitmap, final ZLoadingDialog dialog) {
         PostUserAvatar request = retrofit.create(PostUserAvatar.class);
         final File avatar = new File(imagePath);
         String token = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "token");
@@ -815,7 +825,7 @@ public class RetrofitUtils {
     }
     //用户注册之后上传用户头像
     //传入用户token和图片，上传用户头像
-    public static void postUserAvatar(final Context context, String imagePath, final ZLoadingDialog dialog) {
+    private static void postUserAvatar(String imagePath, final ZLoadingDialog dialog) {
         PostUserAvatar request = retrofit.create(PostUserAvatar.class);
         final File avatar = new File(imagePath);
         String token = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "token");
@@ -859,7 +869,7 @@ public class RetrofitUtils {
 
     //用户注册接口一、找回密码接口一
     //发送手机号并向该手机发送短信验证码，在CountDownTimer中更新按钮状态
-    public static void postGetCode(final Context context, String phone, final Button sendCodeBtn, final String msg) {
+    public static void postGetCode(String phone, final Button sendCodeBtn, final String msg) {
 
         PostGetCode request = retrofit.create(PostGetCode.class);
         GetCodeRequest codeRequest = new GetCodeRequest(phone, msg);
@@ -873,7 +883,7 @@ public class RetrofitUtils {
                     if (msg.equals(ConstantUtils.FORGET_PSW_MSG)) {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "setPswToken", Objects.requireNonNull(response.body()).getData());
                     } else if (msg.equals(ConstantUtils.REGISTER_MSG)) {
-                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "registerToken", response.body().getData());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "registerToken", Objects.requireNonNull(response.body()).getData());
                     }
                     Toast.makeText(UMapplication.getContext(), ConstantUtils.VER_CODE_SEND, Toast.LENGTH_SHORT).show();
                     new Thread(new CountDownTimer(60, sendCodeBtn, 1, UMapplication.getContext())).start();
@@ -895,7 +905,7 @@ public class RetrofitUtils {
 
     //找回密码接口二
     //找回密码，传入手机号、验证码和新密码，找回后返回登录界面
-    public static void postSetNewPsw(final Context context, final Activity startAct, String phone, String verCode, String newPsw) {
+    public static void postSetNewPsw(final Activity startAct, String phone, String verCode, String newPsw) {
         PostSetNewPsw request = retrofit.create(PostSetNewPsw.class);
         String setPswToken = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "setPswToken");
         String SHApassword = SHAArithmetic.encode(newPsw);//密码加密
@@ -907,7 +917,7 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
                 int responseCode = Objects.requireNonNull(response.body()).getCode();
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
-                    nextActivity(UMapplication.getContext(), startAct, LoginActivity.class);
+                    nextActivity(startAct, LoginActivity.class);
                 } else {
                     Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                 }
@@ -924,7 +934,7 @@ public class RetrofitUtils {
 
     //用户注册接口二
     //发送该请求后进入完善资料界面，本接口为测试手机与验证码的正确性
-    public static void postRegister(final Context context, final Activity startAct, final String phone, String verCode) {
+    public static void postRegister(final Activity startAct, final String phone, String verCode) {
         PostRegister request = retrofit.create(PostRegister.class);
         String registerToken = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "registerToken");
 
@@ -937,7 +947,7 @@ public class RetrofitUtils {
                 int responseCode = Objects.requireNonNull(response.body()).getCode();
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "phone", phone);
-                    nextActivity(UMapplication.getContext(), startAct, PerfectInfoActivity.class);
+                    nextActivity(startAct, PerfectInfoActivity.class);
                 } else {
                     Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                 }
@@ -972,16 +982,16 @@ public class RetrofitUtils {
                             .setHintText("loading...")
                             .setCanceledOnTouchOutside(false)
                             .show();
-                    ZLoadingDialog dialog2 = new ZLoadingDialog(UMapplication.getContext());
+                    ZLoadingDialog dialog2 = new ZLoadingDialog(context);
                     dialog2.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                             .setLoadingColor(UMapplication.getContext().getResources().getColor(R.color.blue))//颜色
                             .setHintText("upLoading...")
                             .setCanceledOnTouchOutside(false)
                             .show();
-                    postUserInfo(UMapplication.getContext(), startAct, token, dialog);
+                    postUserInfo(context, startAct, token, dialog);
                     String imagePath = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "imagePath");
                     imagePath = CircleDrawable.compressImage(imagePath);
-                    postUserAvatar(UMapplication.getContext(), imagePath, dialog2);
+                    postUserAvatar(imagePath, dialog2);
                 } else {
                     Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                 }
@@ -1016,13 +1026,13 @@ public class RetrofitUtils {
                             .setHintText("Login...")
                             .setCanceledOnTouchOutside(false)
                             .show();
-                    Log.d("token值", response.body().getData());
-                    RetrofitUtils.postUserInfo(UMapplication.getContext(), startAct, response.body().getData(), dialog);
+                    Log.d("token值", Objects.requireNonNull(response.body()).getData());
+                    RetrofitUtils.postUserInfo(UMapplication.getContext(), startAct, Objects.requireNonNull(response.body()).getData(), dialog);
 //                    nextActivity(UMapplication.getContext(),startAct,MainActivity.class);
                 }
                 else {
                     Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(),Toast.LENGTH_SHORT).show();
-                    nextActivity(UMapplication.getContext(),startAct, AuthPerUserInfo.class);
+                    nextActivity(startAct, AuthPerUserInfo.class);
                 }
             }
             @Override
@@ -1046,7 +1056,7 @@ public class RetrofitUtils {
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token", Objects.requireNonNull(response.body()).getData());
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"hasLogin","true");
                     //使用com.zyao89:zloading:1.1.2引用別人的加载动画
-                    ZLoadingDialog dialog = new ZLoadingDialog(UMapplication.getContext());
+                    ZLoadingDialog dialog = new ZLoadingDialog(context);
                     dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                             .setLoadingColor(UMapplication.getContext().getResources().getColor(R.color.blue))//颜色
                             .setHintText("Login...")
@@ -1080,7 +1090,7 @@ public class RetrofitUtils {
 
 
     //获取远程信息失败或者广告版本为最新时, 检查本地头像是否存在
-    private static boolean checkLocalAvatarImage(Context context) {
+    private static boolean checkLocalAvatarImage() {
         Log.d(TAG, "检测本地头像是否存在");
         File avatarImageFile = new File(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar")));
         return avatarImageFile.exists();
@@ -1088,7 +1098,7 @@ public class RetrofitUtils {
 
 
     //根据token是否有效决定下一活动
-    private static void nextActivity(final Context context, final Activity startAct) {
+    private static void nextActivity(final Activity startAct) {
         if (SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "hasLogin").equals("false")) {
             startAct.runOnUiThread(new Runnable() {
                 @Override
@@ -1113,7 +1123,7 @@ public class RetrofitUtils {
     }
 
     //根据传入参数类决定下一启动活动
-    private static void nextActivity(final Context context, final Activity startAct, final Class endAct) {
+    private static void nextActivity(final Activity startAct, final Class endAct) {
         startAct.runOnUiThread(new Runnable() {
             @Override
             public void run() {

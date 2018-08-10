@@ -159,7 +159,7 @@ public class PerfectInfoActivity extends BaseActivity {
                         .setCanceledOnTouchOutside(false)
                         .show();
                 builder = new AlertDialog.Builder(this);
-                RetrofitUtils.postAllColleges(this,builder,collegeName,academyName,dialog);
+                RetrofitUtils.postAllColleges(builder,collegeName,academyName,dialog);
                 break;
             case R.id.academy_name:
                 if(collegeName.getText().toString().equals("")){
@@ -173,7 +173,7 @@ public class PerfectInfoActivity extends BaseActivity {
                             .setCanceledOnTouchOutside(false)
                             .show();
                     builder = new AlertDialog.Builder(this);
-                    RetrofitUtils.postAllAcademies(this,collegeName.getText().toString(),builder,academyName,dialog);
+                    RetrofitUtils.postAllAcademies(collegeName.getText().toString(),builder,academyName,dialog);
                 }
 
                 break;
