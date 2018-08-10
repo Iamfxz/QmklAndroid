@@ -19,6 +19,7 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.AuthPerInfoRequest;
 import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.DownLoader;
+import com.android.papers.qmkl_android.util.EditTextFilter;
 import com.android.papers.qmkl_android.util.MyTextWatcher;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
@@ -88,6 +89,7 @@ public class AuthPerUserInfo extends BaseActivity{
         }).start();
         //获取第三方昵称
         userNickname.getEditText().setText(SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"nickname"));
+        EditTextFilter.setProhibitEmoji(userNickname.getEditText(),this);
         //获取第三方性别
         genderLayout.getEditText().setText(SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"gender"));
 
@@ -178,23 +180,29 @@ public class AuthPerUserInfo extends BaseActivity{
                 alertDialog.show();
                 break;
             case R.id.next:
-                AuthPerInfoRequest authPerInfoRequest=new AuthPerInfoRequest(
-                        SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"uid"),
-                        SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"nickname"),
-                        "qq",SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"gender"),
-                        Objects.requireNonNull(enterYearLayout.getEditText()).getText().toString(),
-                        SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"avatarUrl"),
-                        Objects.requireNonNull(collegeLayout.getEditText()).getText().toString(),
-                        Objects.requireNonNull(academyLayout.getEditText()).getText().toString()
-                );
-                Log.d(TAG,                         SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"uid")+"\n"+
-                        SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"nickname")+"\n"+
-                        "qq"+"\n"+SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"gender")+"\n"+
-                        Objects.requireNonNull(enterYearLayout.getEditText()).getText().toString()+"\n"+
-                        SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"avatarUrl")+"\n"+
-                        Objects.requireNonNull(collegeLayout.getEditText()).getText().toString()+"\n"+
-                        Objects.requireNonNull(academyLayout.getEditText()).getText().toString());
-                RetrofitUtils.postAuthPerInfo(AuthPerUserInfo.this,authPerInfoRequest,AuthPerUserInfo.this);
+                if(EditTextFilter.isIllegal(userNickname.getEditText().getText().toString())){
+                    AuthPerInfoRequest authPerInfoRequest=new AuthPerInfoRequest(
+                            SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"uid"),
+                            Objects.requireNonNull(userNickname.getEditText()).getText().toString(),
+                            "qq", Objects.requireNonNull(genderLayout.getEditText()).getText().toString(),
+                            Objects.requireNonNull(enterYearLayout.getEditText()).getText().toString(),
+                            SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"avatarUrl"),
+                            Objects.requireNonNull(collegeLayout.getEditText()).getText().toString(),
+                            Objects.requireNonNull(academyLayout.getEditText()).getText().toString()
+                    );
+                    Log.d(TAG,                         SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"uid")+"\n"+
+                            userNickname.getEditText().getText().toString()+"\n"+
+                            "qq"+"\n"+genderLayout.getEditText().getText().toString()+"\n"+
+                            Objects.requireNonNull(enterYearLayout.getEditText()).getText().toString()+"\n"+
+                            SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"avatarUrl")+"\n"+
+                            Objects.requireNonNull(collegeLayout.getEditText()).getText().toString()+"\n"+
+                            Objects.requireNonNull(academyLayout.getEditText()).getText().toString());
+                    RetrofitUtils.postAuthPerInfo(AuthPerUserInfo.this,authPerInfoRequest,AuthPerUserInfo.this);
+                }
+                else {
+                    Toast.makeText(this,"您的输入中有非法字符",Toast.LENGTH_SHORT).show();
+                }
+
                 break;
             case R.id.back:
 

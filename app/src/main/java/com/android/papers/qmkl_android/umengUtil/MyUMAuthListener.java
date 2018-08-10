@@ -3,7 +3,12 @@ package com.android.papers.qmkl_android.umengUtil;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.activity.LoginActivity;
@@ -39,6 +44,7 @@ public class MyUMAuthListener implements UMAuthListener {
 
     @Override
     public void onComplete(SHARE_MEDIA share_media, int i, Map<String, String> map) {
+        Log.d(TAG, "onComplete: ");
         if(isLogin){
             doLogin(map);
         }
@@ -73,11 +79,11 @@ public class MyUMAuthListener implements UMAuthListener {
             //获取用户头像名称
             else if(string.equals("openid") && !map.get(string).isEmpty()){
                 SharedPreferencesUtils.setStoredMessage(context,"avatar",map.get(string)+".jpg");
+                Log.d(TAG,  SharedPreferencesUtils.getStoredMessage(context,"avatar"));
             }
             //获取用户头像路径
             else if(string.equals("iconurl") && !map.get(string).isEmpty()){
                 SharedPreferencesUtils.setStoredMessage(context,"avatarUrl",map.get(string));
-
             }
             //获取用户uid
             else if (string.equals("uid") && !map.get(string).isEmpty()) {
@@ -98,4 +104,10 @@ public class MyUMAuthListener implements UMAuthListener {
         startAct.startActivity(new Intent(startAct,LoginActivity.class));
         startAct.finish();
     }
+
+
+
+
 }
+
+

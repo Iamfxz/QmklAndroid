@@ -2,6 +2,7 @@ package com.android.papers.qmkl_android.util;
 
 import android.os.Environment;
 import android.os.StatFs;
+import android.util.Log;
 
 import java.io.File;
 
@@ -114,7 +115,12 @@ public class SDCardUtils {
      * @return 广告图片路径
      */
     public static String getADImage(String picName) {
-        return getADImagePath() + picName+ ".png";
+        String strings[]=picName.split("\\.");
+        int length=strings.length;
+        if(strings[length-1].equals("jpg") || strings[length-1].equals("png")) {
+            return getADImagePath() + picName;
+        }
+        return getADImagePath() + picName + ".png";
     }
 
     /**
@@ -124,7 +130,12 @@ public class SDCardUtils {
      * @return 头像图片路径
      */
     public static String getAvatarImage(String avatarName) {
-        return getCachePath() + avatarName;
+        String strings[]=avatarName.split("\\.");
+        int length=strings.length;
+        if(strings[length-1].equals("jpg") || strings[length-1].equals("png")){
+            return getCachePath() + avatarName;
+        }
+        return getCachePath() + avatarName + ".png";
     }
 
 

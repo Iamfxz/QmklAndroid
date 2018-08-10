@@ -85,7 +85,20 @@ public class LoginActivity extends BaseActivity {
             }
         }catch (Exception e){
             e.printStackTrace();
+
         }
+//        //闪退的通过try可以解决，但是如果是必要执行的不要使用try
+//        try{
+//            if(SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")
+//                    ||SharedPreferencesUtils.getStoredMessage(this,"phone")==null){
+//                //设置默认账号
+//                userPhoneNum.getEditText().setText(SharedPreferencesUtils.getStoredMessage(this,"phone"));
+//                //初始焦点位于输入密码位置
+//                userPsw.getEditText().requestFocus();
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
 
         //初始时登录按钮不可用
         loginBtn.setEnabled(false);

@@ -47,15 +47,17 @@
 
                     <TextView
                         android:id="@+id/user_name"
-                        android:layout_width="100dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Robin"
+                        android:singleLine="true"
+                        android:maxEms="10"
+                        android:text="期末考啦"
                         android:textColor="@color/blue"
                         android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/user_college_name"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="18dp"
                         android:text="福州大学"

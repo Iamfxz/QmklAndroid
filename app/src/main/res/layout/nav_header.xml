@@ -47,15 +47,17 @@
 
                 <TextView
                     android:id="@+id/user_name"
-                    android:layout_width="100dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Robin"
+                    android:singleLine="true"
+                    android:maxEms="10"
+                    android:text="期末考啦"
                     android:textColor="@color/blue"
                     android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/user_college_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
                     android:background="@color/head_back"
@@ -64,25 +66,7 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/next"
-                android:layout_width="27dp"
-                android:layout_height="33dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:background="@color/head_back"
-                android:src="@mipmap/next" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/next"
-                android:background="@color/head_back"
-                android:text="修改信息"
-                android:textColor="@color/gray"
-                android:textSize="11sp" />
         </RelativeLayout>
 
 
