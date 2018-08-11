@@ -125,8 +125,11 @@ public class DownLoader {
 
                 }catch (Exception e) {
 
+<<<<<<< HEAD
+=======
 //                    Log.d("ActivityTag", e.getMessage());
 
+>>>>>>> 86c698a6a2a178e8330dfacefcfd0def7b623149
                     if (callback instanceof DownloadTaskCallback && ! Thread.currentThread().isInterrupted()) {
                         callback.onFailure(e);
                     }

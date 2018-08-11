@@ -91,17 +91,35 @@ public class AuthPerUserInfo extends BaseActivity{
                 }
             }
         }).start();
+<<<<<<< HEAD
+
+        //获取第三方昵称
+        Objects.requireNonNull(userNickname.getEditText()).setText(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"nickname"));
+
+=======
+>>>>>>> 86c698a6a2a178e8330dfacefcfd0def7b623149
 
         //获取第三方昵称、昵称长度
-        String nickName = SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"nickname");
+        String nickName = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"nickname");
         Objects.requireNonNull(userNickname.getEditText()).setText(nickName);
+<<<<<<< HEAD
+
+=======
+>>>>>>> 86c698a6a2a178e8330dfacefcfd0def7b623149
         EditTextFilter.setProhibitEmoji(userNickname.getEditText(),this);
         userNickname.getEditText().setSelection(nickName.length());//光标
 
         //获取第三方性别
+<<<<<<< HEAD
+        String gender = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"gender");
+        Objects.requireNonNull(genderLayout.getEditText()).setText(gender);
+
+
+=======
         String gender = SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"gender");
         Objects.requireNonNull(genderLayout.getEditText()).setText(gender);
 
+>>>>>>> 86c698a6a2a178e8330dfacefcfd0def7b623149
         //下一步按钮不可用
         nextBtn.setEnabled(false);
 
