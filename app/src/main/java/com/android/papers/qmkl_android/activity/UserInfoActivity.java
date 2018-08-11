@@ -30,6 +30,7 @@ import com.android.papers.qmkl_android.umengUtil.MyUMAuthListener;
 import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.ConstantUtils;
+import com.android.papers.qmkl_android.util.EditTextFilter;
 import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
@@ -100,6 +101,7 @@ public class UserInfoActivity extends BaseActivity {
         // 获取布局中的控件
         final EditText username = view.findViewById(R.id.nickname);
         username.setText(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"nickname"));
+        EditTextFilter.setProhibitEmoji(username,this);
         // 设置参数
         builder.setTitle("请输入昵称").setView(view);
         // 创建对话框
@@ -219,8 +221,8 @@ public class UserInfoActivity extends BaseActivity {
                 .setItems(enterYearItems, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface DialogInterface, int which) {
-                        UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),enterYearItems[which],ConstantUtils.ENTERYEAR);
-                        RetrofitUtils.postUpdateUser(ConstantUtils.ENTERYEAR,userRequest,null,enterYear,dialog,false);
+                        UpdateUserRequest userRequest=getUserRequest(getApplicationContext(),enterYearItems[which],ConstantUtils.ENTER_YEAR);
+                        RetrofitUtils.postUpdateUser(ConstantUtils.ENTER_YEAR,userRequest,null,enterYear,dialog,false);
                     }
                 });
         //监听返回键
@@ -306,7 +308,7 @@ public class UserInfoActivity extends BaseActivity {
             case ConstantUtils.GENDER:
                 gender=value;
                 break;
-            case ConstantUtils.ENTERYEAR:
+            case ConstantUtils.ENTER_YEAR:
                 enterYear=value;
                 break;
             case ConstantUtils.COLLEGE:

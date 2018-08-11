@@ -5,7 +5,7 @@ public class ConstantUtils {
     //个人信息代码
     public static final int NICKNAME = 1;
     public static final int GENDER = 2;
-    public static final int ENTERYEAR = 3;
+    public static final int ENTER_YEAR = 3;
     public static final int COLLEGE = 4;
     public static final int ACADEMY = 5;
 
@@ -21,14 +21,16 @@ public class ConstantUtils {
     public static final String REGISTER_MSG = "注册";
 
     //提示信息
-    public static final String CACHE_AD_ERROR="缓存广告失败";
-    public static final String SERVER_REQUEST_FAILURE="网络连接失败";
-    public static final String UPLOAD_IMG_FAILURE="上传头像失败";
-    public static final String CHECK_ACCOUNT_AND_PSW="请检查账号密码是否准确";
-    public static final String LOGIN_FIRST="请先登录";
-    public static final String CHOOSE_ACADEMY="选择学院";
-    public static final String CHOOSE_COLLEGE="选择学校";
-    public static final String VER_CODE_SEND="验证码已发送";
+    public static final String CACHE_AD_ERROR = "缓存广告失败";
+    public static final String SERVER_REQUEST_FAILURE = "网络连接失败";
+    public static final String UPLOAD_IMG_FAILURE = "上传头像失败";
+    public static final String CHECK_ACCOUNT_AND_PSW = "请检查账号密码是否准确";
+    public static final String LOGIN_FIRST = "请先登录";
+    public static final String CHOOSE_ACADEMY = "选择学院";
+    public static final String CHOOSE_COLLEGE = "选择学校";
+    public static final String VER_CODE_SEND = "验证码已发送，请查收~";
+    public static final String LOGIN_INVALID = "您的登陆信息居然失效了，需要重新登陆，谢谢~";
+    public static final String SERVER_FILE_ERROR = "您网络可能出了点问题啦，请重新启动一下，谢谢~";
 
 
 }

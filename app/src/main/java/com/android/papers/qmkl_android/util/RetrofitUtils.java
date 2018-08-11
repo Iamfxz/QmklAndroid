@@ -240,6 +240,7 @@ public class RetrofitUtils {
                     String token = Objects.requireNonNull(response.body()).getData().toString();
                     //接下来进入登录界面
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", token);
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "true");
                     Log.d(TAG, "已保存正确token值");
                     //获取用户信息
                     RetrofitUtils.postUserInfo(context, startActivity, token, dialog);
@@ -434,7 +435,7 @@ public class RetrofitUtils {
                             SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "gender", userInfo.getUser().getGender());
                             break;
                         //修改入学年份
-                        case ConstantUtils.ENTERYEAR:
+                        case ConstantUtils.ENTER_YEAR:
                             textView.setText(userInfo.getUser().getEnterYear());
                             SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "enterYear", userInfo.getUser().getEnterYear());
                             break;

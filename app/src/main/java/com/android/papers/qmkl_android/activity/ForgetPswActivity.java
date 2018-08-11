@@ -21,6 +21,7 @@ public class ForgetPswActivity extends BaseActivity {
 
     private static final String TAG = "ForgetPswActivity";
     private static final String FORGET_PSW_MSG="修改密码";
+
     @BindView(R.id.user_phone)
     TextInputLayout userPhone;
     @BindView(R.id.verification_code)

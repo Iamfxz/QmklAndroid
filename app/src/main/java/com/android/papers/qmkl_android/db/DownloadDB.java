@@ -30,15 +30,20 @@ public class DownloadDB extends SQLiteOpenHelper {
     private static final String URL = "url";
     private static final String TIME = "time";
     private static final String PATH = "path";
+    private static final String FILE_ID = "fileId";
+    private static final String LIKE_NUM = "likeNum";
+    private static final String DISLIKE_NUM = "dislikeNum";
+    private static final String MD5 = "md5";
 
     //根据PATH查找文件所有信息
     private static final String QUERY_DOWNLOADED = "SELECT * FROM " + TABLE_NAME
             + " WHERE " + PATH + " = ?";
     //按照（文件名，课程，大小，类型，URL，时间）插入数据
     private static final String ADD_DOWNLOADED = "INSERT INTO " + TABLE_NAME
-            + "(" + NAME + ", " + COURSE + ", " + SIZE + ", " + TYPE + ", "
-            + URL + ", " + TIME + ", " + PATH +") "
-            + "VALUES(?, ?, ?, ?, ?, ?, ?)";
+            + "(" + NAME + ", " + COURSE + ", " + SIZE + ", " + TYPE + ", "+ URL +
+            ", " + TIME + ", " + PATH + ", " + FILE_ID + ", " + LIKE_NUM + ", " + DISLIKE_NUM
+            + ", " + MD5 +") "
+            + "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     //根据PATH删除该文件所有信息
     private static final String REMOVE_DOWNLOADED = "DELETE FROM " + TABLE_NAME + " WHERE "
             + PATH + " = ?";
@@ -78,7 +83,11 @@ public class DownloadDB extends SQLiteOpenHelper {
                 + TYPE + " TEXT NOT NULL,"
                 + URL + " TEXT NOT NULL,"
                 + TIME + " TEXT NOT NULL,"
-                + PATH + " TEXT NOT NULL)");
+                + PATH + " TEXT NOT NULL,"
+                + FILE_ID + " TEXT NOT NULL,"
+                + LIKE_NUM + " TEXT NOT NULL,"
+                + DISLIKE_NUM + " TEXT NOT NULL,"
+                + MD5 + " TEXT NOT NULL)");
     }
 
     @Override
@@ -104,7 +113,11 @@ public class DownloadDB extends SQLiteOpenHelper {
                 paperFile.getType(),
                 paperFile.getUrl(),
                 PaperFileUtils.getCurrentTime(),
-                paperFile.getPath()
+                paperFile.getPath(),
+                String.valueOf(paperFile.getId()),
+                String.valueOf(paperFile.getLikeNum()),
+                String.valueOf(paperFile.getDislikeNum()),
+                paperFile.getMd5()
         });
     }
 
@@ -143,6 +156,10 @@ public class DownloadDB extends SQLiteOpenHelper {
             file.setSize(cursor.getString(cursor.getColumnIndex(SIZE)));
             file.setDownload(true);
             file.setPath(cursor.getString(cursor.getColumnIndex(PATH)));
+            file.setId(cursor.getString(cursor.getColumnIndex(FILE_ID)));
+            file.setLikeNum(cursor.getString(cursor.getColumnIndex(LIKE_NUM)));
+            file.setDislikeNum(cursor.getString(cursor.getColumnIndex(DISLIKE_NUM)));
+            file.setMd5(cursor.getString(cursor.getColumnIndex(MD5)));
 
             downloadedFile.setFile(file);
             downloadedFile.setDownloadTime(cursor.getString(cursor.getColumnIndex(TIME)));
