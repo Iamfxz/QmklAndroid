@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -136,7 +137,7 @@ public class FileDetailActivity extends BaseActivity {
                 break;
             case R.id.btn_cancel:
                 LogUtils.d(Tag, "cancel download");
-                cancelDonwload();
+                cancelDownload();
                 break;
 
         }
@@ -218,9 +219,12 @@ public class FileDetailActivity extends BaseActivity {
         });
     }
 
+    /**
+     *      删除文件
+     */
     private void deleteDownloadedFile() {
         new AlertDialog.Builder(this)
-                .setMessage("删除该文件?")
+                .setMessage("是否删除该文件?")
                 .setCancelable(true)
                 .setNegativeButton("取消", null)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -228,19 +232,19 @@ public class FileDetailActivity extends BaseActivity {
                     public void onClick(DialogInterface dialog, int which) {
 
                         File file = new File(SDCardUtils.getDownloadPath() + downloadDB.getFileName(mFile.getPath()));
-                        System.out.println("文件地址"+" :"+file.toString());
+//                        System.out.println("文件地址"+" :"+file.toString());
                         if (file.exists()) {
                             if(file.delete())
-                                LogUtils.d(Tag, "删除文件: " + file.getName());
+                                Log.d(Tag, "删除文件: " + file.getName());
                         }
                         downloadDB.removeDownloadInfo(mFile.getPath());
-                        LogUtils.d(Tag, "清除数据库信息: " + mFile.getUrl());
+                        Log.d(Tag, "清除数据库信息: " + mFile.getUrl());
 
                         mFile.setDownload(false);
 
                         refreshDownloadState();
 
-                        setResult(RESULT_OK);
+                        setResult(RESULT_OK);//废弃
                         finish();
                     }
                 }).create().show();
@@ -253,26 +257,23 @@ public class FileDetailActivity extends BaseActivity {
         if (!mFile.isDownload()) {
 
             //未下载 执行下载进程
-            setDownloadViewVisiablity();
-            System.out.println("文件资源URL:"+mFile.getUrl());
-            System.out.println("下载路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
+            setDownloadViewVisible();
+//            System.out.println("文件资源URL:"+mFile.getUrl());
+//            System.out.println("下载路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
             downloadTask = DownLoader.downloadPaperFile(mFile.getUrl(),
                     SDCardUtils.getDownloadPath() + mFile.getName(),
                     new DownLoader.DownloadTaskCallback() {
                         @Override
                         public void onProgress(final int hasWrite, final int totalExpected) {
-
                             runOnUiThread(new Runnable() {
                                 @SuppressLint("SetTextI18n")
                                 @Override
                                 public void run() {
-
                                     pbProgress.setProgress((int) ((double) hasWrite / (double) totalExpected * 100));
                                     tvProgress.setText("下载中...(" + PaperFileUtils.sizeWithDouble(hasWrite / 1024.0) + "" +
                                             "/" + mFile.getSize() + ")");
                                 }
                             });
-
                         }
 
                         @Override
@@ -289,7 +290,7 @@ public class FileDetailActivity extends BaseActivity {
 
                                     downloadDB.addDownloadInfo(mFile);
 
-                                    setDownloadViewVisiablity();
+                                    setDownloadViewVisible();
                                     downloadTask = null;
                                 }
                             });
@@ -303,7 +304,7 @@ public class FileDetailActivity extends BaseActivity {
                                 public void run() {
 
                                     ToastUtils.showShort(FileDetailActivity.this, "下载发生错误");
-                                    setDownloadViewVisiablity();
+                                    setDownloadViewVisible();
                                 }
                             });
                         }
@@ -314,7 +315,7 @@ public class FileDetailActivity extends BaseActivity {
                                 @Override
                                 public void run() {
                                     pbProgress.setProgress(0);
-                                    setDownloadViewVisiablity();
+                                    setDownloadViewVisible();
                                 }
                             });
                         }
@@ -352,7 +353,7 @@ public class FileDetailActivity extends BaseActivity {
     /**
      *      中断下载
      */
-    private void cancelDonwload() {
+    private void cancelDownload() {
 
         if (downloadTask != null && downloadTask.isAlive()) {
             downloadTask.interrupt();
@@ -364,7 +365,7 @@ public class FileDetailActivity extends BaseActivity {
      *      设置下载视图
      *      一般用于下载完成一个文件后的视图设置
      */
-    private void setDownloadViewVisiablity() {
+    private void setDownloadViewVisible() {
         isDownloading = !isDownloading;
 
         refreshDownloadState();
@@ -379,12 +380,17 @@ public class FileDetailActivity extends BaseActivity {
 
     /**
      *      刷新下载状态
+     *      1删除按钮设为可见
+     *      2按钮字样由下载到手机变为打开文件
      */
     private void refreshDownloadState() {
         tvDelete.setVisibility(mFile.isDownload() ? View.VISIBLE : View.INVISIBLE);
         btnDownload.setText(mFile.isDownload() ? "打开文件" : "下载到手机");
     }
 
+    /**
+     *      发送点踩请求
+     */
     private void postDislike(){
         PostDislike request = retrofit.create(PostDislike.class);
         Call<ResponseInfo> call = request.getCall(LDRequest);
@@ -398,6 +404,9 @@ public class FileDetailActivity extends BaseActivity {
         });
     }
 
+    /**
+     *      获取是否已经点踩请求
+     */
     private void postIsDislike(){
         PostIsDislike request = retrofit.create(PostIsDislike.class);
         Call<ResponseInfo> call = request.getCall(LDRequest);
@@ -418,6 +427,9 @@ public class FileDetailActivity extends BaseActivity {
         });
     }
 
+    /**
+     *      发送点赞请求
+     */
     private void postLike(){
         PostLike request = retrofit.create(PostLike.class);
         Call<ResponseInfo> call = request.getCall(LDRequest);
@@ -431,6 +443,9 @@ public class FileDetailActivity extends BaseActivity {
         });
     }
 
+    /**
+     *      获取是否已经点赞
+     */
     private void postIsLike(){
         PostIsLike request = retrofit.create(PostIsLike.class);
         Call<ResponseInfo> call = request.getCall(LDRequest);
@@ -455,6 +470,9 @@ public class FileDetailActivity extends BaseActivity {
         super.onDestroy();
     }
 
+    /**
+     *      UI线程更新视图
+     */
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {

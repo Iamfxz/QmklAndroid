@@ -11,7 +11,7 @@ public class CommonUtils {
         long time = System.currentTimeMillis();
         long timeD = time - lastClickTime;
         //800ms内只能点击一次
-        if ( 0 < timeD && timeD < 800) {
+        if ( 0 < timeD && timeD < 500) {
             return true;
         }
         lastClickTime = time;
