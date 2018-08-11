@@ -159,14 +159,14 @@
             android:layout_marginRight="5dp"
             android:src="@drawable/umeng_socialize_qq" />
 
-        <ImageView
-            android:id="@+id/wx_quick_login"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:src="@drawable/umeng_socialize_qq" />
+        <!--<ImageView-->
+            <!--android:id="@+id/wx_quick_login"-->
+            <!--android:layout_width="80dp"-->
+            <!--android:layout_height="80dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_marginLeft="5dp"-->
+            <!--android:layout_marginRight="5dp"-->
+            <!--android:src="@drawable/umeng_socialize_qq" />-->
 
     </LinearLayout>
 

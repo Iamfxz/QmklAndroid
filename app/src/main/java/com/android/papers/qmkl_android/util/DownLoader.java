@@ -125,8 +125,6 @@ public class DownLoader {
 
                 }catch (Exception e) {
 
-                    Log.d("ActivityTag", e.getMessage());
-
                     if (callback instanceof DownloadTaskCallback && ! Thread.currentThread().isInterrupted()) {
                         callback.onFailure(e);
                     }

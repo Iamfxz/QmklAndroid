@@ -354,21 +354,20 @@ public class UserInfoActivity extends BaseActivity {
      * @return 所在地址
      */
     private String getImagePath(Uri uri, String selection){
-
-//        if(PermissionUtils.isHaveWritePer(UserInfoActivity.this,PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE)){
-//            Toast.makeText(this,"没有权限",Toast.LENGTH_SHORT).show();
-//            PermissionUtils.jumpPermissionPage(UserInfoActivity.this);
-//        }else {
+        if(!PermissionUtils.isHaveWritePer(UserInfoActivity.this,PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE)){
+            PermissionUtils.requestPermissionInApp(UserInfoActivity.this,PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
+        }else {
             String path = null;
-            Cursor cursor = getContentResolver().query(uri,null,selection,null,null);
-            if (cursor != null){
+            Cursor cursor = getContentResolver().query(uri, null, selection, null, null);
+            if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
                 }
                 cursor.close();
             }
-                return path;
-
+            return path;
+        }
+        return null;
     }
 
     /**

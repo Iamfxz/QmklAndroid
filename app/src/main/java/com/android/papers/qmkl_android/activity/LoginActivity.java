@@ -1,7 +1,10 @@
 package com.android.papers.qmkl_android.activity;
+import android.content.Context;
 import android.content.DialogInterface;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -26,6 +29,7 @@ import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -69,8 +73,8 @@ public class LoginActivity extends BaseActivity {
 
         //闪退的通过try可以解决，但是如果是必要执行的不要使用try
         try{
-            if(SharedPreferencesUtils.getStoredMessage(this,"phone")==null
-                    || SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")){
+            if(SharedPreferencesUtils.getStoredMessage(this,"phone")!=null
+                    && SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")){
                 //设置默认账号
                 userPhoneNum.getEditText().setText(SharedPreferencesUtils.getStoredMessage(this,"phone"));
                 //初始焦点位于输入密码位置
@@ -155,7 +159,12 @@ public class LoginActivity extends BaseActivity {
                 startActivity(new Intent(LoginActivity.this,RegisterActivity.class));  //用户注册 进入短信验证
                 break;
             case R.id.qq_quick_login:
-                UMShareAPI.get(LoginActivity.this).getPlatformInfo(LoginActivity.this, SHARE_MEDIA.QQ,new MyUMAuthListener(LoginActivity.this,LoginActivity.this,"qq",true));
+                if(isQQClientAvailable(LoginActivity.this)){
+                    UMShareAPI.get(LoginActivity.this).getPlatformInfo(LoginActivity.this, SHARE_MEDIA.QQ,new MyUMAuthListener(LoginActivity.this,LoginActivity.this,"qq",true));
+                }
+                else{
+                    Toast.makeText(LoginActivity.this,"未安装qq客户端",Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }
@@ -200,5 +209,25 @@ public class LoginActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         //QQ第三方登录调用
         UMShareAPI.get(LoginActivity.this).onActivityResult(requestCode,resultCode,data);
+    }
+
+    /**
+     * 判断qq是否可用
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isQQClientAvailable(Context context) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
+        if (pinfo != null) {
+            for (int i = 0; i < pinfo.size(); i++) {
+                String pn = pinfo.get(i).packageName;
+                if (pn.equals("com.tencent.mobileqq")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

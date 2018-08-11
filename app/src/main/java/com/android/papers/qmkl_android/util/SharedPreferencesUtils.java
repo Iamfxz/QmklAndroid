@@ -31,7 +31,7 @@ public class SharedPreferencesUtils {
      *  imagePath:上传头像的本地路径
      *  uid:qq第三方登录ID，即用户上传openid
      *  platform:存储用户登录平台
-     *
+     *  hasRequestSDPermission:是否是第一次申请SD读写权限
      */
 
 
