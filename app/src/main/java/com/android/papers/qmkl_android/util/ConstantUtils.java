@@ -22,7 +22,7 @@ public class ConstantUtils {
 
     //提示信息
     public static final String CACHE_AD_ERROR="缓存广告失败";
-    public static final String SERVER_REQUEST_FAILURE="服务器请求失败";
+    public static final String SERVER_REQUEST_FAILURE="网络连接失败";
     public static final String UPLOAD_IMG_FAILURE="上传头像失败";
     public static final String CHECK_ACCOUNT_AND_PSW="请检查账号密码是否准确";
     public static final String LOGIN_FIRST="请先登录";

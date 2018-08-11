@@ -1,7 +1,6 @@
 package com.android.papers.qmkl_android.ui;
 
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,13 +10,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
@@ -76,9 +73,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ResourceFragment extends Fragment
         implements NavigationView.OnNavigationItemSelectedListener, AbsListView.OnScrollListener {
 
-    //为方便将Fragment在Tag中改为Activity,方便LogCat的过滤
-    private static final String TAG = "ResourceActivityTag";
-
     //文件总数据
     private FileRes mData;
     private List<String> list;//文件名列表
@@ -99,7 +93,7 @@ public class ResourceFragment extends Fragment
     final int errorCode = 404;
     final int successCode = 200;
 
-    //loadPaperData()方法是请求码
+    //loadPaperData()方法的请求码，含义看函数头注释
     final int loadFolder = 0;
     final int loadPreviousFolder = 1;
     final int loadRefresh = 2;
@@ -108,7 +102,6 @@ public class ResourceFragment extends Fragment
 
     //学校名称
     private String collegeName;
-    private GestureDetector gesture; //手势识别
 
     //搜索框，开源框架，github地址https://github.com/MiguelCatalan/MaterialSearchView
     private MaterialSearchView searchView;
@@ -214,16 +207,6 @@ public class ResourceFragment extends Fragment
             }
         }, 100);
 
-        //根据父窗体getActivity()为fragment设置手势识别
-        gesture = new GestureDetector(this.getActivity(), new MyOnGestureListener());
-        //为fragment添加OnTouchListener监听器
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return gesture.onTouchEvent(event);//返回手势识别触发的事件
-            }
-        });
-
         lvFolder.setOnScrollListener(this);
 
         return view;
@@ -322,7 +305,6 @@ public class ResourceFragment extends Fragment
         mLastVisibleItem = lastVisibleItem;
     }
 
-
     /**
      * 菜单栏
      *
@@ -387,6 +369,11 @@ public class ResourceFragment extends Fragment
         });
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
+
     /**
      * 列表的加载动画
      *
@@ -406,26 +393,6 @@ public class ResourceFragment extends Fragment
             animator.start();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    //TODO 设置手势识别监听器，暂时无法使用成功，以后回头来看
-    private class MyOnGestureListener extends GestureDetector.SimpleOnGestureListener {
-        @Override//此方法必须重写且返回真，否则onFling不起效
-        public boolean onDown(MotionEvent e) {
-            return true;
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if ((e1.getX() - e2.getX() > 120) && Math.abs(velocityX) > 200) {
-                System.out.println("向左");
-                return true;
-            } else if ((e2.getX() - e1.getX() > 120) && Math.abs(velocityX) > 200) {
-                System.out.println("向右");
-                return true;
-            }
-            return false;
         }
     }
 
@@ -537,65 +504,6 @@ public class ResourceFragment extends Fragment
             postFileDetail(path.toString(), collegeName);
         }
 
-    }
-
-    /**
-     * 单个item的适配器，不仅仅是文件夹folder，也可以是文件file
-     */
-    private class FolderAdapter extends BaseAdapter {
-
-        @Override
-        public int getCount() {
-            int size = 0;
-            if (mData == null) {
-                return size;
-            }
-            try {
-                size = mData.getData().keySet().size();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return size;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return new ArrayList<>(mData.getData().keySet()).get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            mItemViewHolder holder;
-            list = new ArrayList<>(mData.getData().keySet());
-            String folderName = list.get(position);
-            //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
-            if (convertView == null) {
-                convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
-                holder = new mItemViewHolder(convertView);
-                convertView.setTag(holder);
-            } else {
-                holder = (mItemViewHolder) convertView.getTag();
-            }
-
-            //从Data中取出数据填充到ListView列表项中
-            holder.tvFolderName.setText(folderName);
-            holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
-            if (!PaperFileUtils.typeWithFileName(folderName).equals("folder")) {
-                holder.tvFolderSize.setText(mData.getData().get(folderName));
-                holder.tvFolderSize.setVisibility(View.VISIBLE);
-                holder.imgFolderArrow.setVisibility(View.INVISIBLE);
-            } else {
-                holder.tvFolderSize.setVisibility(View.INVISIBLE);
-                holder.imgFolderArrow.setVisibility(View.VISIBLE);
-            }
-            return convertView;
-        }
     }
 
     /**
@@ -799,12 +707,6 @@ public class ResourceFragment extends Fragment
             //TODO 重新登陆
             SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
         }
-    }
-
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
     }
 
     private class FileAdapter extends BaseAdapter{

@@ -624,13 +624,6 @@ public class RetrofitUtils {
         }
     }
 
-<<<<<<< HEAD
-
-    //用户注册界面获取学校信息
-
-    public static void postAllColleges(final AlertDialog.Builder builder, final EditText college, final EditText academy, final ZLoadingDialog dialog) {
-        //监听返回键
-=======
     /**
      *        用户注册界面获取学校信息
      * @param context 上下文
@@ -641,7 +634,6 @@ public class RetrofitUtils {
      */
     public static void postAllColleges(final Context context, final AlertDialog.Builder builder, final EditText college, final EditText academy, final ZLoadingDialog dialog) {
         //监听返回键，返回则取消加载动画
->>>>>>> 65b3f53c257b36cb69755bc1d6f72bd7f961e5e9
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface DialogInterface, int keyCode, KeyEvent event) {

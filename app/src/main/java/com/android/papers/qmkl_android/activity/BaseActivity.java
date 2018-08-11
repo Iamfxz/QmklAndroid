@@ -3,13 +3,17 @@ package com.android.papers.qmkl_android.activity;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.android.papers.qmkl_android.R;
+import com.android.papers.qmkl_android.util.StatusBarUtil;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
 
 import java.io.File;
@@ -19,9 +23,13 @@ public class BaseActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setColor();
+        setBarColor(R.color.blue);
     }
 
+    /**
+     *      设置状态栏颜色和顶部一致
+     * @param resID 颜色
+     */
     public void setBarColor(int resID) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -34,10 +42,6 @@ public class BaseActivity extends Activity {
             // 设置状态栏的文字颜色
             tintManager.setStatusBarDarkMode(true, this);
         }
-    }
-
-    public void setColor(){
-        setBarColor(R.color.blue);
     }
 
     @TargetApi(19)
@@ -53,6 +57,10 @@ public class BaseActivity extends Activity {
         win.setAttributes(winParams);
     }
 
+    /**
+     *      打开文件
+     * @param file 文件
+     */
     protected void openFile(File file){
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -68,12 +76,11 @@ public class BaseActivity extends Activity {
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
     /**
      * 根据文件后缀名获得对应的MIME类型。
-     * @param file
+     * @param file 文件
      */
     private String getMIMEType(File file) {
         String type="*/*";

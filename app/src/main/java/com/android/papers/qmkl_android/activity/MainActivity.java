@@ -25,6 +25,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +39,7 @@ import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
+import com.android.papers.qmkl_android.util.StatusBarUtil;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initView(getApplicationContext());
 
-
+        //状态栏透明设置
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //状态栏透明 需要在创建SystemBarTintManager 之前调用。
             setTranslucentStatus(true);
@@ -108,6 +110,7 @@ public class MainActivity extends AppCompatActivity
             // 设置状态栏的文字颜色
             tintManager.setStatusBarDarkMode(true, this);
         }
+        StatusBarUtil.fullScreen(this);
 
         //设置顶部工具栏
         toolbar = findViewById(R.id.toolbar);
@@ -127,14 +130,11 @@ public class MainActivity extends AppCompatActivity
         CircleDrawable circleDrawable = new CircleDrawable(drawable,this,44);
         toolbar.setNavigationIcon(circleDrawable);
 
-
         drawer.addDrawerListener(toggle);
 
         toggle.syncState();
 
         navigationView = findViewById(R.id.nav_view);
-
-
 
         //引入header和menu
         navigationView.inflateHeaderView(R.layout.nav_header);
