@@ -143,6 +143,9 @@ public class ResourceFragment extends Fragment
         lvFolder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //不加载动画
+                mFirstVisibleItem = -1;
+                mLastVisibleItem = -1;
                 if (CommonUtils.isFastDoubleClick()) {
                     //当快速点击时候，弹出1s的动画 TODO 可否使用锁的方式达到数据同步？
                     doZLoadingDailog();
@@ -157,6 +160,8 @@ public class ResourceFragment extends Fragment
                         doZLoadingDailog();
                         System.out.println("你点击了：" + folder);
                     }
+                    //返回顶部
+                    lvFolder.setSelection(0);
                 }
             }
         });
