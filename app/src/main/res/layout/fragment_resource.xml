@@ -55,22 +55,12 @@
                 fab:fab_colorPressed="@color/btn_blue" />
 
             <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fab12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/change_sort_white"
-                fab:fab_size="mini"
-                fab:fab_label="修改学校"
-                fab:fab_colorNormal="@color/blue"
-                fab:fab_colorPressed="@color/btn_blue" />
-
-            <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/refesh_list"
                 fab:fab_size="mini"
-                fab:fab_label="刷新列表"
+                fab:fab_label="到主目录"
                 fab:fab_colorNormal="@color/blue"
                 fab:fab_colorPressed="@color/btn_blue" />
 

@@ -1,6 +1,7 @@
 package com.android.papers.qmkl_android.ui;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -32,17 +34,22 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileDetailActivity;
 import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.db.DownloadDB;
+import com.android.papers.qmkl_android.impl.PostAllColleges;
 import com.android.papers.qmkl_android.impl.PostFile;
 import com.android.papers.qmkl_android.impl.PostFileDetail;
 import com.android.papers.qmkl_android.impl.PostFileUrl;
+import com.android.papers.qmkl_android.model.AcademiesOrCollegesRes;
 import com.android.papers.qmkl_android.model.FileDetailRes;
 import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.model.FileUrlRes;
 import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
+import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.CommonUtils;
+import com.android.papers.qmkl_android.util.ConstantUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
+import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -58,6 +65,7 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
@@ -72,6 +80,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.android.papers.qmkl_android.util.ConstantUtils.LOGIN_INVALID;
 import static com.android.papers.qmkl_android.util.ConstantUtils.SERVER_FILE_ERROR;
 import static com.android.papers.qmkl_android.util.ConstantUtils.SERVER_REQUEST_FAILURE;
+import static com.android.papers.qmkl_android.util.ConstantUtils.SUCCESS_CODE;
+import static com.android.papers.qmkl_android.util.ConstantUtils.UNKNOWN_ERROR;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -80,7 +90,7 @@ import static com.android.papers.qmkl_android.util.ConstantUtils.SERVER_REQUEST_
 public class ResourceFragment extends Fragment
         implements NavigationView.OnNavigationItemSelectedListener, AbsListView.OnScrollListener {
 
-    final static String TAG="ResourceFragment";
+    final static String TAG = "ResourceFragment";
 
     //文件总数据
     private FileRes mData;
@@ -99,9 +109,10 @@ public class ResourceFragment extends Fragment
     private StringBuffer path;//最终请求路径
 
     //请求结果
-    final int errorCode = 404;
-    final int successCode = 200;
-    final int tokenInvalidCode = 301;
+    final int errorCode = 404;//请求错误
+    final int successCode = 200;//请求成功
+    final int tokenInvalidCode = 301;//登陆失效
+    final int normalErrorCode = 202;//常规错误，可以直接抛出msg给用户
 
     //loadPaperData()方法的请求码，含义看函数头注释
     final int loadFolder = 0;
@@ -118,6 +129,8 @@ public class ResourceFragment extends Fragment
 
     //显示学校名称或当前所在文件夹
     private TextView title;
+    //下拉选择学校
+    private ImageView chooseSchool;
 
     //是否退出程序，连续点两次返回则退出
     private static Boolean isExit = false;
@@ -142,11 +155,70 @@ public class ResourceFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_resource, container, false);
         ButterKnife.bind(this, view);
 
-        Log.d(TAG, SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"hasLogin"));
+        Log.d(TAG, SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "hasLogin"));
+        initView();
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //五个悬浮按钮，从上往下
+        FloatingActionButton fabUpload = view.findViewById(R.id.fab11);
+        FloatingActionButton fabReturnToMain = view.findViewById(R.id.fab13);
+        FloatingActionButton fabReturnTop = view.findViewById(R.id.fab14);
+        FloatingActionButton fabReturnBottom = view.findViewById(R.id.fab15);
+        FloatingActionButton fabPreviousMenu = view.findViewById(R.id.fab16);
+
+        //悬浮菜单及按钮监听
+        fabUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO
+                Toast.makeText(getContext(), "fabUpload Clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        fabReturnToMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadPaperData(null, 4, collegeName);//返回主页面
+            }
+        });
+
+        fabReturnTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lvFolder.setSelection(0);
+            }
+        });
+
+        fabReturnBottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lvFolder.setSelection(mAdapter.getCount());
+            }
+        });
+
+        fabPreviousMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (path.toString().equals("/"))
+                    Toast.makeText(getContext(), "当前已经是根目录了", Toast.LENGTH_SHORT).show();
+                loadPaperData(null, loadPreviousFolder, collegeName);//返回上级文件夹
+            }
+        });
+    }
+
+    private void initView() {
         //设置学校名称
         title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         collegeName = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "college");
         title.setText(collegeName);
+
+        setChooseSchoolListener();
 
         //文件列表设置
         mAdapter = new FileAdapter();
@@ -225,67 +297,40 @@ public class ResourceFragment extends Fragment
 
         lvFolder.setOnScrollListener(this);
 
-        return view;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        //五个悬浮按钮，从上往下
-        FloatingActionButton fabUpload = view.findViewById(R.id.fab11);
-        FloatingActionButton fabChangeSchool = view.findViewById(R.id.fab12);
-        FloatingActionButton fabRefresh = view.findViewById(R.id.fab13);
-        FloatingActionButton fabReturnTop = view.findViewById(R.id.fab14);
-        FloatingActionButton fabReturnBottom = view.findViewById(R.id.fab15);
-        FloatingActionButton fabPreviousMenu = view.findViewById(R.id.fab16);
-
-        //悬浮菜单及按钮监听
-        fabUpload.setOnClickListener(new View.OnClickListener() {
+    public void setChooseSchoolListener() {
+        chooseSchool = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school);
+        chooseSchool.setVisibility(View.VISIBLE);
+        title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
-                Toast.makeText(getContext(), "fabUpload Clicked!", Toast.LENGTH_SHORT).show();
+                ZLoadingDialog dialog = new ZLoadingDialog(v.getContext());
+                dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                        .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                        .setHintText("loading...")
+                        .setCanceledOnTouchOutside(false)
+                        .show();
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                postAllColleges(builder, title, dialog);
+            }
+        });
+        chooseSchool.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ZLoadingDialog dialog = new ZLoadingDialog(v.getContext());
+                dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                        .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                        .setHintText("loading...")
+                        .setCanceledOnTouchOutside(false)
+                        .show();
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                postAllColleges(builder, title, dialog);
+
             }
         });
 
-        fabChangeSchool.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO
-                Toast.makeText(getContext(), "fabChangeSchool Clicked!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        fabRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ptrFrame.autoRefresh();
-            }
-        });
-
-        fabReturnTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lvFolder.setSelection(0);
-            }
-        });
-
-        fabReturnBottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lvFolder.setSelection(mAdapter.getCount());
-            }
-        });
-
-        fabPreviousMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (path.toString().equals("/"))
-                    Toast.makeText(getContext(), "当前已经是根目录了", Toast.LENGTH_SHORT).show();
-                loadPaperData(null, loadPreviousFolder, collegeName);//返回上级文件夹
-            }
-        });
     }
 
     @Override
@@ -416,7 +461,8 @@ public class ResourceFragment extends Fragment
      * 请求并加载文件资源，主要用于主界面的资源页面
      *
      * @param folder      "/"表示请求主界面所有文件 "/cad/"表示请求其中的cad文件夹，以此类推
-     * @param requestCode 3——加载具体文件；
+     * @param requestCode 4——加载主页面文件；
+     *                    3——加载具体文件；
      *                    2——刷新当前页面;
      *                    1——用于回退到上一个文件夹；
      *                    0——加载folder
@@ -501,8 +547,15 @@ public class ResourceFragment extends Fragment
                         } else if (resultCode == successCode) {
                             //请求成功
                             handler.sendEmptyMessage(1);
-                        }else if(resultCode == errorCode ){
+                        } else if (resultCode == errorCode) {
                             handler.sendEmptyMessage(4);
+                        } else if (resultCode == normalErrorCode) {
+                            Message message = Message.obtain();
+                            message.obj = Objects.requireNonNull(response.body()).getMsg();
+                            message.what = 5;
+                            handler.sendMessage(message);
+                        } else {
+                            handler.sendEmptyMessage(6);
                         }
                     }
 
@@ -643,6 +696,7 @@ public class ResourceFragment extends Fragment
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                     System.out.println("文件详细信息请求结果：" + resultCode);
                     if (resultCode == errorCode) {
+                        handler.sendEmptyMessage(4);
                         System.out.println(Objects.requireNonNull(response.body()).getMsg());
                     } else if (resultCode == successCode) {
                         System.out.println("文件详细信息请求成功");
@@ -656,9 +710,15 @@ public class ResourceFragment extends Fragment
                         Intent intent = new Intent(getActivity(), FileDetailActivity.class);
                         intent.putExtra("FileDetail", paperFile);
                         startActivity(intent);
-                    } else if (resultCode == tokenInvalidCode){
+                    } else if (resultCode == tokenInvalidCode) {
                         handler.sendEmptyMessage(3);
-                    }else {
+                    } else if (resultCode == normalErrorCode) {
+                        Message message = Message.obtain();
+                        message.obj = Objects.requireNonNull(response.body()).getMsg();
+                        message.what = 5;
+                        handler.sendMessage(message);
+                    } else {
+                        handler.sendEmptyMessage(6);
                         System.out.println("文件详细信息返回码无法解析");
                     }
                 }
@@ -666,7 +726,7 @@ public class ResourceFragment extends Fragment
                 //请求失败时回调
                 @Override
                 public void onFailure(@NonNull Call<FileDetailRes> call, @NonNull Throwable t) {
-                    //TODO
+                    handler.sendEmptyMessage(2);
                 }
             });
         } else {
@@ -691,7 +751,7 @@ public class ResourceFragment extends Fragment
                     .build();
 
             //创建 网络请求接口 的实例
-            PostFileUrl request = retrofit.create(PostFileUrl.class);
+            final PostFileUrl request = retrofit.create(PostFileUrl.class);
 
             //对 发送请求 进行封装(账号和密码)
             Call<FileUrlRes> call = request.getCall(new FileRequest(path, collegeName, token));
@@ -710,8 +770,15 @@ public class ResourceFragment extends Fragment
                         url = Objects.requireNonNull(response.body()).getData().getUrl();
                         //存储路径为path的文件的url,方便后面获取
                         SharedPreferencesUtils.setStoredMessage(getContext(), path, url);
-                    } else if(resultCode == tokenInvalidCode){
+                    } else if (resultCode == tokenInvalidCode) {
                         handler.sendEmptyMessage(3);
+                    } else if (resultCode == normalErrorCode) {
+                        Message message = Message.obtain();
+                        message.obj = Objects.requireNonNull(response.body()).getMsg();
+                        message.what = 5;
+                        handler.sendMessage(message);
+                    } else {
+                        handler.sendEmptyMessage(6);
                     }
                 }
 
@@ -726,7 +793,94 @@ public class ResourceFragment extends Fragment
         }
     }
 
-    private class FileAdapter extends BaseAdapter{
+    /**
+     * 文件信息界面获取学校信息
+     *
+     * @param builder  选择对话框实例
+     * @param textView 页面标题
+     * @param dialog   加载动画
+     */
+    public void postAllColleges(final AlertDialog.Builder builder, final TextView textView, final ZLoadingDialog dialog) {
+        //创建Retrofit对象
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ConstantUtils.BaseUrl)// 设置 网络请求 Url,1.0.0版本
+                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                .build();
+
+        //监听返回键，返回则取消加载动画
+        builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface DialogInterface, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    dialog.dismiss();
+                }
+                return false;
+            }
+        });
+        if (ConstantUtils.colleges == null) {
+            PostAllColleges request = retrofit.create(PostAllColleges.class);
+            Call<AcademiesOrCollegesRes> call = request.getCall();
+            call.enqueue(new Callback<AcademiesOrCollegesRes>() {
+
+                @Override
+                public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
+                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    if (resultCode == SUCCESS_CODE) {
+                        ConstantUtils.colleges = Objects.requireNonNull(response.body()).getData();
+                        // 设置参数
+                        builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
+                                .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int which) {
+                                        String newCollageName = Objects.requireNonNull(response.body()).getData()[which];
+                                        textView.setText(newCollageName);
+                                        SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()),"college",newCollageName);
+                                        //TODO 只显示第一次
+                                        System.out.println("look at here:"+newCollageName);
+                                        loadPaperData(null,loadMainFolder,newCollageName);
+                                    }
+                                });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.setCanceledOnTouchOutside(false);
+                        alertDialog.show();
+                    } else if (resultCode == tokenInvalidCode) {
+                        handler.sendEmptyMessage(3);
+                    } else if (resultCode == normalErrorCode) {
+                        Message message = Message.obtain();
+                        message.obj = Objects.requireNonNull(response.body()).getMsg();
+                        message.what = 5;
+                        handler.sendMessage(message);
+                    } else if (resultCode == errorCode) {
+                        handler.sendEmptyMessage(4);
+                    } else {
+                        handler.sendEmptyMessage(6);
+                    }
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
+                    Log.d(TAG, "请求失败");
+                    Toast.makeText(UMapplication.getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+            });
+        } else {
+            builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
+                    .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int which) {
+                            textView.setText(ConstantUtils.colleges[which]);
+                        }
+                    });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
+            dialog.dismiss();
+        }
+    }
+
+    private class FileAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
@@ -736,7 +890,7 @@ public class ResourceFragment extends Fragment
             }
             try {
                 size = mData.getData().keySet().size();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return size;
@@ -799,7 +953,8 @@ public class ResourceFragment extends Fragment
     }
 
     /**
-     *      进入下一个Activity
+     * 进入下一个Activity
+     *
      * @param clazz 活动类名
      */
     public void nextActivity(Class clazz) {
@@ -807,11 +962,12 @@ public class ResourceFragment extends Fragment
         startActivity(intent);
         try {
             Objects.requireNonNull(getActivity()).finish();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
     /**
      * handler为线程之间通信的桥梁
      */
@@ -832,18 +988,25 @@ public class ResourceFragment extends Fragment
                 case 2:
                     //请求失败回调
                     nextActivity(LoginActivity.class);
-                    Toast.makeText(getContext(),SERVER_REQUEST_FAILURE,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
                     break;
                 case 3:
                     //登陆失效
                     nextActivity(LoginActivity.class);
-                    Toast.makeText(getContext(),LOGIN_INVALID,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), LOGIN_INVALID, Toast.LENGTH_SHORT).show();
                     break;
                 case 4:
                     //服务器获取结果为404
                     nextActivity(LoginActivity.class);
-                    Toast.makeText(getContext(),SERVER_FILE_ERROR,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), SERVER_FILE_ERROR, Toast.LENGTH_SHORT).show();
                     break;
+                case 5:
+                    //202常规异常 TODO 未测试
+                    Toast.makeText(getContext(), msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                case 6:
+                    //未知异常
+                    nextActivity(LoginActivity.class);
+                    Toast.makeText(getContext(), UNKNOWN_ERROR, Toast.LENGTH_SHORT).show();
                 default:
                     break;
             }

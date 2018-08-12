@@ -29,6 +29,8 @@ public class StudentsCircleFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_students_circle, container, false);
         TextView title= Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         title.setText("学生圈");
+        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setVisibility(View.GONE);
+
         return view;
     }
 

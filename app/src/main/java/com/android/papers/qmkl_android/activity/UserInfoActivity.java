@@ -50,10 +50,6 @@ public class UserInfoActivity extends BaseActivity {
 
     public static final String TAG = "UserInfoActivityTag";
 
-    //保存学院信息
-    public static String[] academies=null;
-    //保存学校信息
-    public static String[] colleges=null;
 
     @BindView(R.id.user_avatar)
     RelativeLayout user_avatar;

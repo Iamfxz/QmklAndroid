@@ -175,22 +175,6 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
-        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-            }
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-            }
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                Log.d("wyy","侧拉菜单关闭了");
-            }
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
 
     }
 

@@ -95,6 +95,7 @@ public class AuthPerUserInfo extends BaseActivity{
         //获取第三方昵称、昵称长度
         String nickName = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"nickname");
         Objects.requireNonNull(userNickname.getEditText()).setText(nickName);
+
         EditTextFilter.setProhibitEmoji(userNickname.getEditText(),this);
         userNickname.getEditText().setSelection(nickName.length());//光标
 
