@@ -184,6 +184,7 @@ public class ResourceFragment extends Fragment
         fabReturnToMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                BasePath = "/";
                 loadPaperData(null, 4, collegeName);//返回主页面
             }
         });
@@ -302,6 +303,7 @@ public class ResourceFragment extends Fragment
     public void setChooseSchoolListener() {
         chooseSchool = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school);
         chooseSchool.setVisibility(View.VISIBLE);
+
         title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -479,6 +481,7 @@ public class ResourceFragment extends Fragment
                 BasePath += folder;
                 BasePath += "/";
                 path = new StringBuffer(BasePath);
+                chooseSchool.setVisibility(View.GONE);
                 break;
             case loadPreviousFolder:
                 //回退前
@@ -491,6 +494,8 @@ public class ResourceFragment extends Fragment
                 //回退后所在文件夹folder
                 if (!path.toString().equals("/"))
                     folder = path.substring(PaperFileUtils.last2IndexOf(path.toString()) + 1, path.lastIndexOf("/"));
+                else
+                    chooseSchool.setVisibility(View.VISIBLE);
                 break;
             case loadRefresh:
                 //刷新
@@ -502,6 +507,7 @@ public class ResourceFragment extends Fragment
                 break;
             case loadMainFolder:
                 //加载主界面
+                chooseSchool.setVisibility(View.VISIBLE);
                 path = new StringBuffer(BasePath);
                 break;
             default:
