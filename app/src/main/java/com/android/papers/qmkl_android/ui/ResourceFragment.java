@@ -825,6 +825,7 @@ public class ResourceFragment extends Fragment
                 @Override
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    System.out.println("look at here:"+resultCode);
                     if (resultCode == SUCCESS_CODE) {
                         ConstantUtils.colleges = Objects.requireNonNull(response.body()).getData();
                         // 设置参数
@@ -832,12 +833,12 @@ public class ResourceFragment extends Fragment
                                 .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int which) {
-                                        String newCollageName = Objects.requireNonNull(response.body()).getData()[which];
-                                        textView.setText(newCollageName);
-                                        SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()),"college",newCollageName);
-                                        //TODO 只显示第一次
-                                        System.out.println("look at here:"+newCollageName);
-                                        loadPaperData(null,loadMainFolder,newCollageName);
+                                        collegeName = Objects.requireNonNull(response.body()).getData()[which];
+                                        textView.setText(collegeName);
+                                        SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()),"college",collegeName);
+                                        //TODO 只显示第一次？
+                                        System.out.println("look at here:"+collegeName);
+                                        loadPaperData(null,loadMainFolder,collegeName);
                                     }
                                 });
                         AlertDialog alertDialog = builder.create();
