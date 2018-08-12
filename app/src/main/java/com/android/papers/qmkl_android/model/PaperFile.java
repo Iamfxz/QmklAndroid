@@ -200,6 +200,8 @@ public class PaperFile implements Parcelable {
         return dislikeNum;
     }
 
+    public void setDislikeNum(String DislikeNum){ this.dislikeNum = Integer.parseInt(DislikeNum); }
+
     public void setDislikeNum(int dislikeNum) {
         this.dislikeNum = dislikeNum;
     }
@@ -207,6 +209,8 @@ public class PaperFile implements Parcelable {
     public int getLikeNum() {
         return likeNum;
     }
+
+    public void setLikeNum(String likeNum){ this.likeNum = Integer.parseInt(likeNum); }
 
     public void setLikeNum(int likeNum) {
         this.likeNum = likeNum;
@@ -222,6 +226,10 @@ public class PaperFile implements Parcelable {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = Integer.parseInt(id);
     }
 
     public void setId(int id) {

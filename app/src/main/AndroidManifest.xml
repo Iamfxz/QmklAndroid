@@ -44,7 +44,6 @@
             android:launchMode="singleTop"/>
         <activity android:name=".activity.WebViewActivity"/>
         <activity android:name=".activity.FileDetailActivity"/>
-        <activity android:name=".activity.FileFolderActivity"/>
         <activity android:name=".activity.UserInfoActivity"/>
         <activity android:name=".activity.ForgetPswActivity"/>
         <activity android:name=".activity.RegisterActivity"/>

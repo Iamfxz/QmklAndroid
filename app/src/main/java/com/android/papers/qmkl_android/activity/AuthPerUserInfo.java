@@ -95,12 +95,19 @@ public class AuthPerUserInfo extends BaseActivity{
         //获取第三方昵称、昵称长度
         String nickName = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"nickname");
         Objects.requireNonNull(userNickname.getEditText()).setText(nickName);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cc5e1b9437799470676672f759f418ed6b1bfee3
         EditTextFilter.setProhibitEmoji(userNickname.getEditText(),this);
         userNickname.getEditText().setSelection(nickName.length());//光标
 
         //获取第三方性别
+<<<<<<< HEAD
         String gender = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"gender");
+=======
+        String gender = SharedPreferencesUtils.getStoredMessage(AuthPerUserInfo.this,"gender");
+>>>>>>> cc5e1b9437799470676672f759f418ed6b1bfee3
         Objects.requireNonNull(genderLayout.getEditText()).setText(gender);
 
         //下一步按钮不可用
@@ -227,16 +234,5 @@ public class AuthPerUserInfo extends BaseActivity{
                 //TODO 返回？
                 break;
         }
-    }
-
-    /**
-     *      获取远程信息失败或者广告版本为最新时, 检查本地头像是否存在
-     * @param context 上下文
-     * @return 头像是否存在
-     */
-    private static boolean checkLocalAvatarImage(Context context) {
-        Log.d(TAG, "检测本地头像是否存在");
-        File avatarImageFile = new File(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(context,"avatar")));
-        return avatarImageFile.exists();
     }
 }

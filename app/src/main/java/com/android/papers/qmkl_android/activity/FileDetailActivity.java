@@ -179,11 +179,11 @@ public class FileDetailActivity extends BaseActivity {
         //显示图标
         imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType().toLowerCase()));
 //        //测试传递的过来的文件是否准确，准确
-//        System.out.println(mFile.getDislikeNum());
-//        System.out.println(mFile.getLikeNum());
-//        System.out.println(mFile.getId());
-//        System.out.println(mFile.getMd5());
-//        System.out.println("url:"+mFile.getUrl());
+        System.out.println(mFile.getDislikeNum());
+        System.out.println(mFile.getLikeNum());
+        System.out.println(mFile.getId());
+        System.out.println(mFile.getMd5());
+        System.out.println("url:"+mFile.getUrl());
         //显示按钮
         btnDownload.setText(mFile.isDownload() ? "打开文件" : "下载到手机");
         fileOpenTip.setVisibility(mFile.isDownload()? View.VISIBLE:View.INVISIBLE);
@@ -323,7 +323,7 @@ public class FileDetailActivity extends BaseActivity {
             downloadTask.start();
 
         } else {
-            System.out.println("存储路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
+//            System.out.println("存储路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
             File file = new File(SDCardUtils.getDownloadPath() + mFile.getName());
             openFile(file);
         }

@@ -4,6 +4,7 @@ package com.android.papers.qmkl_android.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.android.papers.qmkl_android.util.LogUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,12 +52,12 @@ public class DownloadedFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_downloaded, container, false);
         ButterKnife.bind(this, view);
 
-        TextView title=getActivity().findViewById(R.id.toolbar).findViewById(R.id.title);
+        TextView title= Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         title.setText("已下载");
 
 
@@ -71,7 +73,7 @@ public class DownloadedFragment extends Fragment {
 
                 Intent intent = new Intent(getActivity(), FileDetailActivity.class);
                 intent.putExtra("FileDetail", mFiles.get(position).getFile());
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, 1);
             }
         });
 

@@ -435,7 +435,7 @@ public class RetrofitUtils {
                             SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "gender", userInfo.getUser().getGender());
                             break;
                         //修改入学年份
-                        case ConstantUtils.ENTERYEAR:
+                        case ConstantUtils.ENTER_YEAR:
                             textView.setText(userInfo.getUser().getEnterYear());
                             SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "enterYear", userInfo.getUser().getEnterYear());
                             break;

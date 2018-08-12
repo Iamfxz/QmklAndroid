@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileDetailActivity;
+import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.impl.PostFile;
 import com.android.papers.qmkl_android.impl.PostFileDetail;
@@ -68,6 +69,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.android.papers.qmkl_android.util.ConstantUtils.LOGIN_INVALID;
+import static com.android.papers.qmkl_android.util.ConstantUtils.SERVER_FILE_ERROR;
+import static com.android.papers.qmkl_android.util.ConstantUtils.SERVER_REQUEST_FAILURE;
+
 /**
  * A simple {@link Fragment} subclass.
  * 主页面四个tab之一: 资源页面
@@ -96,6 +101,7 @@ public class ResourceFragment extends Fragment
     //请求结果
     final int errorCode = 404;
     final int successCode = 200;
+    final int tokenInvalidCode = 301;
 
     //loadPaperData()方法的请求码，含义看函数头注释
     final int loadFolder = 0;
@@ -148,6 +154,9 @@ public class ResourceFragment extends Fragment
         lvFolder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //不加载动画
+                mFirstVisibleItem = -1;
+                mLastVisibleItem = -1;
                 if (CommonUtils.isFastDoubleClick()) {
                     //当快速点击时候，弹出1s的动画 TODO 可否使用锁的方式达到数据同步？
                     doZLoadingDailog();
@@ -162,6 +171,8 @@ public class ResourceFragment extends Fragment
                         doZLoadingDailog();
                         System.out.println("你点击了：" + folder);
                     }
+                    //返回顶部
+                    lvFolder.setSelection(0);
                 }
             }
         });
@@ -385,7 +396,7 @@ public class ResourceFragment extends Fragment
      * @param view 视图
      */
     private void doAnimate(View view) {
-        //我们这里先写一个最简单地动画，GROW
+        //动画，GROW
         try {
             ViewPropertyAnimator animator = view.animate().setDuration(500)
                     .setInterpolator(new AccelerateDecelerateInterpolator());
@@ -414,7 +425,7 @@ public class ResourceFragment extends Fragment
      *                    区分BasePath和path：
      *                    前者是当前的地址，后者是改变后的地址
      */
-    private void loadPaperData(String folder, int requestCode, String collegeName) {
+    private void loadPaperData(String folder, final int requestCode, String collegeName) {
 
         switch (requestCode) {
             case loadFolder:
@@ -460,7 +471,7 @@ public class ResourceFragment extends Fragment
             title.setText(folder);
 
         if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")) {
-            System.out.println("正在加载文件夹资源");
+//            System.out.println("正在加载文件夹资源");
             String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
             if (token != null) {
                 //创建Retrofit对象
@@ -470,7 +481,7 @@ public class ResourceFragment extends Fragment
                         .build();
 
                 //创建 网络请求接口 的实例
-                PostFile request = retrofit.create(PostFile.class);
+                final PostFile request = retrofit.create(PostFile.class);
 
                 //对 发送请求 进行封装
                 FileRequest fileRequest = new FileRequest(path.toString(), collegeName, token);
@@ -483,26 +494,27 @@ public class ResourceFragment extends Fragment
                     public void onResponse(@NonNull Call<FileRes> call, @NonNull Response<FileRes> response) {
                         int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                         mData = response.body();
-                        if (resultCode == errorCode) {
-                            System.out.println("文件请求失败");
+                        if (resultCode == tokenInvalidCode) {
+                            //登陆信息失效
+                            handler.sendEmptyMessage(3);
+
                         } else if (resultCode == successCode) {
-                            System.out.println("文件请求成功");
+                            //请求成功
                             handler.sendEmptyMessage(1);
-                        } else {
-                            System.out.println("文件请求发生未知错误");
+                        }else if(resultCode == errorCode ){
+                            handler.sendEmptyMessage(4);
                         }
                     }
 
                     //请求失败时回调
                     @Override
                     public void onFailure(@NonNull Call<FileRes> call, @NonNull Throwable t) {
-                        //TODO
-                        System.out.println("服务器请求失败");
+                        handler.sendEmptyMessage(2);
                     }
                 });
             } else {
-                //TODO 跳转回登陆界面
-                System.out.println("请重新登陆");
+                //token为空，登陆失效
+                handler.sendEmptyMessage(3);
             }
         } else {//如果是某个具体文件，则应该使用这个请求获得url地址
             postFileUrl(path.toString(), collegeName);
@@ -644,7 +656,9 @@ public class ResourceFragment extends Fragment
                         Intent intent = new Intent(getActivity(), FileDetailActivity.class);
                         intent.putExtra("FileDetail", paperFile);
                         startActivity(intent);
-                    } else {
+                    } else if (resultCode == tokenInvalidCode){
+                        handler.sendEmptyMessage(3);
+                    }else {
                         System.out.println("文件详细信息返回码无法解析");
                     }
                 }
@@ -652,12 +666,12 @@ public class ResourceFragment extends Fragment
                 //请求失败时回调
                 @Override
                 public void onFailure(@NonNull Call<FileDetailRes> call, @NonNull Throwable t) {
-                    SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
+                    //TODO
                 }
             });
         } else {
-            //TODO 重新登陆
-            SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
+            //token为空重新登录
+            handler.sendEmptyMessage(3);
         }
     }
 
@@ -690,27 +704,25 @@ public class ResourceFragment extends Fragment
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                     System.out.println("文件URL请求结果" + resultCode);
                     if (resultCode == errorCode) {
-                        System.out.println("文件URL请求失败");
+                        handler.sendEmptyMessage(4);
                     } else if (resultCode == successCode) {
                         String url;
                         url = Objects.requireNonNull(response.body()).getData().getUrl();
-                        System.out.println("文件URL是" + url);
-                        //存储路径为path的文件的url
+                        //存储路径为path的文件的url,方便后面获取
                         SharedPreferencesUtils.setStoredMessage(getContext(), path, url);
-                    } else {
-                        System.out.println("文件URL请求异常");
+                    } else if(resultCode == tokenInvalidCode){
+                        handler.sendEmptyMessage(3);
                     }
                 }
 
                 //请求失败时回调
                 @Override
                 public void onFailure(@NonNull Call<FileUrlRes> call, @NonNull Throwable t) {
-                    SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
+                    handler.sendEmptyMessage(2);
                 }
             });
         } else {
-            //TODO 重新登陆
-            SharedPreferencesUtils.setStoredMessage(getContext(), "hasLogin", "false");
+            handler.sendEmptyMessage(3);
         }
     }
 
@@ -787,6 +799,20 @@ public class ResourceFragment extends Fragment
     }
 
     /**
+     *      进入下一个Activity
+     * @param clazz 活动类名
+     */
+    public void nextActivity(Class clazz) {
+        final Intent intent = new Intent(getActivity(), clazz);
+        startActivity(intent);
+        try {
+            Objects.requireNonNull(getActivity()).finish();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+    /**
      * handler为线程之间通信的桥梁
      */
     private Handler handler = new Handler(new Handler.Callback() {
@@ -796,11 +822,27 @@ public class ResourceFragment extends Fragment
             switch (msg.what) {
                 //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
                 case 1:
+                    //获取数据成功
                     if (mData != null) {
                         mData.sort();
                     }
                     mAdapter.notifyDataSetChanged();//UI界面就刷新
                     result = true;
+                    break;
+                case 2:
+                    //请求失败回调
+                    nextActivity(LoginActivity.class);
+                    Toast.makeText(getContext(),SERVER_REQUEST_FAILURE,Toast.LENGTH_SHORT).show();
+                    break;
+                case 3:
+                    //登陆失效
+                    nextActivity(LoginActivity.class);
+                    Toast.makeText(getContext(),LOGIN_INVALID,Toast.LENGTH_SHORT).show();
+                    break;
+                case 4:
+                    //服务器获取结果为404
+                    nextActivity(LoginActivity.class);
+                    Toast.makeText(getContext(),SERVER_FILE_ERROR,Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
