@@ -787,7 +787,6 @@ public class ResourceFragment extends Fragment
                 e.printStackTrace();
             }
             return size;
-
         }
 
         @Override
