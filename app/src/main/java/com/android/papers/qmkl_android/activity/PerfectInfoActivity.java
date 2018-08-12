@@ -48,8 +48,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PerfectInfoActivity extends BaseActivity {
 
     public static final String TAG = "PerfectInfoActivity";
-    public static String[] colleges=null;
-    public static String[] academies=null;
+
     private boolean hasSetImg=false;
 
     @BindView(R.id.head_img)

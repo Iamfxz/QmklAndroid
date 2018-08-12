@@ -9,6 +9,10 @@ public class ConstantUtils {
     public static final int COLLEGE = 4;
     public static final int ACADEMY = 5;
 
+    //保存所有学校信息和选中学校的学院信息
+    public static String[] colleges=null;
+    public static String[] academies=null;
+
     //服务端基础url
     public static final String BaseUrl = "http://120.77.32.233/qmkl1.0.0/";//后端版本
 

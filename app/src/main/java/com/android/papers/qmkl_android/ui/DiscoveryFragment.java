@@ -65,7 +65,7 @@ public class DiscoveryFragment extends Fragment {
 
         TextView title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         title.setText("我和发现");
-
+        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setVisibility(View.GONE);
 
         setUserInfo();
 

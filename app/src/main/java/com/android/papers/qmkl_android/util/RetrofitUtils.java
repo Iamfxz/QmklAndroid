@@ -53,6 +53,7 @@ import com.android.papers.qmkl_android.requestModel.SetNewPswRequest;
 import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.requestModel.UMengLoginRequest;
 import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
+import com.android.papers.qmkl_android.ui.ResourceFragment;
 import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
@@ -503,7 +504,7 @@ public class RetrofitUtils {
                 }
             });
         }
-        if (UserInfoActivity.academies == null) {
+        if (ConstantUtils.academies == null) {
             PostAllAcademies request = retrofit.create(PostAllAcademies.class);
             Call<AcademiesOrCollegesRes> call = request.getCall(academiesRequest);
             call.enqueue(new Callback<AcademiesOrCollegesRes>() {
@@ -511,13 +512,13 @@ public class RetrofitUtils {
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
                     int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                     if (responseCode == ConstantUtils.SUCCESS_CODE) {
-                        UserInfoActivity.academies = Objects.requireNonNull(response.body()).getData();
+                        ConstantUtils.academies = Objects.requireNonNull(response.body()).getData();
                         // 设置参数
                         builder.setTitle(ConstantUtils.CHOOSE_ACADEMY)
-                                .setItems(UserInfoActivity.academies, new DialogInterface.OnClickListener() {
+                                .setItems(ConstantUtils.academies, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int which) {
-                                        UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.academies[which], ConstantUtils.ACADEMY);
+                                        UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), ConstantUtils.academies[which], ConstantUtils.ACADEMY);
                                         RetrofitUtils.postUpdateUser(ConstantUtils.ACADEMY, userRequest, null, academy, dialog, false);
                                     }
                                 });
@@ -541,10 +542,10 @@ public class RetrofitUtils {
         } else {
             // 设置参数
             builder.setTitle(ConstantUtils.CHOOSE_ACADEMY)
-                    .setItems(UserInfoActivity.academies, new DialogInterface.OnClickListener() {
+                    .setItems(ConstantUtils.academies, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int which) {
-                            UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.academies[which], ConstantUtils.ACADEMY);
+                            UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), ConstantUtils.academies[which], ConstantUtils.ACADEMY);
                             RetrofitUtils.postUpdateUser(ConstantUtils.ACADEMY, userRequest, null, academy, dialog, false);
                         }
                     });
@@ -566,7 +567,7 @@ public class RetrofitUtils {
                 return false;
             }
         });
-        if (UserInfoActivity.colleges == null) {
+        if (ConstantUtils.colleges == null) {
             PostAllColleges request = retrofit.create(PostAllColleges.class);
             Call<AcademiesOrCollegesRes> call = request.getCall();
             call.enqueue(new Callback<AcademiesOrCollegesRes>() {
@@ -574,17 +575,17 @@ public class RetrofitUtils {
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
                     int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                     if (responseCode == ConstantUtils.SUCCESS_CODE) {
-                        UserInfoActivity.colleges = Objects.requireNonNull(response.body()).getData();
+                        ConstantUtils.colleges = Objects.requireNonNull(response.body()).getData();
                         // 设置参数
                         builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
-                                .setItems(UserInfoActivity.colleges, new DialogInterface.OnClickListener() {
+                                .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int which) {
-                                        UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.colleges[which], ConstantUtils.COLLEGE);
+                                        UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), ConstantUtils.colleges[which], ConstantUtils.COLLEGE);
                                         RetrofitUtils.postUpdateUser(ConstantUtils.COLLEGE, userRequest, null, college, dialog, false);
-                                        UserInfoActivity.academies = null;
+                                        ConstantUtils.academies = null;
                                         QueryAcademiesRequest academiesRequest = new QueryAcademiesRequest(
-                                                UserInfoActivity.colleges[which]
+                                                ConstantUtils.colleges[which]
                                         );
                                         postAllAcademies(academiesRequest, builder, college, academy, dialog, true);
                                     }
@@ -607,14 +608,14 @@ public class RetrofitUtils {
             });
         } else {
             builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
-                    .setItems(UserInfoActivity.colleges, new DialogInterface.OnClickListener() {
+                    .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int which) {
-                            UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), UserInfoActivity.colleges[which], ConstantUtils.COLLEGE);
+                            UpdateUserRequest userRequest = UserInfoActivity.getUserRequest(UMapplication.getContext(), ConstantUtils.colleges[which], ConstantUtils.COLLEGE);
                             RetrofitUtils.postUpdateUser(ConstantUtils.COLLEGE, userRequest, null, college, dialog, false);
-                            UserInfoActivity.academies = null;
+                            ConstantUtils.academies = null;
                             QueryAcademiesRequest academiesRequest = new QueryAcademiesRequest(
-                                    UserInfoActivity.colleges[which]
+                                    ConstantUtils.colleges[which]
                             );
                             postAllAcademies(academiesRequest, builder, college, academy, dialog, true);
                         }
@@ -643,7 +644,7 @@ public class RetrofitUtils {
                 return false;
             }
         });
-        if (PerfectInfoActivity.colleges == null) {
+        if (ConstantUtils.colleges == null) {
             PostAllColleges request = retrofit.create(PostAllColleges.class);
             Call<AcademiesOrCollegesRes> call = request.getCall();
             call.enqueue(new Callback<AcademiesOrCollegesRes>() {
@@ -651,10 +652,10 @@ public class RetrofitUtils {
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
                     int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                     if (responseCode == ConstantUtils.SUCCESS_CODE) {
-                        PerfectInfoActivity.colleges = Objects.requireNonNull(response.body()).getData();
+                        ConstantUtils.colleges = Objects.requireNonNull(response.body()).getData();
                         // 设置参数
                         builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
-                                .setItems(PerfectInfoActivity.colleges, new DialogInterface.OnClickListener() {
+                                .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int which) {
                                         college.setText(Objects.requireNonNull(response.body()).getData()[which]);
@@ -680,10 +681,10 @@ public class RetrofitUtils {
             });
         } else {
             builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
-                    .setItems(PerfectInfoActivity.colleges, new DialogInterface.OnClickListener() {
+                    .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int which) {
-                            college.setText(PerfectInfoActivity.colleges[which]);
+                            college.setText(ConstantUtils.colleges[which]);
                             academy.setText("");
                         }
                     });
@@ -705,10 +706,10 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
                 final int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                 if (responseCode == ConstantUtils.SUCCESS_CODE) {
-                    PerfectInfoActivity.academies = Objects.requireNonNull(response.body()).getData();
+                    ConstantUtils.academies = Objects.requireNonNull(response.body()).getData();
                     // 设置参数
                     builder.setTitle(ConstantUtils.CHOOSE_ACADEMY)
-                            .setItems(PerfectInfoActivity.academies, new DialogInterface.OnClickListener() {
+                            .setItems(ConstantUtils.academies, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int which) {
                                     academy.setText(Objects.requireNonNull(response.body()).getData()[which]);
@@ -1083,6 +1084,73 @@ public class RetrofitUtils {
             }
         });
     }
+
+    /**
+     *        文件信息界面获取学校信息
+     * @param builder 选择对话框实例
+     * @param textView 页面标题
+     * @param dialog  加载动画
+     */
+    public static void postAllColleges(final AlertDialog.Builder builder, final TextView textView, final ZLoadingDialog dialog) {
+        //监听返回键，返回则取消加载动画
+        builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface DialogInterface, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    dialog.dismiss();
+                }
+                return false;
+            }
+        });
+        if (ConstantUtils.colleges == null) {
+            PostAllColleges request = retrofit.create(PostAllColleges.class);
+            Call<AcademiesOrCollegesRes> call = request.getCall();
+            call.enqueue(new Callback<AcademiesOrCollegesRes>() {
+                @Override
+                public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
+                    int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                    if (responseCode == ConstantUtils.SUCCESS_CODE) {
+                        ConstantUtils.colleges = Objects.requireNonNull(response.body()).getData();
+                        // 设置参数
+                        builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
+                                .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int which) {
+                                        textView.setText(Objects.requireNonNull(response.body()).getData()[which]);
+                                    }
+                                });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.setCanceledOnTouchOutside(false);
+                        alertDialog.show();
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
+                    Log.d(TAG, "请求失败");
+                    Toast.makeText(UMapplication.getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+            });
+        } else {
+            builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
+                    .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int which) {
+                            textView.setText(ConstantUtils.colleges[which]);
+                        }
+                    });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
+            dialog.dismiss();
+        }
+    }
+
 
     //获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在
     private static boolean checkLocalADImage() {

@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -40,9 +41,11 @@ import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.model.FileUrlRes;
 import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
+import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
+import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -58,6 +61,7 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
@@ -118,6 +122,8 @@ public class ResourceFragment extends Fragment
 
     //显示学校名称或当前所在文件夹
     private TextView title;
+    //下拉选择学校
+    private ImageView chooseSchool;
 
     //是否退出程序，连续点两次返回则退出
     private static Boolean isExit = false;
@@ -143,10 +149,78 @@ public class ResourceFragment extends Fragment
         ButterKnife.bind(this, view);
 
         Log.d(TAG, SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"hasLogin"));
+        initView();
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //五个悬浮按钮，从上往下
+        FloatingActionButton fabUpload = view.findViewById(R.id.fab11);
+        FloatingActionButton fabChangeSchool = view.findViewById(R.id.fab12);
+        FloatingActionButton fabRefresh = view.findViewById(R.id.fab13);
+        FloatingActionButton fabReturnTop = view.findViewById(R.id.fab14);
+        FloatingActionButton fabReturnBottom = view.findViewById(R.id.fab15);
+        FloatingActionButton fabPreviousMenu = view.findViewById(R.id.fab16);
+
+        //悬浮菜单及按钮监听
+        fabUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO
+                Toast.makeText(getContext(), "fabUpload Clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        fabChangeSchool.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO
+                Toast.makeText(getContext(), "fabChangeSchool Clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        fabRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ptrFrame.autoRefresh();
+            }
+        });
+
+        fabReturnTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lvFolder.setSelection(0);
+            }
+        });
+
+        fabReturnBottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lvFolder.setSelection(mAdapter.getCount());
+            }
+        });
+
+        fabPreviousMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (path.toString().equals("/"))
+                    Toast.makeText(getContext(), "当前已经是根目录了", Toast.LENGTH_SHORT).show();
+                loadPaperData(null, loadPreviousFolder, collegeName);//返回上级文件夹
+            }
+        });
+    }
+
+    private void initView(){
         //设置学校名称
         title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         collegeName = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "college");
         title.setText(collegeName);
+
+        setChooseSchoolListener();
 
         //文件列表设置
         mAdapter = new FileAdapter();
@@ -225,67 +299,40 @@ public class ResourceFragment extends Fragment
 
         lvFolder.setOnScrollListener(this);
 
-        return view;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        //五个悬浮按钮，从上往下
-        FloatingActionButton fabUpload = view.findViewById(R.id.fab11);
-        FloatingActionButton fabChangeSchool = view.findViewById(R.id.fab12);
-        FloatingActionButton fabRefresh = view.findViewById(R.id.fab13);
-        FloatingActionButton fabReturnTop = view.findViewById(R.id.fab14);
-        FloatingActionButton fabReturnBottom = view.findViewById(R.id.fab15);
-        FloatingActionButton fabPreviousMenu = view.findViewById(R.id.fab16);
-
-        //悬浮菜单及按钮监听
-        fabUpload.setOnClickListener(new View.OnClickListener() {
+    public void setChooseSchoolListener(){
+        chooseSchool= Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school);
+        chooseSchool.setVisibility(View.VISIBLE);
+        title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
-                Toast.makeText(getContext(), "fabUpload Clicked!", Toast.LENGTH_SHORT).show();
+                ZLoadingDialog dialog = new ZLoadingDialog(v.getContext());
+                dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                        .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                        .setHintText("loading...")
+                        .setCanceledOnTouchOutside(false)
+                        .show();
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                RetrofitUtils.postAllColleges(builder,title,dialog);
+            }
+        });
+        chooseSchool.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ZLoadingDialog dialog = new ZLoadingDialog(v.getContext());
+                dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
+                        .setLoadingColor(getResources().getColor(R.color.blue))//颜色
+                        .setHintText("loading...")
+                        .setCanceledOnTouchOutside(false)
+                        .show();
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                RetrofitUtils.postAllColleges(builder,title,dialog);
+
             }
         });
 
-        fabChangeSchool.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO
-                Toast.makeText(getContext(), "fabChangeSchool Clicked!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        fabRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ptrFrame.autoRefresh();
-            }
-        });
-
-        fabReturnTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lvFolder.setSelection(0);
-            }
-        });
-
-        fabReturnBottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lvFolder.setSelection(mAdapter.getCount());
-            }
-        });
-
-        fabPreviousMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (path.toString().equals("/"))
-                    Toast.makeText(getContext(), "当前已经是根目录了", Toast.LENGTH_SHORT).show();
-                loadPaperData(null, loadPreviousFolder, collegeName);//返回上级文件夹
-            }
-        });
     }
 
     @Override
