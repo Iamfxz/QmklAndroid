@@ -829,6 +829,7 @@ public class RetrofitUtils {
             }
         });
     }
+
     //用户注册之后上传用户头像
     //传入用户token和图片，上传用户头像
     private static void postUserAvatar(String imagePath, final ZLoadingDialog dialog) {
@@ -908,7 +909,6 @@ public class RetrofitUtils {
         });
     }
 
-
     //找回密码接口二
     //找回密码，传入手机号、验证码和新密码，找回后返回登录界面
     public static void postSetNewPsw(final Activity startAct, String phone, String verCode, String newPsw) {
@@ -968,7 +968,6 @@ public class RetrofitUtils {
         });
     }
 
-
     //用户注册接口三
     //传入用户信息，完成注册
     public static void postPerfectInfo(final Context context, PerfectInfoRequest perfectInfoRequest, final Activity startAct) {
@@ -1011,7 +1010,6 @@ public class RetrofitUtils {
             }
         });
     }
-
 
     //用户第三方登录接口，传入uid，判断用户信息是否完整以及登录
     public static void postAuthLogin(final Context context, final UMengLoginRequest uMengLoginRequest, final Activity startAct){
@@ -1085,71 +1083,6 @@ public class RetrofitUtils {
         });
     }
 
-    /**
-     *        文件信息界面获取学校信息
-     * @param builder 选择对话框实例
-     * @param textView 页面标题
-     * @param dialog  加载动画
-     */
-    public static void postAllColleges(final AlertDialog.Builder builder, final TextView textView, final ZLoadingDialog dialog) {
-        //监听返回键，返回则取消加载动画
-        builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface DialogInterface, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    dialog.dismiss();
-                }
-                return false;
-            }
-        });
-        if (ConstantUtils.colleges == null) {
-            PostAllColleges request = retrofit.create(PostAllColleges.class);
-            Call<AcademiesOrCollegesRes> call = request.getCall();
-            call.enqueue(new Callback<AcademiesOrCollegesRes>() {
-                @Override
-                public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
-                    int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    if (responseCode == ConstantUtils.SUCCESS_CODE) {
-                        ConstantUtils.colleges = Objects.requireNonNull(response.body()).getData();
-                        // 设置参数
-                        builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
-                                .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int which) {
-                                        textView.setText(Objects.requireNonNull(response.body()).getData()[which]);
-                                    }
-                                });
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.setCanceledOnTouchOutside(false);
-                        alertDialog.show();
-                    } else {
-                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
-                    }
-                    dialog.dismiss();
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
-                    Log.d(TAG, "请求失败");
-                    Toast.makeText(UMapplication.getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                }
-            });
-        } else {
-            builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
-                    .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int which) {
-                            textView.setText(ConstantUtils.colleges[which]);
-                        }
-                    });
-            AlertDialog alertDialog = builder.create();
-            alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.show();
-            dialog.dismiss();
-        }
-    }
 
 
     //获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在
@@ -1161,14 +1094,12 @@ public class RetrofitUtils {
         return adImageFile.exists();
     }
 
-
     //获取远程信息失败或者广告版本为最新时, 检查本地头像是否存在
     private static boolean checkLocalAvatarImage() {
         Log.d(TAG, "检测本地头像是否存在");
         File avatarImageFile = new File(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar")));
         return avatarImageFile.exists();
     }
-
 
     //根据token是否有效决定下一活动
     private static void nextActivity(final Activity startAct) {

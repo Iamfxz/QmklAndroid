@@ -224,7 +224,6 @@ public class AuthPerUserInfo extends BaseActivity{
                 break;
             case R.id.back:
                 finish();
-                //TODO 返回？
                 break;
         }
     }
