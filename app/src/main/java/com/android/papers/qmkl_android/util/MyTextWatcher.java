@@ -15,6 +15,13 @@ public class MyTextWatcher implements TextWatcher {
     private Context context;
     private Button changeBtn;
     private TextInputLayout[] textInputLayouts;
+
+    /**
+     * TextWatcher监听器
+     * @param context 上下文
+     * @param changeBtn 要修改的按钮
+     * @param textInputLayouts 输入布局，当所有均有输入时按钮变为可用
+     */
     public MyTextWatcher(Context context, Button changeBtn,TextInputLayout...textInputLayouts) {
         this.context=context;
         this.changeBtn=changeBtn;

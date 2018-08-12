@@ -240,6 +240,7 @@ public class RetrofitUtils {
                     String token = Objects.requireNonNull(response.body()).getData().toString();
                     //接下来进入登录界面
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", token);
+                    SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "true");
                     Log.d(TAG, "已保存正确token值");
                     //获取用户信息
                     RetrofitUtils.postUserInfo(context, startActivity, token, dialog);

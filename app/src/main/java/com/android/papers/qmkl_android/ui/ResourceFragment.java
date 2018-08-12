@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +39,7 @@ import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.model.FileUrlRes;
 import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
+import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
@@ -72,6 +74,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ResourceFragment extends Fragment
         implements NavigationView.OnNavigationItemSelectedListener, AbsListView.OnScrollListener {
+
+    final static String TAG="ResourceFragment";
 
     //文件总数据
     private FileRes mData;
@@ -132,6 +136,7 @@ public class ResourceFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_resource, container, false);
         ButterKnife.bind(this, view);
 
+        Log.d(TAG, SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"hasLogin"));
         //设置学校名称
         title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         collegeName = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "college");

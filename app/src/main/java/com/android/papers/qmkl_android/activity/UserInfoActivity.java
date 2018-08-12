@@ -27,9 +27,11 @@ import com.android.papers.qmkl_android.requestModel.QueryAcademiesRequest;
 import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
 import com.android.papers.qmkl_android.umengUtil.MyUMAuthListener;
+import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.ConstantUtils;
+import com.android.papers.qmkl_android.util.EditTextFilter;
 import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
@@ -99,6 +101,7 @@ public class UserInfoActivity extends BaseActivity {
         final View view = View.inflate(UserInfoActivity.this, R.layout.dialog_nickname, null);
         // 获取布局中的控件
         final EditText username = view.findViewById(R.id.nickname);
+        EditTextFilter.setProhibitEmoji(username,this);
         username.setText(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"nickname"));
         // 设置参数
         builder.setTitle("请输入昵称").setView(view);
@@ -110,10 +113,12 @@ public class UserInfoActivity extends BaseActivity {
         Button confirm=view.findViewById(R.id.btn_confirm);
         Button cancel=view.findViewById(R.id.btn_cancel);
 
-
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(username.getText().toString().trim().equals("")){
+
+                }
                 if(!username.getText().toString().equals(SharedPreferencesUtils.getStoredMessage(view.getContext(),"nickname"))){
                     //使用com.zyao89:zloading:1.1.2引用別人的加载动画
                     ZLoadingDialog dialog = new ZLoadingDialog(v.getContext());

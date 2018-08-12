@@ -1,6 +1,5 @@
 package com.android.papers.qmkl_android.util;
 
-
 import android.content.Context;
 import android.text.InputFilter;
 import android.text.SpannableString;
@@ -9,7 +8,10 @@ import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.Toast;
 
-//文本输入过滤器
+/**
+ * 文本输入过滤器
+ * 限制不能输入空格以及其他特殊字符
+ */
 public class EditTextFilter {
 
     public static void setProhibitEmoji(EditText et, Context context) {
