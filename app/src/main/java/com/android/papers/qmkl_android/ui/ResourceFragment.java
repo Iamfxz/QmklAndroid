@@ -294,7 +294,7 @@ public class ResourceFragment extends Fragment
             public void run() {
                 ptrFrame.autoRefresh();
             }
-        }, 100);
+        }, 250);
 
         lvFolder.setOnScrollListener(this);
 
