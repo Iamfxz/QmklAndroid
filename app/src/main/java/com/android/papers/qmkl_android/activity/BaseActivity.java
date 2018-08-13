@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.util.StatusBarUtil;
@@ -61,7 +62,7 @@ public class BaseActivity extends Activity {
      *      打开文件
      * @param file 文件
      */
-    protected void openFile(File file){
+    protected void openFile(File file,String fileName){
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //设置intent的Action属性
@@ -75,6 +76,7 @@ public class BaseActivity extends Activity {
             startActivity(Intent.createChooser(intent, "打开方式"));     //这里最好try一下，有可能会报错。 //比如说你的MIME类型是打开邮箱，但是你手机里面没装邮箱客户端，就会报错。
         }catch (Exception e){
             e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"请安装WPS或其他软件来打开"+fileName,Toast.LENGTH_LONG).show();
         }
     }
 

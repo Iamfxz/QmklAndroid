@@ -964,9 +964,9 @@ public class ResourceFragment extends Fragment
      * @param clazz 活动类名
      */
     public void nextActivity(Class clazz) {
-        final Intent intent = new Intent(getActivity(), clazz);
-        startActivity(intent);
         try {
+            final Intent intent = new Intent(getActivity(), clazz);
+            startActivity(intent);
             Objects.requireNonNull(getActivity()).finish();
         } catch (Exception e) {
             e.printStackTrace();

@@ -282,7 +282,7 @@ public class FileDetailActivity extends BaseActivity {
                                 @Override
                                 public void run() {
 
-                                    setResult(RESULT_OK);
+                                    setResult(RESULT_OK);//废弃
 
                                     LogUtils.d(Tag, "下载完成: " + successName);
                                     mFile.setName(successName);
@@ -325,7 +325,7 @@ public class FileDetailActivity extends BaseActivity {
         } else {
 //            System.out.println("存储路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
             File file = new File(SDCardUtils.getDownloadPath() + mFile.getName());
-            openFile(file);
+            openFile(file,mFile.getName());
         }
     }
 
