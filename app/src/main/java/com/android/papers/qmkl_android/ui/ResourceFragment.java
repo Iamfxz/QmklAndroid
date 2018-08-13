@@ -290,7 +290,12 @@ public class ResourceFragment extends Fragment
                 }, 0);
             }
         });
-        ptrFrame.autoRefresh();
+        ptrFrame.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ptrFrame.autoRefresh();
+            }
+        }, 250);
 
         lvFolder.setOnScrollListener(this);
 
@@ -825,7 +830,7 @@ public class ResourceFragment extends Fragment
                 @Override
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("look at here:" + resultCode);
+                    System.out.println("look at here:"+resultCode);
                     if (resultCode == SUCCESS_CODE) {
                         ConstantUtils.colleges = Objects.requireNonNull(response.body()).getData();
                         // 设置参数
@@ -835,10 +840,10 @@ public class ResourceFragment extends Fragment
                                     public void onClick(DialogInterface dialogInterface, int which) {
                                         collegeName = Objects.requireNonNull(response.body()).getData()[which];
                                         textView.setText(collegeName);
-                                        SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()), "college", collegeName);
+                                        SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()),"college",collegeName);
                                         //TODO 只显示第一次？
-                                        System.out.println("look at here:" + collegeName);
-                                        loadPaperData(null, loadMainFolder, collegeName);
+                                        System.out.println("look at here:"+collegeName);
+                                        loadPaperData(null,loadMainFolder,collegeName);
                                     }
                                 });
                         AlertDialog alertDialog = builder.create();
