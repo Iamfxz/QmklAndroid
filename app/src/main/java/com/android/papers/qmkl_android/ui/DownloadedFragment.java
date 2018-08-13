@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,7 @@ import butterknife.ButterKnife;
 //主页面4个tab之一: "已下载"页面
 public class DownloadedFragment extends Fragment {
 
-    private static final String Tag = "DownloadedActivityTag";
+    private static final String TAG = "DownloadedActivityTag";
 
     private DownloadDB downloadDB;
     private DownloadedAdapter mAdapter;
@@ -46,9 +47,7 @@ public class DownloadedFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         downloadDB = DownloadDB.getInstance(getActivity());
-
     }
 
     @Override
@@ -56,11 +55,11 @@ public class DownloadedFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_downloaded, container, false);
         ButterKnife.bind(this, view);
-
         TextView title= Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         title.setText("已下载");
-        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setVisibility(View.GONE);
-
+        title.setOnClickListener(null);
+        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setVisibility(View.INVISIBLE);
+        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setOnClickListener(null);
 
         checkDownloaded();
 
@@ -91,7 +90,7 @@ public class DownloadedFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        LogUtils.d(Tag, "on result");
+        LogUtils.d(TAG, "on result");
 
         if (resultCode != Activity.RESULT_OK) {
             return;

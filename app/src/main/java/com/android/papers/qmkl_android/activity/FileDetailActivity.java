@@ -283,7 +283,6 @@ public class FileDetailActivity extends BaseActivity {
                                 public void run() {
 
                                     setResult(RESULT_OK);
-
                                     LogUtils.d(Tag, "下载完成: " + successName);
                                     mFile.setName(successName);
                                     mFile.setDownload(true);
