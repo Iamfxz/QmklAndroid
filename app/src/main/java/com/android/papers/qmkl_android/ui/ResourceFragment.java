@@ -218,7 +218,8 @@ public class ResourceFragment extends Fragment
         title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
         collegeName = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "college");
         title.setText(collegeName);
-
+        chooseSchool = getActivity().findViewById(R.id.toolbar).findViewById(R.id.choose_school);
+        chooseSchool.setVisibility(View.VISIBLE);
         setChooseSchoolListener();
 
         //文件列表设置
@@ -286,7 +287,7 @@ public class ResourceFragment extends Fragment
                         }
                         ptrFrame.refreshComplete();
                     }
-                }, 1000);
+                }, 0);
             }
         });
         ptrFrame.postDelayed(new Runnable() {
@@ -301,8 +302,6 @@ public class ResourceFragment extends Fragment
     }
 
     public void setChooseSchoolListener() {
-        chooseSchool = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school);
-        chooseSchool.setVisibility(View.VISIBLE);
 
         title.setOnClickListener(new View.OnClickListener() {
             @Override

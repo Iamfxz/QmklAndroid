@@ -6,19 +6,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.ActivityManager;
+import com.android.papers.qmkl_android.util.ConstantUtils;
 import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 
 
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 
+import java.util.Objects;
+
 import static android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
+import static com.android.papers.qmkl_android.util.ConstantUtils.*;
 
 public class SplashActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -52,9 +58,6 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
         if(ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED){
             RetrofitUtils.postAd(SplashActivity.this);
         }
-
-
-
     }
 
 
@@ -96,31 +99,9 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
         }
     }
 
-    private void nextActivity(Class clazz) {
-        final Intent intent = new Intent(SplashActivity.this, clazz);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                        startActivity(intent);
-
-                    }
-                });
-            }
-        }).start();
-    }
 
     //根据hasLogin判断之前是否登录过决定下一启动活动
     private static void nextActivity(final Context context, final Activity startAct){
-
         if(SharedPreferencesUtils.getStoredMessage(context,"hasLogin").equals("false")){
             startAct.runOnUiThread(new Runnable() {
                 @Override
@@ -129,7 +110,6 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
                     Intent intent=new Intent(startAct,LoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
-
                 }
             });
         }
@@ -146,4 +126,5 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
             });
         }
     }
+
 }
