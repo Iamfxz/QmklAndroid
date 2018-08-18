@@ -268,7 +268,7 @@ public class RetrofitUtils {
     }
 
     //判断当前token是否可以登录
-    public static void postLogin(String token) {
+    public static void postLogin(final Context context, String token) {
         if (token != null) {
             PostLogin request = retrofit.create(PostLogin.class);
             Call<ResponseInfo> call = request.getTokenCall(new TokenRequest(token));
@@ -287,7 +287,7 @@ public class RetrofitUtils {
                 }
                 @Override
                 public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
-                    Log.d(TAG, "请求失败");
+                    Toast.makeText(context,"服务器已经崩了，请联系13375983207陈同学",Toast.LENGTH_LONG).show();
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
                 }
             });

@@ -39,7 +39,7 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     //下拉刷新
     implementation 'in.srain.cube:ultra-ptr:1.0.11'
-    //@bindview的框架，节约代码
+    //@bindView的框架，节约代码
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     //登录等待动画
@@ -54,9 +54,7 @@ dependencies {
     implementation 'com.github.clans:fab:1.6.4'
     //点赞动画
     implementation 'com.jaren:likeview:1.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //网络连接请求
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
@@ -65,5 +63,11 @@ dependencies {
     implementation 'com.umeng.sdk:utdid:1.1.5.3'
     //友盟PushSDK
     implementation 'com.umeng.sdk:push:4.2.0'
+<<<<<<< HEAD
 
+=======
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+>>>>>>> 0758f6c89fada4138715734f3eb24b935a515920
 }
