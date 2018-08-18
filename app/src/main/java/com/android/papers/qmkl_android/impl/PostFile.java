@@ -12,6 +12,6 @@ import retrofit2.http.POST;
  * 邮箱：273332683@qq.com
  */
 public interface PostFile {
-    @POST("file/list")
+    @POST("qmkl1.0.0/file/list")
     Call<FileRes> getCall(@Body FileRequest fileRequest);
 }

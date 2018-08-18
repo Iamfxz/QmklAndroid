@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileDetailActivity;
 import com.android.papers.qmkl_android.activity.LoginActivity;
+import com.android.papers.qmkl_android.activity.UpLoadActivity;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.impl.PostAllColleges;
 import com.android.papers.qmkl_android.impl.PostFile;
@@ -177,7 +178,8 @@ public class ResourceFragment extends Fragment
             @Override
             public void onClick(View v) {
                 //TODO
-                Toast.makeText(getContext(), "fabUpload Clicked!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getActivity(),UpLoadActivity.class));
+//                Toast.makeText(getContext(), "fabUpload Clicked!", Toast.LENGTH_SHORT).show();
             }
         });
 

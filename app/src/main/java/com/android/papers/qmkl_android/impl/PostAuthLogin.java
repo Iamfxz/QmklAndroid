@@ -9,6 +9,6 @@ import retrofit2.http.POST;
 
 public interface PostAuthLogin {
 
-    @POST("userauth/login")
+    @POST("qmkl1.0.0/userauth/login")
     Call<ResponseInfo<String>> getCall(@Body UMengLoginRequest uMengLoginRequest);
 }

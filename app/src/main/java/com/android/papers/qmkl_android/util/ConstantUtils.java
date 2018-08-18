@@ -14,7 +14,7 @@ public class ConstantUtils {
     public static String[] academies=null;
 
     //服务端基础url
-    public static final String BaseUrl = "http://120.77.32.233/qmkl1.0.0/";//后端版本
+    public static final String BaseUrl = "http://120.77.32.233/";//后端版本
 
     //服务器返回正确与错误代码
     public static final int SUCCESS_CODE = 200;//请求成功
@@ -30,6 +30,10 @@ public class ConstantUtils {
     public static final String CACHE_AD_ERROR = "缓存广告失败";
     public static final String SERVER_REQUEST_FAILURE = "网络连接失败";
     public static final String UPLOAD_IMG_FAILURE = "上传头像失败";
+    public static final String UPLOAD_FILE_BIG = "上传文件过大，请重新选择文件上传";
+    public static final String UPLOAD_FILE_FAILURE = "上传文件失败";
+    public static final String UPLOAD_FILE_SUCCESS = "上传文件成功，感谢您的分享~";
+
     public static final String CHECK_ACCOUNT_AND_PSW = "请检查账号密码是否准确";
     public static final String LOGIN_FIRST = "请先登录";
     public static final String CHOOSE_ACADEMY = "选择学院";

@@ -8,6 +8,6 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface PostAllColleges {
-    @POST("college/list")
+    @POST("qmkl1.0.0/college/list")
     Call<AcademiesOrCollegesRes> getCall();
 }

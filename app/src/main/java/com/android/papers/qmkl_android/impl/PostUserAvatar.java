@@ -13,6 +13,6 @@ import retrofit2.http.Part;
 public interface PostUserAvatar {
 
     @Multipart
-    @POST("user/update/avatar")
+    @POST("qmkl1.0.0/user/update/avatar")
     Call<ResponseInfo<String>> getCall(@Part MultipartBody.Part avatar, @Part("token") RequestBody token);
 }

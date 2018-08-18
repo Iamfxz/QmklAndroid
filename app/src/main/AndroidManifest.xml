@@ -50,6 +50,7 @@
         <activity android:name=".activity.PerfectInfoActivity"/>
         <activity android:name=".activity.AuthPerUserInfo"/>
         <activity android:name=".activity.BaseActivity"/>
+        <activity android:name=".activity.UpLoadActivity"/>
 
 
         <!--友盟配置-->

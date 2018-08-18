@@ -13,7 +13,7 @@ import retrofit2.http.POST;
  *
  */
 public interface PostLike {
-    @POST("like/addordesc")
+    @POST("qmkl1.0.0/like/addordesc")
     Call<ResponseInfo> getCall(@Body LikeDisLikeRequest likeDisLikeRequest);
 
 }

@@ -23,6 +23,7 @@ public class SharedPreferencesUtils {
      *  college:所在大学
      *  enterYear:入学年份
      *  gender:用户性别
+     *  id:用户ID
      *  phone:电话号码
      *  username:用户名
      *  lastCollege:在更改学校的时候为选择学校之后但未选择专业时恢复原学校准备

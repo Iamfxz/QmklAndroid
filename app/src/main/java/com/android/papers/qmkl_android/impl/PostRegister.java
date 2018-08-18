@@ -9,6 +9,6 @@ import retrofit2.http.POST;
 
 public interface PostRegister {
 
-    @POST("user/vercode")
+    @POST("qmkl1.0.0/user/vercode")
     Call<ResponseInfo> getCall(@Body RegisterRequest registerRequest);
 }

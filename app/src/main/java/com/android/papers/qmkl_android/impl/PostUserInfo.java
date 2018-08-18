@@ -12,6 +12,6 @@ import retrofit2.http.POST;
  * 即自动登录
  */
 public interface PostUserInfo {
-    @POST("user/info")
+    @POST("qmkl1.0.0/user/info")
     Call<UserInfoRes> getCall(@Body TokenRequest token);
 }

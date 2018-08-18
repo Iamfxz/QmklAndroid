@@ -11,10 +11,10 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface PostLogin {
-    @POST("user/login")
+    @POST("qmkl1.0.0/user/login")
     Call<ResponseInfo> getCall(@Body LoginRequest request);
 
-    @POST("user/login")
+    @POST("qmkl1.0.0/user/login")
     Call<ResponseInfo> getTokenCall(@Body TokenRequest token);
 
 }

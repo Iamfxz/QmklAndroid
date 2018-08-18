@@ -9,6 +9,6 @@ import retrofit2.http.POST;
 
 public interface PostSetNewPsw {
 
-    @POST("user/update/password")
+    @POST("qmkl1.0.0/user/update/password")
     Call<ResponseInfo> getCall(@Body SetNewPswRequest newPswRequest);
 }

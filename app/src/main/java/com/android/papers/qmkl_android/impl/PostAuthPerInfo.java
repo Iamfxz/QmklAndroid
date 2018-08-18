@@ -10,6 +10,6 @@ import retrofit2.http.POST;
 
 public interface PostAuthPerInfo {
 
-    @POST("userauth/update/info")
+    @POST("qmkl1.0.0/userauth/update/info")
     Call<ResponseInfo<String>> getCall(@Body AuthPerInfoRequest authPerInfoRequest);
 }

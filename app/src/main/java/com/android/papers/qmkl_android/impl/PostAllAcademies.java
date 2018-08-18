@@ -11,9 +11,9 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 
 public interface PostAllAcademies {
-    @POST("academy/list/college")
+    @POST("qmkl1.0.0/academy/list/college")
     Call<AcademiesOrCollegesRes> getCall(@Body QueryAcademiesRequest academiesRequest);
 
-    @POST("academy/list")
+    @POST("qmkl1.0.0/academy/list")
     Call<AcademiesOrCollegesRes> getCall(@Body TokenRequest tokenRequest);
 }

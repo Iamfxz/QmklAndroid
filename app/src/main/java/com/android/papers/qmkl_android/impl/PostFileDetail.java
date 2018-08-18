@@ -13,6 +13,6 @@ import retrofit2.http.POST;
  *
  */
 public interface PostFileDetail {
-    @POST("file/list/detail")
+    @POST("qmkl1.0.0/file/list/detail")
     Call<FileDetailRes> getCall(@Body FileRequest fileRequest);
 }

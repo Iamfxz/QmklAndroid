@@ -13,6 +13,6 @@ import retrofit2.http.POST;
  *      请求文件的详细数据的接口
  */
 public interface PostFileUrl {
-    @POST("file/download/url")
+    @POST("qmkl1.0.0/file/download/url")
     Call<FileUrlRes> getCall(@Body FileRequest fileDetailRequest);
 }

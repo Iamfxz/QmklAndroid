@@ -65,4 +65,5 @@ dependencies {
     implementation 'com.umeng.sdk:utdid:1.1.5.3'
     //友盟PushSDK
     implementation 'com.umeng.sdk:push:4.2.0'
+
 }

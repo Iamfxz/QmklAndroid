@@ -12,7 +12,7 @@ import retrofit2.http.POST;
  * 邮箱：273332683@qq.com
  */
 public interface PostDislike {
-    @POST("dislike/addordesc")
+    @POST("qmkl1.0.0/dislike/addordesc")
     Call<ResponseInfo> getCall(@Body LikeDisLikeRequest likeDisLikeRequest);
 
 }

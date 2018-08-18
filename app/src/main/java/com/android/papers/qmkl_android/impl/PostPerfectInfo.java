@@ -8,6 +8,6 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface PostPerfectInfo {
-    @POST("user/all/info")
+    @POST("qmkl1.0.0/user/all/info")
     Call<ResponseInfo<String>> getCall(@Body PerfectInfoRequest perfectInfoRequest);
 }

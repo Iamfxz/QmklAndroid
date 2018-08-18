@@ -11,6 +11,6 @@ import retrofit2.http.POST;
 
 public interface PostExitLogin {
 
-    @POST("user/out")
+    @POST("qmkl1.0.0/user/out")
     Call<String> getCall(@Body ExitLoginRequest exitLoginRequest);
 }

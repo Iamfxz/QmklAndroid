@@ -25,6 +25,7 @@ import com.android.papers.qmkl_android.activity.AuthPerUserInfo;
 import com.android.papers.qmkl_android.activity.LoginActivity;
 import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.activity.PerfectInfoActivity;
+import com.android.papers.qmkl_android.activity.UpLoadActivity;
 import com.android.papers.qmkl_android.activity.UserInfoActivity;
 import com.android.papers.qmkl_android.impl.PostAds;
 import com.android.papers.qmkl_android.impl.PostAllAcademies;
@@ -37,6 +38,7 @@ import com.android.papers.qmkl_android.impl.PostLogin;
 import com.android.papers.qmkl_android.impl.PostPerfectInfo;
 import com.android.papers.qmkl_android.impl.PostRegister;
 import com.android.papers.qmkl_android.impl.PostSetNewPsw;
+import com.android.papers.qmkl_android.impl.PostUpLoadFiles;
 import com.android.papers.qmkl_android.impl.PostUpdateUserInfo;
 import com.android.papers.qmkl_android.impl.PostUserAvatar;
 import com.android.papers.qmkl_android.impl.PostUserInfo;
@@ -313,6 +315,7 @@ public class RetrofitUtils {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "college", Objects.requireNonNull(response.body()).getData().getCollege());
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "enterYear", Objects.requireNonNull(response.body()).getData().getEnteYear());
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "gender", Objects.requireNonNull(response.body()).getData().getGender());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "id", String.valueOf(Objects.requireNonNull(response.body()).getData().getId()));
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "phone", Objects.requireNonNull(response.body()).getData().getPhone());
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "username", Objects.requireNonNull(response.body()).getData().getUsername());
                         avatarPath = UMapplication.getContext().getString(R.string.user_info_url) + Objects.requireNonNull(response.body()).getData().getAvatar();
@@ -379,6 +382,7 @@ public class RetrofitUtils {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "college", Objects.requireNonNull(response.body()).getData().getCollege());
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "enterYear", Objects.requireNonNull(response.body()).getData().getEnteYear());
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "gender", Objects.requireNonNull(response.body()).getData().getGender());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "id", String.valueOf(Objects.requireNonNull(response.body()).getData().getId()));
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "phone", Objects.requireNonNull(response.body()).getData().getPhone());
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "username", Objects.requireNonNull(response.body()).getData().getUsername());
                         avatarPath = UMapplication.getContext().getString(R.string.user_info_url) + Objects.requireNonNull(response.body()).getData().getAvatar();
@@ -1087,6 +1091,63 @@ public class RetrofitUtils {
         });
     }
 
+
+    //用户上传文件
+    public static void PostUpLoadFiles(String filePath, String spath,String note, String anonymous, final ZLoadingDialog dialog,final Activity startAct){
+        PostUpLoadFiles request = retrofit.create(PostUpLoadFiles.class);
+        final File file = new File(filePath);
+        String userId = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "id");
+
+        RequestBody userIdRequest = RequestBody.create(MediaType.parse("multipart/form-data"), userId);
+
+
+        RequestBody fileRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part avatarRequest = MultipartBody.Part.createFormData("file", file.getName(), fileRequestBody);
+
+        RequestBody spathRequest = RequestBody.create(MediaType.parse("multipart/form-data"), spath);
+        RequestBody noteRequest;
+        if(note!=null){
+            noteRequest = RequestBody.create(MediaType.parse("multipart/form-data"), note);
+        }else {
+            noteRequest = null;
+        }
+
+        RequestBody anonymousRequest = RequestBody.create(MediaType.parse("multipart/form-data"), anonymous);
+
+        Call<ResponseInfo<String>> call = request.getCall(userIdRequest, avatarRequest, noteRequest, spathRequest, anonymousRequest);
+        call.enqueue(new Callback<ResponseInfo<String>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull final Response<ResponseInfo<String>> response) {
+                if(response.body()==null){
+                    Toast.makeText(UMapplication.getContext(),UPLOAD_FILE_BIG, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(UMapplication.getContext(),UPLOAD_FILE_SUCCESS, Toast.LENGTH_SHORT).show();
+                    new AlertDialog.Builder(startAct).setTitle("提示").setMessage("上传文件成功，留在此页还是返回主页面？")
+
+                            .setPositiveButton("返回主页面", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which){
+                                    startAct.finish();
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton("留在此页", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).show();
+                }
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
+                Log.d(TAG+"上传", "失败");
+                Toast.makeText(UMapplication.getContext(), UPLOAD_FILE_FAILURE, Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
+    }
 
 
     //获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在

@@ -10,6 +10,6 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface PostGetCode {
-    @POST("sms/send")
+    @POST("qmkl1.0.0/sms/send")
     Call<ResponseInfo<String>> getCall(@Body GetCodeRequest request);
 }
