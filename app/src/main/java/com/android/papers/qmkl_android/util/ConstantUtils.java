@@ -42,6 +42,6 @@ public class ConstantUtils {
     public static final String LOGIN_INVALID = "您的登陆信息居然失效了，需要重新登陆~谢谢~";
     public static final String SERVER_FILE_ERROR = "您网络可能出了点问题啦，请重新启动一下~谢谢~";
     public static final String UNKNOWN_ERROR = "很抱歉出现未知异常，可以反馈给我们吗~谢谢~";
-
+    public static final String CONNECT_WITH_ME = "服务器已经崩了，请联系13375983207陈同学";
 
 }

@@ -37,6 +37,9 @@
     <style name="myNavigationDrawerStyle" >
         <item name="android:textSize">18sp</item>
     </style>
+    <style name="dialog_warn" parent="@android:style/Theme.Dialog">
 
+        <item name="android:windowBackground">@color/white</item>
+    </style>
 
 </resources>

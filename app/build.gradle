@@ -63,11 +63,8 @@ dependencies {
     implementation 'com.umeng.sdk:utdid:1.1.5.3'
     //友盟PushSDK
     implementation 'com.umeng.sdk:push:4.2.0'
-<<<<<<< HEAD
 
-=======
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
->>>>>>> 0758f6c89fada4138715734f3eb24b935a515920
 }

@@ -3,6 +3,7 @@ package com.android.papers.qmkl_android.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -78,11 +79,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.android.papers.qmkl_android.util.ConstantUtils.LOGIN_INVALID;
-import static com.android.papers.qmkl_android.util.ConstantUtils.SERVER_FILE_ERROR;
-import static com.android.papers.qmkl_android.util.ConstantUtils.SERVER_REQUEST_FAILURE;
-import static com.android.papers.qmkl_android.util.ConstantUtils.SUCCESS_CODE;
-import static com.android.papers.qmkl_android.util.ConstantUtils.UNKNOWN_ERROR;
+import static com.android.papers.qmkl_android.util.ConstantUtils.*;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -314,7 +311,8 @@ public class ResourceFragment extends Fragment
                         .setHintText("loading...")
                         .setCanceledOnTouchOutside(false)
                         .show();
-                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(),R.style.dialog_warn);
+
                 postAllColleges(builder, title, dialog);
             }
         });
@@ -328,7 +326,8 @@ public class ResourceFragment extends Fragment
                         .setCanceledOnTouchOutside(false)
                         .show();
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(),R.style.dialog_warn);
+
                 postAllColleges(builder, title, dialog);
 
             }
@@ -810,7 +809,7 @@ public class ResourceFragment extends Fragment
     public void postAllColleges(final AlertDialog.Builder builder, final TextView textView, final ZLoadingDialog dialog) {
         //创建Retrofit对象
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ConstantUtils.BaseUrl)// 设置 网络请求 Url,1.0.0版本
+                .baseUrl(BaseUrl)// 设置 网络请求 Url,1.0.0版本
                 .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
                 .build();
 
@@ -824,68 +823,58 @@ public class ResourceFragment extends Fragment
                 return false;
             }
         });
-        if (ConstantUtils.colleges == null) {
-            PostAllColleges request = retrofit.create(PostAllColleges.class);
-            Call<AcademiesOrCollegesRes> call = request.getCall();
-            call.enqueue(new Callback<AcademiesOrCollegesRes>() {
+        PostAllColleges request = retrofit.create(PostAllColleges.class);
+        Call<AcademiesOrCollegesRes> call = request.getCall();
+        call.enqueue(new Callback<AcademiesOrCollegesRes>() {
 
-                @Override
-                public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
-                    int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("look at here:"+resultCode);
-                    if (resultCode == SUCCESS_CODE) {
-                        ConstantUtils.colleges = Objects.requireNonNull(response.body()).getData();
-                        // 设置参数
-                        builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
-                                .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int which) {
-                                        collegeName = Objects.requireNonNull(response.body()).getData()[which];
-                                        textView.setText(collegeName);
-                                        SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()),"college",collegeName);
-                                        //TODO 只显示第一次？
-                                        System.out.println("look at here:"+collegeName);
-                                        loadPaperData(null,loadMainFolder,collegeName);
-                                    }
-                                });
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.setCanceledOnTouchOutside(false);
-                        alertDialog.show();
-                    } else if (resultCode == tokenInvalidCode) {
-                        handler.sendEmptyMessage(3);
-                    } else if (resultCode == normalErrorCode) {
-                        Message message = Message.obtain();
-                        message.obj = Objects.requireNonNull(response.body()).getMsg();
-                        message.what = 5;
-                        handler.sendMessage(message);
-                    } else if (resultCode == errorCode) {
-                        handler.sendEmptyMessage(4);
-                    } else {
-                        handler.sendEmptyMessage(6);
-                    }
-                    dialog.dismiss();
+            @Override
+            public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
+                int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
+                System.out.println("look at here:"+resultCode);
+                if (resultCode == SUCCESS_CODE) {
+                    colleges = Objects.requireNonNull(response.body()).getData();
+                    // 设置参数
+                    TextView tv = new TextView(getActivity());
+                    tv.setText(CHOOSE_COLLEGE);	//内容
+                    tv.setTextColor(Color.BLACK);//颜色
+                    tv.setTextSize(20);
+                    tv.setPadding(30, 0, 10, 10);//位置
+                    builder.setCustomTitle(tv);//不是setTitle()
+                    builder.setItems(colleges, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int which) {
+                                    collegeName = Objects.requireNonNull(response.body()).getData()[which];
+                                    textView.setText(collegeName);
+                                    SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()),"college",collegeName);
+                                    System.out.println("look at here:"+collegeName);
+                                    loadPaperData(null,loadMainFolder,collegeName);
+                                }
+                            });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    alertDialog.show();
+                } else if (resultCode == tokenInvalidCode) {
+                    handler.sendEmptyMessage(3);
+                } else if (resultCode == normalErrorCode) {
+                    Message message = Message.obtain();
+                    message.obj = Objects.requireNonNull(response.body()).getMsg();
+                    message.what = 5;
+                    handler.sendMessage(message);
+                } else if (resultCode == errorCode) {
+                    handler.sendEmptyMessage(4);
+                } else {
+                    handler.sendEmptyMessage(6);
                 }
+                dialog.dismiss();
+            }
+            @Override
+            public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
+                Log.d(TAG, "请求失败");
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
 
-                @Override
-                public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
-                    Log.d(TAG, "请求失败");
-                    Toast.makeText(UMapplication.getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                }
-            });
-        } else {
-            builder.setTitle(ConstantUtils.CHOOSE_COLLEGE)
-                    .setItems(ConstantUtils.colleges, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int which) {
-                            textView.setText(ConstantUtils.colleges[which]);
-                        }
-                    });
-            AlertDialog alertDialog = builder.create();
-            alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.show();
-            dialog.dismiss();
-        }
     }
 
     private class FileAdapter extends BaseAdapter {

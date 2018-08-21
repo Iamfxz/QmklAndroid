@@ -266,14 +266,6 @@ public class UserInfoActivity extends BaseActivity {
         builder.show();
         }
 
-    @OnClick(R.id.join_us)
-    public void clickJoinUs(){
-        Intent intent=new Intent(UserInfoActivity.this,WebViewActivity.class);
-        intent.putExtra("url","http://cn.mikecrm.com/6lMhybb");
-        intent.putExtra("title","加入我们");
-        startActivity(intent);
-    }
-
     @OnClick(R.id.iv_back)
     public void clickBack(){
         finish();

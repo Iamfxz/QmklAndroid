@@ -87,7 +87,6 @@ public class MyUMAuthListener implements UMAuthListener {
             }
             //获取用户uid
             else if (string.equals("uid") && !map.get(string).isEmpty()) {
-                Toast.makeText(context,"登录成功",Toast.LENGTH_SHORT).show();
                 SharedPreferencesUtils.setStoredMessage(context,"uid",map.get(string));
                 UMengLoginRequest uMengLoginRequest=new UMengLoginRequest(map.get(string),platform);
                 RetrofitUtils.postAuthLogin(context,uMengLoginRequest,startAct);

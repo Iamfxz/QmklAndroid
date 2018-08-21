@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+
     <color name="white_content">#F9F9F9</color>
     <color name="background">#F9F9F9</color>
     <color name="blue">#508CEE</color>
@@ -15,7 +16,7 @@
 
 
 
-
+    <color name="transparent">#fff</color>
     <color name="blue1">#077BD2</color>
     <color name="blue2">#165AED</color>
     <color name="blue3">#161EED</color>
