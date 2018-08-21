@@ -97,6 +97,14 @@ public class PaperFileUtils {
     }
 
     /**
+     *      判断是否是文件夹
+     * @param fileName 文件名
+     * @return 是否文件夹
+     */
+    static public boolean typeIsFolder(String fileName){
+        return !fileName.contains(".");
+    }
+    /**
      *      获取倒数第二个斜杠的索引
      * @param str 需要处理的字符串，一般为路径，例如/cad/
      * @return 倒数第二个斜杠的索引，上述例子返回为0

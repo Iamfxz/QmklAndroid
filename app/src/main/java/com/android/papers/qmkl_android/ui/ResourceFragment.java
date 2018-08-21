@@ -46,12 +46,9 @@ import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.model.FileUrlRes;
 import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
-import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.CommonUtils;
-import com.android.papers.qmkl_android.util.ConstantUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
-import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -67,7 +64,6 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
@@ -174,9 +170,7 @@ public class ResourceFragment extends Fragment
         fabUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
-                startActivity(new Intent(getActivity(),UpLoadActivity.class));
-//                Toast.makeText(getContext(), "fabUpload Clicked!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getActivity(), UpLoadActivity.class));
             }
         });
 
@@ -191,6 +185,7 @@ public class ResourceFragment extends Fragment
         fabReturnTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 lvFolder.setSelection(0);
             }
         });
@@ -198,7 +193,9 @@ public class ResourceFragment extends Fragment
         fabReturnBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lvFolder.setSelection(mAdapter.getCount());
+                //TODO
+                lvFolder.setSelection(mAdapter.getCount()-1);
+
             }
         });
 
@@ -232,16 +229,16 @@ public class ResourceFragment extends Fragment
                 mLastVisibleItem = -1;
                 if (CommonUtils.isFastDoubleClick()) {
                     //当快速点击时候，弹出1s的动画 TODO 可否使用锁的方式达到数据同步？
-                    doZLoadingDailog();
+                    doZLoadingDialog();
                 } else {
                     list = new ArrayList<>(mData.getData().keySet());
                     final String folder = list.get(position);
-                    //点击的是文件夹
+                    //点击的是文件夹 TODO 添加在加载数据时候的加载动画
                     if (PaperFileUtils.typeWithFileName(folder).equals("folder")) {
                         loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
                     } else {
                         loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
-                        doZLoadingDailog();
+                        doZLoadingDialog();
                         System.out.println("你点击了：" + folder);
                     }
                     //返回顶部
@@ -284,6 +281,7 @@ public class ResourceFragment extends Fragment
                         } else {
                             loadPaperData(null, loadRefresh, collegeName);//刷新页面
                         }
+                        lvFolder.setSelection(0);
                         ptrFrame.refreshComplete();
                     }
                 }, 0);
@@ -311,7 +309,7 @@ public class ResourceFragment extends Fragment
                         .setHintText("loading...")
                         .setCanceledOnTouchOutside(false)
                         .show();
-                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(),R.style.dialog_warn);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), R.style.dialog_warn);
 
                 postAllColleges(builder, title, dialog);
             }
@@ -326,7 +324,7 @@ public class ResourceFragment extends Fragment
                         .setCanceledOnTouchOutside(false)
                         .show();
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(),R.style.dialog_warn);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), R.style.dialog_warn);
 
                 postAllColleges(builder, title, dialog);
 
@@ -386,8 +384,10 @@ public class ResourceFragment extends Fragment
         searchView.setBackground(new ColorDrawable(Objects.requireNonNull(getContext()).getResources().getColor(R.color.bar_color)));
         searchView.setVoiceSearch(false);
         searchView.setEllipsize(true);
+        searchView.setFocusable(true);
         searchView.setHint("课程名称或文件名称");
         searchView.setFocusable(true);
+        searchView.setAdapter(mAdapter);
         //设置可搜索的内容
 //        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
@@ -445,7 +445,7 @@ public class ResourceFragment extends Fragment
     private void doAnimate(View view) {
         //动画，GROW
         try {
-            ViewPropertyAnimator animator = view.animate().setDuration(500)
+            ViewPropertyAnimator animator = view.animate().setDuration(300)
                     .setInterpolator(new AccelerateDecelerateInterpolator());
             view.setPivotX(view.getWidth() / 2);
             view.setPivotY(view.getHeight() / 2);
@@ -619,7 +619,7 @@ public class ResourceFragment extends Fragment
     /**
      * 加载动画
      */
-    private void doZLoadingDailog() {
+    private void doZLoadingDialog() {
         final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                 .setLoadingColor(getResources().getColor(R.color.blue))//颜色
@@ -830,26 +830,26 @@ public class ResourceFragment extends Fragment
             @Override
             public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
                 int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                System.out.println("look at here:"+resultCode);
+                System.out.println("look at here:" + resultCode);
                 if (resultCode == SUCCESS_CODE) {
                     colleges = Objects.requireNonNull(response.body()).getData();
                     // 设置参数
                     TextView tv = new TextView(getActivity());
-                    tv.setText(CHOOSE_COLLEGE);	//内容
+                    tv.setText(CHOOSE_COLLEGE);    //内容
                     tv.setTextColor(Color.BLACK);//颜色
                     tv.setTextSize(20);
                     tv.setPadding(30, 0, 10, 10);//位置
                     builder.setCustomTitle(tv);//不是setTitle()
                     builder.setItems(colleges, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int which) {
-                                    collegeName = Objects.requireNonNull(response.body()).getData()[which];
-                                    textView.setText(collegeName);
-                                    SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()),"college",collegeName);
-                                    System.out.println("look at here:"+collegeName);
-                                    loadPaperData(null,loadMainFolder,collegeName);
-                                }
-                            });
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int which) {
+                            collegeName = Objects.requireNonNull(response.body()).getData()[which];
+                            textView.setText(collegeName);
+                            SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()), "college", collegeName);
+//                            System.out.println("look at here:" + collegeName);
+                            loadPaperData(null, loadMainFolder, collegeName);
+                        }
+                    });
                     AlertDialog alertDialog = builder.create();
                     alertDialog.setCanceledOnTouchOutside(false);
                     alertDialog.show();
@@ -867,6 +867,7 @@ public class ResourceFragment extends Fragment
                 }
                 dialog.dismiss();
             }
+
             @Override
             public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
                 Log.d(TAG, "请求失败");
@@ -921,7 +922,7 @@ public class ResourceFragment extends Fragment
             //从Data中取出数据填充到ListView列表项中
             holder.tvFolderName.setText(folderName);
             holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
-            if (!PaperFileUtils.typeWithFileName(folderName).equals("folder")) {
+            if (!PaperFileUtils.typeIsFolder(folderName)) {
                 holder.tvFolderSize.setText(mData.getData().get(folderName));
                 holder.tvFolderSize.setVisibility(View.VISIBLE);
                 holder.imgFolderArrow.setVisibility(View.INVISIBLE);
