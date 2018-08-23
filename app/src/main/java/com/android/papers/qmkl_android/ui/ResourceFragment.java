@@ -26,6 +26,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -51,6 +53,7 @@ import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
+import com.github.promeg.pinyinhelper.Pinyin;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
@@ -88,7 +91,7 @@ public class ResourceFragment extends Fragment
 
     //文件总数据
     private FileRes mData;
-    private List<String> list;//文件名列表
+    private List<String> list;//文件名列表，有点乱，还需要理清楚 TODO
     private boolean isFirst = true;//第一次刷新数据
 
     //记录上次滚动之后的第一个可见item和最后一个item
@@ -99,7 +102,7 @@ public class ResourceFragment extends Fragment
     private FileAdapter mAdapter;
 
     //地址变化
-    private String BasePath = "/";
+    private String BasePath = "/";//"/"表示主页面
     private StringBuffer path;//最终请求路径
 
     //请求结果
@@ -120,6 +123,7 @@ public class ResourceFragment extends Fragment
 
     //搜索框，开源框架，github地址https://github.com/MiguelCatalan/MaterialSearchView
     private MaterialSearchView searchView;
+    MenuItem searchItem;
 
     //显示学校名称或当前所在文件夹
     private TextView title;
@@ -194,7 +198,7 @@ public class ResourceFragment extends Fragment
             @Override
             public void onClick(View v) {
                 //TODO
-                lvFolder.setSelection(mAdapter.getCount()-1);
+                lvFolder.setSelection(mAdapter.getCount() - 1);
 
             }
         });
@@ -227,23 +231,28 @@ public class ResourceFragment extends Fragment
                 //不加载动画
                 mFirstVisibleItem = -1;
                 mLastVisibleItem = -1;
-                if (CommonUtils.isFastDoubleClick()) {
-                    //当快速点击时候，弹出1s的动画 TODO 可否使用锁的方式达到数据同步？
+//                list = new ArrayList<>(mData.getData().keySet());
+
+                final String folder = list.get(position);
+
+
+                if (CommonUtils.isFastDoubleClick() && !PaperFileUtils.typeWithFileName(folder).equals("folder")) {
+                    //避免打开多个文件的活动页面
                     doZLoadingDialog();
                 } else {
-                    list = new ArrayList<>(mData.getData().keySet());
-                    final String folder = list.get(position);
+                    if (searchView.isSearchOpen()) {
+                        searchView.closeSearch();
+                    }
                     //点击的是文件夹 TODO 添加在加载数据时候的加载动画
                     if (PaperFileUtils.typeWithFileName(folder).equals("folder")) {
                         loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
                     } else {
                         loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
                         doZLoadingDialog();
-                        System.out.println("你点击了：" + folder);
                     }
-                    //返回顶部
-                    lvFolder.setSelection(0);
                 }
+                //返回顶部
+                lvFolder.setSelection(0);
             }
         });
 
@@ -270,7 +279,7 @@ public class ResourceFragment extends Fragment
             //需要加载数据时触发
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
-                System.out.println("正在刷新主页面");
+//                System.out.println("正在刷新主页面");
                 ptrFrame.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -314,6 +323,7 @@ public class ResourceFragment extends Fragment
                 postAllColleges(builder, title, dialog);
             }
         });
+
         chooseSchool.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -379,15 +389,14 @@ public class ResourceFragment extends Fragment
 
         //搜索框架的相关设置
         searchView = getActivity().findViewById(R.id.search_view);
-        MenuItem item = menu.findItem(R.id.search_item);
-        searchView.setMenuItem(item);
+        searchItem = menu.findItem(R.id.search_item);
+        searchView.setMenuItem(searchItem);
         searchView.setBackground(new ColorDrawable(Objects.requireNonNull(getContext()).getResources().getColor(R.color.bar_color)));
         searchView.setVoiceSearch(false);
         searchView.setEllipsize(true);
         searchView.setFocusable(true);
         searchView.setHint("课程名称或文件名称");
         searchView.setFocusable(true);
-        searchView.setAdapter(mAdapter);
         //设置可搜索的内容
 //        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
@@ -407,27 +416,39 @@ public class ResourceFragment extends Fragment
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
-                searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String query = (String) parent.getItemAtPosition(position);
-                        searchView.setQuery(query, true);
-                        searchView.closeSearch();
+                //TODO
+//                searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
+                if (mAdapter != null) {
+                    Filter filter = mAdapter.getFilter();
+                    if (newText == null || newText.length() == 0) {
+                        filter.filter(null);
+                    } else {
+                        filter.filter(newText);
                     }
-                });
-                return false;
+                }
+
+//                searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                        String query = (String) parent.getItemAtPosition(position);
+//                        searchView.setQuery(query, true);
+//                        searchView.closeSearch();
+//                    }
+//                });
+                return true;
             }
         });
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
+//                searchView.setAdapter(mAdapter);
+//                ptrFrame.autoRefresh();
                 //Do some magic
             }
 
             @Override
             public void onSearchViewClosed() {
-                //Do some magic
+//                ptrFrame.autoRefresh();
             }
         });
     }
@@ -514,13 +535,17 @@ public class ResourceFragment extends Fragment
                 path = new StringBuffer(BasePath);
                 break;
         }
-        System.out.println("当前路径：" + path);
+//        System.out.println("当前路径：" + path);
 
         //设置页面标题
-        if (path.toString().equals("/"))
+        if (path.toString().equals("/")) {
             title.setText(collegeName);
-        else if (requestCode == loadFolder || requestCode == loadPreviousFolder)
+//            searchItem.setVisible(true);
+        } else if (requestCode == loadFolder || requestCode == loadPreviousFolder) {
             title.setText(folder);
+//            searchItem.setVisible(false);
+        }
+
 
         if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")) {
 //            System.out.println("正在加载文件夹资源");
@@ -553,6 +578,7 @@ public class ResourceFragment extends Fragment
                         } else if (resultCode == successCode) {
                             //请求成功
                             handler.sendEmptyMessage(1);
+                            list = new ArrayList<>(mData.getData().keySet());
                         } else if (resultCode == errorCode) {
                             handler.sendEmptyMessage(4);
                         } else if (resultCode == normalErrorCode) {
@@ -623,7 +649,7 @@ public class ResourceFragment extends Fragment
         final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
                 .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                .setHintText("Loading...")
+                .setHintText("loading...")
                 .setCanceledOnTouchOutside(false);
         dialog.show();
         Timer timer = new Timer();
@@ -700,12 +726,12 @@ public class ResourceFragment extends Fragment
                 @Override
                 public void onResponse(@NonNull Call<FileDetailRes> call, @NonNull Response<FileDetailRes> response) {
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("文件详细信息请求结果：" + resultCode);
+//                    System.out.println("文件详细信息请求结果：" + resultCode);
                     if (resultCode == errorCode) {
                         handler.sendEmptyMessage(4);
-                        System.out.println(Objects.requireNonNull(response.body()).getMsg());
+//                        System.out.println(Objects.requireNonNull(response.body()).getMsg());
                     } else if (resultCode == successCode) {
-                        System.out.println("文件详细信息请求成功");
+//                        System.out.println("文件详细信息请求成功");
 
                         String size = Objects.requireNonNull(response.body()).getData().getSize();
                         PaperFile paperFile = new PaperFile(path, size, Objects.requireNonNull(response.body()));
@@ -725,7 +751,7 @@ public class ResourceFragment extends Fragment
                         handler.sendMessage(message);
                     } else {
                         handler.sendEmptyMessage(6);
-                        System.out.println("文件详细信息返回码无法解析");
+//                        System.out.println("文件详细信息返回码无法解析");
                     }
                 }
 
@@ -768,7 +794,7 @@ public class ResourceFragment extends Fragment
                 @Override
                 public void onResponse(@NonNull Call<FileUrlRes> call, @NonNull Response<FileUrlRes> response) {
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("文件URL请求结果" + resultCode);
+//                    System.out.println("文件URL请求结果" + resultCode);
                     if (resultCode == errorCode) {
                         handler.sendEmptyMessage(4);
                     } else if (resultCode == successCode) {
@@ -830,7 +856,7 @@ public class ResourceFragment extends Fragment
             @Override
             public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
                 int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                System.out.println("look at here:" + resultCode);
+//                System.out.println("look at here:" + resultCode);
                 if (resultCode == SUCCESS_CODE) {
                     colleges = Objects.requireNonNull(response.body()).getData();
                     // 设置参数
@@ -878,16 +904,29 @@ public class ResourceFragment extends Fragment
 
     }
 
-    private class FileAdapter extends BaseAdapter {
+    private class FileAdapter extends BaseAdapter implements Filterable {
+
+        /**
+         * Lock used to modify the content of {@link #list}. Any write operation
+         * performed on the array should be synchronized on this lock. This lock is also
+         * used by the filter (see {@link #getFilter()} to make a synchronized copy of
+         * the original array of data.
+         */
+        private final Object mLock = new Object();
+
+        // A copy of the original mObjects array, initialized from and then used instead as soon as
+        // the mFilter ArrayFilter is used. mObjects will then only contain the filtered values.
+        private ArrayList<String> mOriginalValues;//用于保存原始数据
+        private ArrayFilter mFilter;//过滤器
 
         @Override
         public int getCount() {
             int size = 0;
-            if (mData == null) {
+            if (list == null) {
                 return size;
             }
             try {
-                size = mData.getData().keySet().size();
+                size = list.size();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -896,7 +935,7 @@ public class ResourceFragment extends Fragment
 
         @Override
         public Object getItem(int position) {
-            return new ArrayList<>(mData.getData().keySet()).get(position);
+            return list.get(position);
         }
 
         @Override
@@ -908,7 +947,6 @@ public class ResourceFragment extends Fragment
         public View getView(int position, View convertView, ViewGroup parent) {
 
             mItemViewHolder holder;
-            list = new ArrayList<>(mData.getData().keySet());
             String folderName = list.get(position);
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
@@ -931,6 +969,95 @@ public class ResourceFragment extends Fragment
                 holder.imgFolderArrow.setVisibility(View.VISIBLE);
             }
             return convertView;
+        }
+
+        @Override
+        public Filter getFilter() {
+            if (mFilter == null) {
+                mFilter = new ArrayFilter();
+            }
+            return mFilter;
+        }
+
+        /**
+         * 前缀过滤
+         * TODO 修改成中文模糊匹配
+         */
+        private class ArrayFilter extends Filter {
+            @Override
+            protected FilterResults performFiltering(CharSequence query) {
+                FilterResults results = new FilterResults();
+//                System.out.println("performFiltering");
+                // 保存原始数据
+                if (mOriginalValues== null) {
+                    synchronized (mLock) {
+                        mOriginalValues = new ArrayList<>(mData.getData().keySet());
+                    }
+                }
+
+                //如果为空则回复原始数据,否则开始过滤
+                if (query == null || query.length() == 0) {
+                    ArrayList<String> originalList;
+                    synchronized (mLock) {
+                        originalList = new ArrayList<>(mData.getData().keySet());
+                    }
+                    results.values = originalList;
+                    results.count = originalList.size();
+                } else {
+                    //要搜索的内容转化为小写,去除空格
+                    String queryString = query.toString().replace(" ", "").toLowerCase();
+                    //转化为中文拼音且小写，去除空格
+                    String queryPinyin = Pinyin.toPinyin(query.toString().replace(" ", ""), "").toLowerCase();
+                    //转化为中文拼音且小写且空格分开且去除空格
+                    String queryPinyin2 = Pinyin.toPinyin(query.toString().replace(" ", ""), " ").toLowerCase();
+
+                    ArrayList<String> values;
+                    synchronized (mLock) {
+                        values = new ArrayList<>(mData.getData().keySet());//拷贝数据并上锁
+                    }
+
+                    final int count = values.size();
+                    final ArrayList<String> newValues = new ArrayList<>();
+
+                    for (int i = 0; i < count; i++) {
+                        final String value = values.get(i);//单个数据项的名字
+                        final String valuePinyin = Pinyin.toPinyin(value, "").toLowerCase();//转化为拼音用于搜索
+                        final String valuePinyin2 = Pinyin.toPinyin(value, " ").toLowerCase();//转化为拼音用于搜索,用空格区分中文
+
+                        // 搜索匹配算法
+                        if (value.equals(queryString)) {//完全匹配
+                            newValues.add(value);
+                            break;
+                        } else if (valuePinyin.equals(queryPinyin)) {//拼音完全匹配
+                            newValues.add(value);
+                            break;
+                        } else if (value.contains(queryString)) {//判断是否包含搜索字符串
+                            newValues.add(value);
+                        } else if (valuePinyin.contains(queryPinyin)) {//判断是否包含搜索字符串的拼音
+                            newValues.add(value);
+                        } else if (CommonUtils.levenshtein(valuePinyin2, queryPinyin2) >= 0.6) {//相似度大于0.6
+                            newValues.add(value);
+                        }
+
+                    }
+
+                    results.values = newValues;
+                    results.count = newValues.size();
+                }
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                //noinspection unchecked
+                list = (List<String>) results.values;
+                if (results.count > 0) {
+                    notifyDataSetChanged();
+                } else {
+                    notifyDataSetInvalidated();
+                }
+            }
         }
     }
 
@@ -976,9 +1103,9 @@ public class ResourceFragment extends Fragment
                 //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
                 case 1:
                     //获取数据成功
-                    if (mData != null) {
-                        mData.sort();
-                    }
+//                    if (mData != null) {
+//                        mData.sort();
+//                    }
                     mAdapter.notifyDataSetChanged();//UI界面就刷新
                     result = true;
                     break;
