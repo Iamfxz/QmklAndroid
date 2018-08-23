@@ -380,7 +380,7 @@ public class ResourceFragment extends Fragment
      * 菜单栏
      *
      * @param menu     菜单
-     * @param inflater 不知如何解释
+     * @param inflater LayoutInflater是用来找res/layout/下的xml布局文件，并且实例化；作用类似于findViewById()
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -402,15 +402,26 @@ public class ResourceFragment extends Fragment
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                String defaultQuery = lvFolder.getItemAtPosition(0).toString();//默认搜索第一个
+
                 if (queryIsExist(query)) {
                     Toast.makeText(getContext(), "您搜索的是《" + query + "》", Toast.LENGTH_SHORT).show();
                     if (PaperFileUtils.typeWithFileName(query).equals("folder"))
                         loadPaperData(query, loadFolder, collegeName);//加载文件夹
                     else
                         loadPaperData(query, loadFile, collegeName);//加载具体文件
+                } else if (!lvFolder.getItemAtPosition(0).toString().isEmpty()) {
+                    if (queryIsExist(defaultQuery)) {
+                        if (PaperFileUtils.typeWithFileName(defaultQuery).equals("folder"))
+                            loadPaperData(defaultQuery, loadFolder, collegeName);//加载文件夹
+                        else
+                            loadPaperData(defaultQuery, loadFile, collegeName);//加载具体文件
+                    }
+                    Toast.makeText(getContext(), "您搜索的是《" + defaultQuery + "》", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "找不到您搜索的《" + query + "》课程或文件", Toast.LENGTH_SHORT).show();
                 }
+
                 return false;
             }
 
@@ -535,7 +546,7 @@ public class ResourceFragment extends Fragment
                 path = new StringBuffer(BasePath);
                 break;
         }
-//        System.out.println("当前路径：" + path);
+        System.out.println("当前路径：" + path);
 
         //设置页面标题
         if (path.toString().equals("/")) {
@@ -576,9 +587,8 @@ public class ResourceFragment extends Fragment
                             handler.sendEmptyMessage(3);
 
                         } else if (resultCode == successCode) {
-                            //请求成功
+                            //请求数据成功
                             handler.sendEmptyMessage(1);
-                            list = new ArrayList<>(mData.getData().keySet());
                         } else if (resultCode == errorCode) {
                             handler.sendEmptyMessage(4);
                         } else if (resultCode == normalErrorCode) {
@@ -989,7 +999,7 @@ public class ResourceFragment extends Fragment
                 FilterResults results = new FilterResults();
 //                System.out.println("performFiltering");
                 // 保存原始数据
-                if (mOriginalValues== null) {
+                if (mOriginalValues == null) {
                     synchronized (mLock) {
                         mOriginalValues = new ArrayList<>(mData.getData().keySet());
                     }
@@ -1103,9 +1113,10 @@ public class ResourceFragment extends Fragment
                 //根据上面的提示，当Message为1，表示数据处理完了，可以通知主线程了
                 case 1:
                     //获取数据成功
-//                    if (mData != null) {
-//                        mData.sort();
-//                    }
+                    if (mData != null) {
+                        mData.sort();
+                    }
+                    list = new ArrayList<>(mData.getData().keySet());
                     mAdapter.notifyDataSetChanged();//UI界面就刷新
                     result = true;
                     break;
