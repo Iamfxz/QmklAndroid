@@ -258,8 +258,8 @@ public class FileDetailActivity extends BaseActivity {
 
             //未下载 执行下载进程
             setDownloadViewVisible();
-//            System.out.println("文件资源URL:"+mFile.getUrl());
-//            System.out.println("下载路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
+            System.out.println("文件资源URL:"+mFile.getUrl());
+            System.out.println("下载路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
             downloadTask = DownLoader.downloadPaperFile(mFile.getUrl(),
                     SDCardUtils.getDownloadPath() + mFile.getName(),
                     new DownLoader.DownloadTaskCallback() {
@@ -303,7 +303,7 @@ public class FileDetailActivity extends BaseActivity {
                                 @Override
                                 public void run() {
 
-                                    ToastUtils.showShort(FileDetailActivity.this, "下载发生错误");
+                                    ToastUtils.showShort(FileDetailActivity.this, "下载发生错误，请尝试重新打开此页面");
                                     setDownloadViewVisible();
                                 }
                             });

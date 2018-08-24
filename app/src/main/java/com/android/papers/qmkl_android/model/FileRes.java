@@ -36,7 +36,7 @@ public class FileRes implements Parcelable{
             Set<Map.Entry<String,String>> entries =  data.entrySet();
             list = new LinkedList<>(entries);
 
-            //从小到大排序（从大到小将o1与o2交换即可）
+            //转换成拼音后从小到大排序（根据ascii码）
             Collections.sort(list, new PinYinComparator());
 
             //新建一个LinkedHashMap，把排序后的List放入
@@ -56,7 +56,6 @@ public class FileRes implements Parcelable{
     public class PinYinComparator implements Comparator<Map.Entry<String,String>>{
         @Override
         public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
-            //TODO 不知什么原因失败了
 //            String string1 = Pinyin.toPinyin(o1.getKey().charAt(0)).toLowerCase();
 //            String string2 = Pinyin.toPinyin(o2.getKey().charAt(0)).toLowerCase();
 //            return string1.compareTo(string2);

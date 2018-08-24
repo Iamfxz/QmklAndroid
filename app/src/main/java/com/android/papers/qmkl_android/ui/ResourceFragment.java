@@ -143,6 +143,7 @@ public class ResourceFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
     }
 
@@ -213,6 +214,14 @@ public class ResourceFragment extends Fragment
         });
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        //如果当前页面对用户不可见则关闭搜索框
+        if(searchView.isSearchOpen()){
+            searchView.closeSearch();
+        }
+    }
     private void initView() {
         //设置学校名称
         title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
@@ -394,9 +403,8 @@ public class ResourceFragment extends Fragment
         searchView.setBackground(new ColorDrawable(Objects.requireNonNull(getContext()).getResources().getColor(R.color.bar_color)));
         searchView.setVoiceSearch(false);
         searchView.setEllipsize(true);
-        searchView.setFocusable(true);
+        searchView.setFocusable(false);
         searchView.setHint("课程名称或文件名称");
-        searchView.setFocusable(true);
         //设置可搜索的内容
 //        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
@@ -437,7 +445,6 @@ public class ResourceFragment extends Fragment
                         filter.filter(newText);
                     }
                 }
-
 //                searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //                    @Override
 //                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

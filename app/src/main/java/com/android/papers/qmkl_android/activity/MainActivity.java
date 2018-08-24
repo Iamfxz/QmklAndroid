@@ -116,12 +116,12 @@ public class MainActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //设置侧滑
         drawer = findViewById(R.id.drawer_layout);
 
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, 0, 0);
         toggle.setDrawerIndicatorEnabled(false);
-
 
         Log.d("头像路径", SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
 
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity
 
 
     /**
-     * @return 当前显示的fragement
+     * @return 当前显示的fragment
      */
     public Fragment getVisibleFragment() {
         FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
