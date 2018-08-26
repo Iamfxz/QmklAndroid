@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -107,6 +108,8 @@ public class FileDetailActivity extends BaseActivity {
     TextView tvDislikeTip;
     @BindView(R.id.likeTip)//点赞人数
     TextView tvLikeTip;
+    @BindView(R.id.create_time)
+    TextView tvCreateTime;
 
     //监听退出和删除按钮
     @OnClick({R.id.iv_exit, R.id.tv_delete})
@@ -175,15 +178,16 @@ public class FileDetailActivity extends BaseActivity {
         tvFileSize.setText(String.valueOf(mFile.getSize()));
         tvLikeTip.setText(String.valueOf(mFile.getLikeNum()));
         tvDislikeTip.setText(String.valueOf(mFile.getDislikeNum()));
+        tvCreateTime.setText(mFile.getCreateAt().substring(0,mFile.getCreateAt().indexOf(" ")));
 
         //显示图标
         imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType().toLowerCase()));
 //        //测试传递的过来的文件是否准确，准确
-        System.out.println(mFile.getDislikeNum());
-        System.out.println(mFile.getLikeNum());
-        System.out.println(mFile.getId());
-        System.out.println(mFile.getMd5());
-        System.out.println("url:"+mFile.getUrl());
+//        System.out.println(mFile.getDislikeNum());
+//        System.out.println(mFile.getLikeNum());
+//        System.out.println(mFile.getId());
+//        System.out.println(mFile.getMd5());
+//        System.out.println("url:"+mFile.getUrl());
         //显示按钮
         btnDownload.setText(mFile.isDownload() ? "打开文件" : "下载到手机");
         fileOpenTip.setVisibility(mFile.isDownload()? View.VISIBLE:View.INVISIBLE);
@@ -258,8 +262,8 @@ public class FileDetailActivity extends BaseActivity {
 
             //未下载 执行下载进程
             setDownloadViewVisible();
-//            System.out.println("文件资源URL:"+mFile.getUrl());
-//            System.out.println("下载路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
+            System.out.println("文件资源URL:"+mFile.getUrl());
+            System.out.println("下载路径:"+SDCardUtils.getDownloadPath() + mFile.getName());
             downloadTask = DownLoader.downloadPaperFile(mFile.getUrl(),
                     SDCardUtils.getDownloadPath() + mFile.getName(),
                     new DownLoader.DownloadTaskCallback() {
@@ -303,7 +307,7 @@ public class FileDetailActivity extends BaseActivity {
                                 @Override
                                 public void run() {
 
-                                    ToastUtils.showShort(FileDetailActivity.this, "下载发生错误");
+                                    ToastUtils.showShort(FileDetailActivity.this, "下载发生错误，请尝试重新打开此页面");
                                     setDownloadViewVisible();
                                 }
                             });

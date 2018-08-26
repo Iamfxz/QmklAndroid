@@ -30,27 +30,40 @@ public class FileRes implements Parcelable{
 
     //默认使用ascii码排序，后期可再更改成将中文转为拼音在按字母排序
     public void sort(){
+        List<Map.Entry<String,String>> list = null;
         try {
+            //先转成LinkedList集合
             Set<Map.Entry<String,String>> entries =  data.entrySet();
-            List<Map.Entry<String,String>> list = new LinkedList<>(entries);
+            list = new LinkedList<>(entries);
+
+            //转换成拼音后从小到大排序（根据ascii码）
             Collections.sort(list, new PinYinComparator());
+
+            //新建一个LinkedHashMap，把排序后的List放入
+            LinkedHashMap<String, String> updateData = new LinkedHashMap<>();
+            for (Map.Entry<String, String> entry : list) {
+                updateData.put(entry.getKey(), entry.getValue());
+            }
+
+            //给原始数据赋值
+            data = updateData;
         }catch (Exception e){
             e.printStackTrace();
         }
+
     }
 
     public class PinYinComparator implements Comparator<Map.Entry<String,String>>{
         @Override
         public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
-            //TODO 不知什么原因失败了
 //            String string1 = Pinyin.toPinyin(o1.getKey().charAt(0)).toLowerCase();
 //            String string2 = Pinyin.toPinyin(o2.getKey().charAt(0)).toLowerCase();
 //            return string1.compareTo(string2);
-            return  o1.getKey().compareTo(o2.getKey());
+            return  Pinyin.toPinyin(o1.getKey(),"").toUpperCase().compareTo(Pinyin.toPinyin(o2.getKey(),"").toUpperCase());
         }
     }
 
-    public FileRes(Parcel source) {
+    private FileRes(Parcel source) {
         this.code = source.readString();
         data = new LinkedHashMap<>();
         source.readHashMap(HashMap.class.getClassLoader());

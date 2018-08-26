@@ -26,9 +26,15 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
+<<<<<<< HEAD
 import android.widget.RelativeLayout;
+=======
+import android.widget.SectionIndexer;
+>>>>>>> f7b84ede5d531bbfbb07b46271b7c28d2eee8933
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -48,14 +54,13 @@ import com.android.papers.qmkl_android.model.FileRes;
 import com.android.papers.qmkl_android.model.FileUrlRes;
 import com.android.papers.qmkl_android.model.PaperFile;
 import com.android.papers.qmkl_android.requestModel.FileRequest;
-import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.CommonUtils;
-import com.android.papers.qmkl_android.util.ConstantUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
-import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
+import com.github.promeg.pinyinhelper.Pinyin;
+import com.gjiazhe.wavesidebar.WaveSideBar;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
@@ -69,7 +74,6 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
@@ -94,7 +98,7 @@ public class ResourceFragment extends Fragment
 
     //文件总数据
     private FileRes mData;
-    private List<String> list;//文件名列表
+    private List<String> list;//文件名列表，有点乱，还需要理清楚 TODO
     private boolean isFirst = true;//第一次刷新数据
 
     //记录上次滚动之后的第一个可见item和最后一个item
@@ -105,7 +109,7 @@ public class ResourceFragment extends Fragment
     private FileAdapter mAdapter;
 
     //地址变化
-    private String BasePath = "/";
+    private String BasePath = "/";//"/"表示主页面
     private StringBuffer path;//最终请求路径
 
     //请求结果
@@ -126,6 +130,7 @@ public class ResourceFragment extends Fragment
 
     //搜索框，开源框架，github地址https://github.com/MiguelCatalan/MaterialSearchView
     private MaterialSearchView searchView;
+    MenuItem searchItem;
 
     //显示学校名称或当前所在文件夹
     private TextView title;
@@ -145,6 +150,7 @@ public class ResourceFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
 
 
@@ -174,17 +180,13 @@ public class ResourceFragment extends Fragment
         //五个悬浮按钮，从上往下
         FloatingActionButton fabUpload = view.findViewById(R.id.fab11);
         FloatingActionButton fabReturnToMain = view.findViewById(R.id.fab13);
-        FloatingActionButton fabReturnTop = view.findViewById(R.id.fab14);
-        FloatingActionButton fabReturnBottom = view.findViewById(R.id.fab15);
         FloatingActionButton fabPreviousMenu = view.findViewById(R.id.fab16);
 
         //悬浮菜单及按钮监听
         fabUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
-                startActivity(new Intent(getActivity(),UpLoadActivity.class));
-//                Toast.makeText(getContext(), "fabUpload Clicked!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getActivity(), UpLoadActivity.class));
             }
         });
 
@@ -196,20 +198,6 @@ public class ResourceFragment extends Fragment
             }
         });
 
-        fabReturnTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lvFolder.setSelection(0);
-            }
-        });
-
-        fabReturnBottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lvFolder.setSelection(mAdapter.getCount());
-            }
-        });
-
         fabPreviousMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,6 +206,33 @@ public class ResourceFragment extends Fragment
                 loadPaperData(null, loadPreviousFolder, collegeName);//返回上级文件夹
             }
         });
+
+        WaveSideBar sideBar = getActivity().findViewById(R.id.side_bar);
+        sideBar.setIndexItems("#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
+                "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
+        sideBar.setOnSelectIndexItemListener(new WaveSideBar.OnSelectIndexItemListener() {
+            @Override
+            public void onSelectIndexItem(String index) {
+                int section = -1;
+                int position = 0;
+                Log.d("WaveSideBar", index);
+                if(index.charAt(0) >= 'A' && index.charAt(0) <= 'Z'){
+                    section = index.charAt(0) - 'A';
+                    position = mAdapter.getPositionForSection(section);
+                }
+                lvFolder.setSelection(position);
+                // TODo something here ....
+            }
+        });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //如果当前页面对用户不可见则关闭搜索框
+        if(searchView.isSearchOpen()){
+            searchView.closeSearch();
+        }
     }
 
     private void initView() {
@@ -238,23 +253,21 @@ public class ResourceFragment extends Fragment
                 //不加载动画
                 mFirstVisibleItem = -1;
                 mLastVisibleItem = -1;
-                if (CommonUtils.isFastDoubleClick()) {
-                    //当快速点击时候，弹出1s的动画 TODO 可否使用锁的方式达到数据同步？
-                    doZLoadingDailog();
-                } else {
-                    list = new ArrayList<>(mData.getData().keySet());
-                    final String folder = list.get(position);
-                    //点击的是文件夹
+//                list = new ArrayList<>(mData.getData().keySet());
+
+                final String folder = list.get(position);
+
+
+                    if (searchView.isSearchOpen()) {
+                        searchView.closeSearch();
+                    }
+                    //点击的是文件夹 TODO 添加在加载数据时候的加载动画
                     if (PaperFileUtils.typeWithFileName(folder).equals("folder")) {
                         loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
                     } else {
                         loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
-                        doZLoadingDailog();
-                        System.out.println("你点击了：" + folder);
                     }
-                    //返回顶部
-                    lvFolder.setSelection(0);
-                }
+
             }
         });
 
@@ -281,7 +294,7 @@ public class ResourceFragment extends Fragment
             //需要加载数据时触发
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
-                System.out.println("正在刷新主页面");
+//                System.out.println("正在刷新主页面");
                 ptrFrame.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -305,7 +318,6 @@ public class ResourceFragment extends Fragment
         }, 250);
 
         lvFolder.setOnScrollListener(this);
-
     }
 
     //初始化界面时对标题栏做的一些准备工作
@@ -325,11 +337,12 @@ public class ResourceFragment extends Fragment
                         .setHintText("loading...")
                         .setCanceledOnTouchOutside(false)
                         .show();
-                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(),R.style.dialog_warn);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), R.style.dialog_warn);
 
                 postAllColleges(builder, title, dialog);
             }
         });
+
         chooseSchool.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -340,7 +353,7 @@ public class ResourceFragment extends Fragment
                         .setCanceledOnTouchOutside(false)
                         .show();
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(),R.style.dialog_warn);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), R.style.dialog_warn);
 
                 postAllColleges(builder, title, dialog);
 
@@ -386,7 +399,7 @@ public class ResourceFragment extends Fragment
      * 菜单栏
      *
      * @param menu     菜单
-     * @param inflater 不知如何解释
+     * @param inflater LayoutInflater是用来找res/layout/下的xml布局文件，并且实例化；作用类似于findViewById()
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -395,53 +408,76 @@ public class ResourceFragment extends Fragment
 
         //搜索框架的相关设置
         searchView = getActivity().findViewById(R.id.search_view);
-        MenuItem item = menu.findItem(R.id.search_item);
-        searchView.setMenuItem(item);
+        searchItem = menu.findItem(R.id.search_item);
+        searchView.setMenuItem(searchItem);
         searchView.setBackground(new ColorDrawable(Objects.requireNonNull(getContext()).getResources().getColor(R.color.bar_color)));
         searchView.setVoiceSearch(false);
         searchView.setEllipsize(true);
+        searchView.setFocusable(false);
         searchView.setHint("课程名称或文件名称");
-        searchView.setFocusable(true);
         //设置可搜索的内容
 //        searchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                String defaultQuery = lvFolder.getItemAtPosition(0).toString();//默认搜索第一个
+
                 if (queryIsExist(query)) {
                     Toast.makeText(getContext(), "您搜索的是《" + query + "》", Toast.LENGTH_SHORT).show();
                     if (PaperFileUtils.typeWithFileName(query).equals("folder"))
                         loadPaperData(query, loadFolder, collegeName);//加载文件夹
                     else
                         loadPaperData(query, loadFile, collegeName);//加载具体文件
+                } else if (!lvFolder.getItemAtPosition(0).toString().isEmpty()) {
+                    if (queryIsExist(defaultQuery)) {
+                        if (PaperFileUtils.typeWithFileName(defaultQuery).equals("folder"))
+                            loadPaperData(defaultQuery, loadFolder, collegeName);//加载文件夹
+                        else
+                            loadPaperData(defaultQuery, loadFile, collegeName);//加载具体文件
+                    }
+                    Toast.makeText(getContext(), "您搜索的是《" + defaultQuery + "》", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "找不到您搜索的《" + query + "》课程或文件", Toast.LENGTH_SHORT).show();
                 }
+
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
-                searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String query = (String) parent.getItemAtPosition(position);
-                        searchView.setQuery(query, true);
-                        searchView.closeSearch();
+                //TODO
+//                searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
+                if (mAdapter != null) {
+                    Filter filter = mAdapter.getFilter();
+                    if (newText == null || newText.length() == 0) {
+                        filter.filter(null);
+                    } else {
+                        filter.filter(newText);
                     }
-                });
-                return false;
+                }
+//                searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                        String query = (String) parent.getItemAtPosition(position);
+//                        searchView.setQuery(query, true);
+//                        searchView.closeSearch();
+//                    }
+//                });
+                return true;
             }
         });
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
+//                searchView.setAdapter(mAdapter);
+                lvFolder.setSelection(0);
+//                ptrFrame.autoRefresh();
                 //Do some magic
             }
 
             @Override
             public void onSearchViewClosed() {
-                //Do some magic
+//                ptrFrame.autoRefresh();
             }
         });
     }
@@ -459,7 +495,7 @@ public class ResourceFragment extends Fragment
     private void doAnimate(View view) {
         //动画，GROW
         try {
-            ViewPropertyAnimator animator = view.animate().setDuration(500)
+            ViewPropertyAnimator animator = view.animate().setDuration(300)
                     .setInterpolator(new AccelerateDecelerateInterpolator());
             view.setPivotX(view.getWidth() / 2);
             view.setPivotY(view.getHeight() / 2);
@@ -531,10 +567,14 @@ public class ResourceFragment extends Fragment
         System.out.println("当前路径：" + path);
 
         //设置页面标题
-        if (path.toString().equals("/"))
+        if (path.toString().equals("/")) {
             title.setText(collegeName);
-        else if (requestCode == loadFolder || requestCode == loadPreviousFolder)
+//            searchItem.setVisible(true);
+        } else if (requestCode == loadFolder || requestCode == loadPreviousFolder) {
             title.setText(folder);
+//            searchItem.setVisible(false);
+        }
+
 
         if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")) {
 //            System.out.println("正在加载文件夹资源");
@@ -565,7 +605,7 @@ public class ResourceFragment extends Fragment
                             handler.sendEmptyMessage(3);
 
                         } else if (resultCode == successCode) {
-                            //请求成功
+                            //请求数据成功
                             handler.sendEmptyMessage(1);
                         } else if (resultCode == errorCode) {
                             handler.sendEmptyMessage(4);
@@ -630,24 +670,6 @@ public class ResourceFragment extends Fragment
         return false;
     }
 
-    /**
-     * 加载动画
-     */
-    private void doZLoadingDailog() {
-        final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
-        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                .setHintText("Loading...")
-                .setCanceledOnTouchOutside(false);
-        dialog.show();
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                dialog.dismiss();
-            }
-        }, 1000); // 延时1秒
-    }
 
     /**
      * 处理返回按键事件
@@ -714,12 +736,12 @@ public class ResourceFragment extends Fragment
                 @Override
                 public void onResponse(@NonNull Call<FileDetailRes> call, @NonNull Response<FileDetailRes> response) {
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("文件详细信息请求结果：" + resultCode);
+//                    System.out.println("文件详细信息请求结果：" + resultCode);
                     if (resultCode == errorCode) {
                         handler.sendEmptyMessage(4);
-                        System.out.println(Objects.requireNonNull(response.body()).getMsg());
+//                        System.out.println(Objects.requireNonNull(response.body()).getMsg());
                     } else if (resultCode == successCode) {
-                        System.out.println("文件详细信息请求成功");
+//                        System.out.println("文件详细信息请求成功");
 
                         String size = Objects.requireNonNull(response.body()).getData().getSize();
                         PaperFile paperFile = new PaperFile(path, size, Objects.requireNonNull(response.body()));
@@ -739,7 +761,7 @@ public class ResourceFragment extends Fragment
                         handler.sendMessage(message);
                     } else {
                         handler.sendEmptyMessage(6);
-                        System.out.println("文件详细信息返回码无法解析");
+//                        System.out.println("文件详细信息返回码无法解析");
                     }
                 }
 
@@ -782,7 +804,7 @@ public class ResourceFragment extends Fragment
                 @Override
                 public void onResponse(@NonNull Call<FileUrlRes> call, @NonNull Response<FileUrlRes> response) {
                     int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                    System.out.println("文件URL请求结果" + resultCode);
+//                    System.out.println("文件URL请求结果" + resultCode);
                     if (resultCode == errorCode) {
                         handler.sendEmptyMessage(4);
                     } else if (resultCode == successCode) {
@@ -844,26 +866,26 @@ public class ResourceFragment extends Fragment
             @Override
             public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
                 int resultCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
-                System.out.println("look at here:"+resultCode);
+//                System.out.println("look at here:" + resultCode);
                 if (resultCode == SUCCESS_CODE) {
                     colleges = Objects.requireNonNull(response.body()).getData();
                     // 设置参数
                     TextView tv = new TextView(getActivity());
-                    tv.setText(CHOOSE_COLLEGE);	//内容
+                    tv.setText(CHOOSE_COLLEGE);    //内容
                     tv.setTextColor(Color.BLACK);//颜色
                     tv.setTextSize(20);
                     tv.setPadding(30, 0, 10, 10);//位置
                     builder.setCustomTitle(tv);//不是setTitle()
                     builder.setItems(colleges, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int which) {
-                                    collegeName = Objects.requireNonNull(response.body()).getData()[which];
-                                    textView.setText(collegeName);
-                                    SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()),"college",collegeName);
-                                    System.out.println("look at here:"+collegeName);
-                                    loadPaperData(null,loadMainFolder,collegeName);
-                                }
-                            });
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int which) {
+                            collegeName = Objects.requireNonNull(response.body()).getData()[which];
+                            textView.setText(collegeName);
+                            SharedPreferencesUtils.setStoredMessage(Objects.requireNonNull(getContext()), "college", collegeName);
+//                            System.out.println("look at here:" + collegeName);
+                            loadPaperData(null, loadMainFolder, collegeName);
+                        }
+                    });
                     AlertDialog alertDialog = builder.create();
                     alertDialog.setCanceledOnTouchOutside(false);
                     alertDialog.show();
@@ -881,6 +903,7 @@ public class ResourceFragment extends Fragment
                 }
                 dialog.dismiss();
             }
+
             @Override
             public void onFailure(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull Throwable t) {
                 Log.d(TAG, "请求失败");
@@ -891,16 +914,23 @@ public class ResourceFragment extends Fragment
 
     }
 
-    private class FileAdapter extends BaseAdapter {
+    private class FileAdapter extends BaseAdapter implements Filterable,SectionIndexer {
+
+        private final Object mLock = new Object();//锁住数据
+
+        // A copy of the original mObjects array, initialized from and then used instead as soon as
+        // the mFilter ArrayFilter is used. mObjects will then only contain the filtered values.
+        private ArrayList<String> mOriginalValues;//用于保存原始数据
+        private ArrayFilter mFilter;//过滤器
 
         @Override
         public int getCount() {
             int size = 0;
-            if (mData == null) {
+            if (list == null) {
                 return size;
             }
             try {
-                size = mData.getData().keySet().size();
+                size = list.size();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -909,7 +939,7 @@ public class ResourceFragment extends Fragment
 
         @Override
         public Object getItem(int position) {
-            return new ArrayList<>(mData.getData().keySet()).get(position);
+            return list.get(position);
         }
 
         @Override
@@ -921,7 +951,6 @@ public class ResourceFragment extends Fragment
         public View getView(int position, View convertView, ViewGroup parent) {
 
             mItemViewHolder holder;
-            list = new ArrayList<>(mData.getData().keySet());
             String folderName = list.get(position);
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
@@ -935,7 +964,7 @@ public class ResourceFragment extends Fragment
             //从Data中取出数据填充到ListView列表项中
             holder.tvFolderName.setText(folderName);
             holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
-            if (!PaperFileUtils.typeWithFileName(folderName).equals("folder")) {
+            if (!PaperFileUtils.typeIsFolder(folderName)) {
                 holder.tvFolderSize.setText(mData.getData().get(folderName));
                 holder.tvFolderSize.setVisibility(View.VISIBLE);
                 holder.imgFolderArrow.setVisibility(View.INVISIBLE);
@@ -943,7 +972,139 @@ public class ResourceFragment extends Fragment
                 holder.tvFolderSize.setVisibility(View.INVISIBLE);
                 holder.imgFolderArrow.setVisibility(View.VISIBLE);
             }
+
+            if(position == 0 && getPositionForSection(getSectionForPosition(position)) == -1){
+                holder.tvFolderHead.setVisibility(View.VISIBLE);
+                holder.tvFolderHead.setText("#");
+            }else if(position == getPositionForSection(getSectionForPosition(position))){
+                holder.tvFolderHead.setVisibility(View.VISIBLE);
+                //把section index转化为大写字母
+                char c = (char) (getSectionForPosition(position) + 65);
+                if(c >= 'A' && c <= 'Z'){
+                    holder.tvFolderHead.setText(String.valueOf(c));
+                }
+            }else{
+                holder.tvFolderHead.setVisibility(View.GONE);
+            }
             return convertView;
+        }
+
+        @Override
+        public Filter getFilter() {
+            if (mFilter == null) {
+                mFilter = new ArrayFilter();
+            }
+            return mFilter;
+        }
+
+        @Override
+        public Object[] getSections() {
+            return null;
+        }
+
+        @Override
+        public int getPositionForSection(int arg0) {              //关键方法，通过section index获取在ListView中的位置
+            //根据参数arg0，加上65后得到对应的大写字母
+            char c = (char)(arg0 + 65);
+            //循环遍历ListView中的数据，遇到第一个首字母为上面的就是要找的位置
+            for(int i = 0; i < getCount(); i++){
+                if(Pinyin.toPinyin(list.get(i),"").toUpperCase().charAt(0) == c){
+                    return i;
+                }
+            }
+            return -1;//找不到返回-1
+        }
+        @Override
+        public int getSectionForPosition(int arg0) {              //关键方法，通过在ListView中的位置获取Section index
+            //获取该位置的城市名首字母
+            char c = Pinyin.toPinyin(list.get(arg0),"").toUpperCase().charAt(0);
+            //如果该字母在A和Z之间，则返回A到Z的索引，从0到25
+            if(c >= 'A' && c <= 'Z'){
+                return c - 'A';
+            }
+            //如果首字母不是A到Z的字母，则返回26，该类型将会被分类到#下面
+            return 26;
+        }
+
+        /**
+         * 前缀过滤
+         * TODO 修改成中文模糊匹配
+         */
+        private class ArrayFilter extends Filter {
+            @Override
+            protected FilterResults performFiltering(CharSequence query) {
+                FilterResults results = new FilterResults();
+//                System.out.println("performFiltering");
+                // 保存原始数据
+                if (mOriginalValues == null) {
+                    synchronized (mLock) {
+                        mOriginalValues = new ArrayList<>(mData.getData().keySet());
+                    }
+                }
+
+                //如果为空则回复原始数据,否则开始过滤
+                if (query == null || query.length() == 0) {
+                    ArrayList<String> originalList;
+                    synchronized (mLock) {
+                        originalList = new ArrayList<>(mData.getData().keySet());
+                    }
+                    results.values = originalList;
+                    results.count = originalList.size();
+                } else {
+                    //要搜索的内容转化为小写,去除空格
+                    String queryString = query.toString().replace(" ", "").toLowerCase();
+                    //转化为中文拼音且小写，去除空格
+                    String queryPinyin = Pinyin.toPinyin(query.toString().replace(" ", ""), "").toLowerCase();
+                    //转化为中文拼音且小写且空格分开且去除空格
+                    String queryPinyin2 = Pinyin.toPinyin(query.toString().replace(" ", ""), " ").toLowerCase();
+
+                    ArrayList<String> values;
+                    synchronized (mLock) {
+                        values = new ArrayList<>(mData.getData().keySet());//拷贝数据并上锁
+                    }
+
+                    final int count = values.size();
+                    final ArrayList<String> newValues = new ArrayList<>();
+
+                    for (int i = 0; i < count; i++) {
+                        final String value = values.get(i);//单个数据项的名字
+                        final String valuePinyin = Pinyin.toPinyin(value, "").toLowerCase();//转化为拼音用于搜索
+                        final String valuePinyin2 = Pinyin.toPinyin(value, " ").toLowerCase();//转化为拼音用于搜索,用空格区分中文
+
+                        // 搜索匹配算法
+                        if (value.equals(queryString)) {//完全匹配
+                            newValues.add(value);
+                            break;
+                        } else if (valuePinyin.equals(queryPinyin)) {//拼音完全匹配
+                            newValues.add(value);
+                            break;
+                        } else if (value.contains(queryString)) {//判断是否包含搜索字符串
+                            newValues.add(value);
+                        } else if (valuePinyin.contains(queryPinyin)) {//判断是否包含搜索字符串的拼音
+                            newValues.add(value);
+                        } else if (CommonUtils.levenshtein(valuePinyin2, queryPinyin2) >= 0.6) {//相似度大于0.6
+                            newValues.add(value);
+                        }
+
+                    }
+
+                    results.values = newValues;
+                    results.count = newValues.size();
+                }
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                //noinspection unchecked
+                list = (List<String>) results.values;
+                if (results.count > 0) {
+                    notifyDataSetChanged();
+                } else {
+                    notifyDataSetInvalidated();
+                }
+            }
         }
     }
 
@@ -956,6 +1117,8 @@ public class ResourceFragment extends Fragment
         TextView tvFolderSize;
         @BindView(R.id.img_folder_arrow)
         ImageView imgFolderArrow;
+        @BindView(R.id.tv_folder_head)
+        TextView tvFolderHead;
 
         mItemViewHolder(View view) {
             ButterKnife.bind(this, view);
@@ -992,7 +1155,10 @@ public class ResourceFragment extends Fragment
                     if (mData != null) {
                         mData.sort();
                     }
+                    list = new ArrayList<>(mData.getData().keySet());
                     mAdapter.notifyDataSetChanged();//UI界面就刷新
+                    //如果加载数据完成自动返回顶部
+                    lvFolder.setSelection(0);
                     result = true;
                     break;
                 case 2:

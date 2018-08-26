@@ -21,9 +21,9 @@
         android:layout_below="@id/title_bar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="60dp"
+        android:contentDescription="文件类型图标"
         android:scaleType="fitXY"
-        android:src="@drawable/document_type_unknow"
-        android:contentDescription="文件类型图标" />
+        android:src="@drawable/document_type_unknow" />
 
     <TextView
         android:id="@+id/tv_file_name"
@@ -48,53 +48,102 @@
         android:textColor="@android:color/darker_gray"
         android:textSize="16sp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <RelativeLayout
+        android:id="@+id/likeAndDislike"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/tv_file_size">
 
-        <com.jaren.lib.view.LikeView
-            android:id="@+id/dislikeView"
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="94dp"
-            android:layout_marginTop="-1dp"
-            app:checkedColor="@color/black"
-            app:cirRadius="15dp"
-            app:cycleTime="2000"
-            app:defaultColor="#ff657487" />
+            android:layout_height="wrap_content">
 
-        <com.jaren.lib.view.LikeView
-            android:id="@+id/likeView"
+            <com.jaren.lib.view.LikeView
+                android:id="@+id/dislikeView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="94dp"
+                android:layout_marginTop="-1dp"
+                app:checkedColor="@color/black"
+                app:cirRadius="15dp"
+                app:cycleTime="2000"
+                app:defaultColor="#ff657487" />
+
+            <TextView
+                android:id="@+id/dislikeTip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="131dp"
+                android:text="0"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/dislikeView"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="127dp"
+                android:text="踩" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="94dp"
-            app:cirRadius="15dp"
-            app:cycleTime="2000"
-            app:defaultColor="#ff657487" />
+            android:layout_height="wrap_content">
+
+            <com.jaren.lib.view.LikeView
+                android:id="@+id/likeView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="94dp"
+                app:cirRadius="15dp"
+                app:cycleTime="2000"
+                app:defaultColor="#ff657487" />
+
+            <TextView
+                android:id="@+id/likeTip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="132dp"
+                android:text="0"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/likeView"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="128dp"
+                android:text="赞" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/likeAndDislike">
 
         <TextView
-            android:id="@+id/likeTip"
-            android:layout_width="wrap_content"
+            android:id="@+id/create_time"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="132dp"
-            android:text="0"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/dislikeTip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="131dp"
-            android:text="0"
-            android:textColor="@color/white" />
+            android:layout_alignParentTop="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="上传时间未知" />
 
     </RelativeLayout>
 

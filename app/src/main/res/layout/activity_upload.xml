@@ -14,22 +14,51 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+<<<<<<< HEAD
         android:layout_centerVertical="true"
         android:gravity="center_vertical">
 
         <RelativeLayout
             android:id="@+id/layout_upload"
             android:layout_width="match_parent"
+=======
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="102dp"
+        android:gravity="center_horizontal">
+
+
+        <RelativeLayout
+            android:id="@+id/file"
+            android:layout_width="wrap_content"
+>>>>>>> f7b84ede5d531bbfbb07b46271b7c28d2eee8933
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:gravity="center_horizontal"
             >
 
+<<<<<<< HEAD
+=======
+            <EditText
+                android:id="@+id/file_path"
+                android:layout_width="268dp"
+                android:layout_height="40dp"
+
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="15dp"
+                android:layout_weight="2"
+                android:background="@drawable/margin_edittext"
+                android:enabled="false"
+                android:gravity="center"
+                android:hint="还未选择文件"
+                android:textSize="15sp" />
+>>>>>>> f7b84ede5d531bbfbb07b46271b7c28d2eee8933
 
             <LinearLayout
                 android:id="@+id/file"
                 android:layout_width="wrap_content"
+<<<<<<< HEAD
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
@@ -160,6 +189,101 @@
 
         <LinearLayout
             android:id="@+id/upload"
+=======
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="2dp"
+                android:layout_weight="1"
+                android:background="@color/blue1"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="选择文件"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/school"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/file"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/school_name"
+                android:layout_width="268dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="15dp"
+                android:layout_weight="2"
+                android:background="@drawable/margin_edittext"
+                android:gravity="center"
+                android:hint="还未填写学校"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/btn_choose_school"
+                android:layout_width="99dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:text="所属学校"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/must_write_icon"
+                android:layout_width="19dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:text="*"
+                android:textColor="@color/red1"
+                android:textSize="18sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/course"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/school"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/course_name"
+                android:layout_width="268dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/margin_edittext"
+                android:gravity="center"
+                android:hint="还未填写课程目录"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/btn_choose_course"
+                android:layout_width="99dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="0dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="课程目录"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/remarks"
+>>>>>>> f7b84ede5d531bbfbb07b46271b7c28d2eee8933
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/layout_upload"
@@ -167,6 +291,7 @@
             android:layout_marginTop="20dp"
             android:orientation="horizontal">
 
+<<<<<<< HEAD
             <Button
                 android:id="@+id/btn_upload"
                 android:layout_width="0dp"
@@ -185,4 +310,57 @@
         </LinearLayout>
     </RelativeLayout>
 
+=======
+            <EditText
+                android:id="@+id/remarks_info"
+                android:layout_width="268dp"
+                android:layout_height="150dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/margin_edittext"
+                android:gravity="center"
+                android:hint="请填写上传备注"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_remarks"
+                android:layout_width="98dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="文件备注"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/upload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_upload"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+
+        <Button
+            android:id="@+id/btn_upload"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:background="@color/blue1"
+            android:text="上传"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <CheckBox
+            android:id="@+id/anonymous_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="匿名上传"/>
+    </LinearLayout>
+>>>>>>> f7b84ede5d531bbfbb07b46271b7c28d2eee8933
 </RelativeLayout>

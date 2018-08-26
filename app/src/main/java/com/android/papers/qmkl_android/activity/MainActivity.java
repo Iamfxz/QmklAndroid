@@ -3,6 +3,7 @@ package com.android.papers.qmkl_android.activity;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.android.papers.qmkl_android.util.StatusBarUtil;
 import com.android.papers.qmkl_android.util.SystemBarTintManager;
+import com.gjiazhe.wavesidebar.WaveSideBar;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
@@ -116,12 +118,12 @@ public class MainActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //设置侧滑
         drawer = findViewById(R.id.drawer_layout);
 
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, 0, 0);
         toggle.setDrawerIndicatorEnabled(false);
-
 
         Log.d("头像路径", SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
 
@@ -243,7 +245,7 @@ public class MainActivity extends AppCompatActivity
 
 
     /**
-     * @return 当前显示的fragement
+     * @return 当前显示的fragment
      */
     public Fragment getVisibleFragment() {
         FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();

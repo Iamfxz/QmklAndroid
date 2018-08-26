@@ -19,8 +19,8 @@ public class PaperFile implements Parcelable {
     private String course;//所属课程
     private boolean download;//是否已经下载
     private String path;//文件路径
-    private Long createAt;//建立时间
-    private Long updateAt;//更新时间
+    private String createAt;//建立时间
+    private String updateAt;//更新时间
     private String md5;//文件的md5
     private String nick;//上传文件的用户昵称
     private int dislikeNum;//踩的人数
@@ -81,6 +81,9 @@ public class PaperFile implements Parcelable {
 
         dest.writeString(this.md5);
         dest.writeInt(this.id);
+
+        dest.writeString(this.createAt);
+        dest.writeString(this.updateAt);
     }
 
     private PaperFile(Parcel in) {
@@ -98,6 +101,9 @@ public class PaperFile implements Parcelable {
 
         this.md5 = in.readString();
         this.id = in.readInt();
+
+        this.createAt = in.readString();
+        this.updateAt = in.readString();
     }
 
     public static final Creator<PaperFile> CREATOR = new Creator<PaperFile>() {
@@ -112,19 +118,19 @@ public class PaperFile implements Parcelable {
         }
     };
 
-    public Long getCreateAt() {
+    public String getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(Long createAt) {
+    public void setCreateAt(String createAt) {
         this.createAt = createAt;
     }
 
-    public Long getUpdateAt() {
+    public String getUpdateAt() {
         return updateAt;
     }
 
-    public void setUpdateAt(Long updateAt) {
+    public void setUpdateAt(String updateAt) {
         this.updateAt = updateAt;
     }
 
