@@ -30,6 +30,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.promeg.pinyinhelper.Pinyin;
+import com.gjiazhe.wavesidebar.WaveSideBar;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
@@ -190,7 +192,6 @@ public class ResourceFragment extends Fragment
         fabReturnTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 lvFolder.setSelection(0);
             }
         });
@@ -198,7 +199,7 @@ public class ResourceFragment extends Fragment
         fabReturnBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                //TODO 速度太慢
                 lvFolder.setSelection(mAdapter.getCount() - 1);
 
             }
@@ -212,6 +213,15 @@ public class ResourceFragment extends Fragment
                 loadPaperData(null, loadPreviousFolder, collegeName);//返回上级文件夹
             }
         });
+
+        WaveSideBar sideBar = getActivity().findViewById(R.id.side_bar);
+        sideBar.setOnSelectIndexItemListener(new WaveSideBar.OnSelectIndexItemListener() {
+            @Override
+            public void onSelectIndexItem(String index) {
+                Log.d("WaveSideBar", index);
+                // TODo something here ....
+            }
+        });
     }
 
     @Override
@@ -222,6 +232,7 @@ public class ResourceFragment extends Fragment
             searchView.closeSearch();
         }
     }
+
     private void initView() {
         //设置学校名称
         title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
@@ -245,10 +256,6 @@ public class ResourceFragment extends Fragment
                 final String folder = list.get(position);
 
 
-                if (CommonUtils.isFastDoubleClick() && !PaperFileUtils.typeWithFileName(folder).equals("folder")) {
-                    //避免打开多个文件的活动页面
-                    doZLoadingDialog();
-                } else {
                     if (searchView.isSearchOpen()) {
                         searchView.closeSearch();
                     }
@@ -257,9 +264,8 @@ public class ResourceFragment extends Fragment
                         loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
                     } else {
                         loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
-                        doZLoadingDialog();
                     }
-                }
+
                 //返回顶部
                 lvFolder.setSelection(0);
             }
@@ -313,7 +319,6 @@ public class ResourceFragment extends Fragment
         }, 250);
 
         lvFolder.setOnScrollListener(this);
-
     }
 
     public void setChooseSchoolListener() {
@@ -659,24 +664,6 @@ public class ResourceFragment extends Fragment
         return false;
     }
 
-    /**
-     * 加载动画
-     */
-    private void doZLoadingDialog() {
-        final ZLoadingDialog dialog = new ZLoadingDialog(Objects.requireNonNull(getContext()));
-        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                .setHintText("loading...")
-                .setCanceledOnTouchOutside(false);
-        dialog.show();
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                dialog.dismiss();
-            }
-        }, 1000); // 延时1秒
-    }
 
     /**
      * 处理返回按键事件
@@ -921,7 +908,7 @@ public class ResourceFragment extends Fragment
 
     }
 
-    private class FileAdapter extends BaseAdapter implements Filterable {
+    private class FileAdapter extends BaseAdapter implements Filterable,SectionIndexer {
 
         /**
          * Lock used to modify the content of {@link #list}. Any write operation
@@ -994,6 +981,21 @@ public class ResourceFragment extends Fragment
                 mFilter = new ArrayFilter();
             }
             return mFilter;
+        }
+
+        @Override
+        public Object[] getSections() {
+            return new Object[0];
+        }
+
+        @Override
+        public int getPositionForSection(int sectionIndex) {
+            return 0;
+        }
+
+        @Override
+        public int getSectionForPosition(int position) {
+            return 0;
         }
 
         /**

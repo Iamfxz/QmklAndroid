@@ -1,5 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
@@ -31,7 +31,20 @@
                 android:fastScrollEnabled="true"><!--android:focusable="true"-->
             </ListView>
 
+
         </in.srain.cube.views.ptr.PtrFrameLayout>
+
+        <com.gjiazhe.wavesidebar.WaveSideBar
+            android:id="@+id/side_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingRight="8dp"
+            app:sidebar_lazy_respond="true"
+            app:sidebar_max_offset="80dp"
+            app:sidebar_position="right"
+            app:sidebar_text_alignment="center"
+            app:sidebar_text_color="@color/blue"
+            app:sidebar_text_size="14sp" />
 
         <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/fab_menu"
@@ -39,61 +52,61 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            fab:menu_labels_showAnimation="@anim/fab_scale_up"
+            android:layout_marginEnd="20dp"
             fab:elevation="10dp"
             fab:menu_colorNormal="@color/blue"
-            fab:menu_colorPressed="@color/btn_blue">
+            fab:menu_colorPressed="@color/btn_blue"
+            fab:menu_labels_showAnimation="@anim/fab_scale_up">
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/upload_white"
-                fab:fab_size="mini"
-                fab:fab_label="上传资料"
                 fab:fab_colorNormal="@color/blue"
-                fab:fab_colorPressed="@color/btn_blue" />
+                fab:fab_colorPressed="@color/btn_blue"
+                fab:fab_label="上传资料"
+                fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/refesh_list"
-                fab:fab_size="mini"
-                fab:fab_label="到主目录"
                 fab:fab_colorNormal="@color/blue"
-                fab:fab_colorPressed="@color/btn_blue" />
+                fab:fab_colorPressed="@color/btn_blue"
+                fab:fab_label="到主目录"
+                fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/return_top"
-                fab:fab_size="mini"
-                fab:fab_label="返回顶部"
                 fab:fab_colorNormal="@color/blue"
-                fab:fab_colorPressed="@color/btn_blue" />
+                fab:fab_colorPressed="@color/btn_blue"
+                fab:fab_label="返回顶部"
+                fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/return_bottom"
-                fab:fab_size="mini"
-                fab:fab_label="跳到底部"
                 fab:fab_colorNormal="@color/blue"
-                fab:fab_colorPressed="@color/btn_blue" />
+                fab:fab_colorPressed="@color/btn_blue"
+                fab:fab_label="跳到底部"
+                fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/return_previous_menu"
-                fab:fab_size="mini"
-                fab:fab_label="上级目录"
                 fab:fab_colorNormal="@color/blue"
-                fab:fab_colorPressed="@color/btn_blue" />
+                fab:fab_colorPressed="@color/btn_blue"
+                fab:fab_label="上级目录"
+                fab:fab_size="mini" />
         </com.github.clans.fab.FloatingActionMenu>
     </FrameLayout>
 
