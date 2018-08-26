@@ -1,5 +1,7 @@
 package com.android.papers.qmkl_android.model;
 
+import java.util.Date;
+
 /**
  * 作者：方向臻 on 2018/7/26/026 14:53
  * 邮箱：273332683@qq.com
@@ -9,12 +11,12 @@ public class FileDetailRes {
     private FileDetail data;
 
     public class FileDetail {
-        Long createAt;//创建时间
+        String createAt;//创建时间
         String md5;//文件的md5
         String name;//文件名字
         String nick;//上传文件的用户昵称
         String size;//文件大小
-        Long updateAt;//更新时间
+        String updateAt;//更新时间
         int dislikeNum;//踩的人数
         int likeNum;//赞的人数
         int uid;//用户id
@@ -29,11 +31,11 @@ public class FileDetailRes {
             this.id = id;
         }
 
-        public Long getCreateAt() {
+        public String getCreateAt() {
             return createAt;
         }
 
-        public void setCreateAt(Long createAt) {
+        public void setCreateAt(String createAt) {
             this.createAt = createAt;
         }
 
@@ -61,11 +63,11 @@ public class FileDetailRes {
             this.nick = nick;
         }
 
-        public Long getUpdateAt() {
+        public String getUpdateAt() {
             return updateAt;
         }
 
-        public void setUpdateAt(Long updateAt) {
+        public void setUpdateAt(String updateAt) {
             this.updateAt = updateAt;
         }
 
