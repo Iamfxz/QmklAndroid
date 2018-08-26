@@ -62,12 +62,7 @@ public class DiscoveryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_discovery, container, false);
 
         ButterKnife.bind(this, view);
-
-        TextView title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
-        title.setText("我和发现");
-        title.setOnClickListener(null);
-        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setVisibility(View.INVISIBLE);
-        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setOnClickListener(null);
+        initOnCreateView();
 
         setUserInfo();
 
@@ -83,6 +78,16 @@ public class DiscoveryFragment extends Fragment {
         return view;
     }
 
+
+    //初始化界面时对标题栏做的一些准备工作
+    private void initOnCreateView(){
+        TextView title = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
+        title.setText("我和发现");
+        title.setOnClickListener(null);
+        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setVisibility(View.INVISIBLE);
+        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setOnClickListener(null);
+
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();

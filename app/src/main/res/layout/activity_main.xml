@@ -32,10 +32,11 @@
                     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
                     <RelativeLayout
+                        android:id="@+id/toolbar_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:layout_marginEnd="50dp"
+                        android:layout_marginEnd="44dp"
                         android:gravity="center"
                         >
                         <TextView
@@ -49,6 +50,7 @@
 
                         <ImageView
                             android:id="@+id/choose_school"
+
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_toEndOf="@+id/title"
@@ -63,7 +65,7 @@
             <com.miguelcatalan.materialsearchview.MaterialSearchView
                 android:id="@+id/search_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="52dp"
                 android:iconifiedByDefault="true" />
         </FrameLayout>
 

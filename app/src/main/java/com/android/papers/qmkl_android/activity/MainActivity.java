@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
     private Class mFragmentArray[] = {
             ResourceFragment.class,//资源页面
             DownloadedFragment.class,//已下载页面
-//            StudentsCircleFragment.class,//学生圈界面
+            StudentsCircleFragment.class,//学生圈界面
 //            DiscoveryFragment.class//发现界面
     };
 
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity
     private int mImageArray[] = {
             R.drawable.tab_resource,
             R.drawable.tab_downloaded,
-//            R.drawable.tab_students,
+            R.drawable.tab_students,
 //            R.drawable.tab_discovery
     };
 

@@ -51,7 +51,9 @@
         <activity android:name=".activity.AuthPerUserInfo"/>
         <activity android:name=".activity.BaseActivity"/>
         <activity android:name=".activity.UpLoadActivity"/>
-
+        <activity android:name=".studentCircle.dwcorephoto.MixShowActivity"/>
+        <activity android:name=".studentCircle.dwcorephoto.BaseActivity"/>
+        <activity android:name=".studentCircle.dwcorephoto.PreviewImage"/>
 
         <!--友盟配置-->
         <meta-data android:value="5b694daf8f4a9d591a000013" android:name="UMENG_APPKEY"/>

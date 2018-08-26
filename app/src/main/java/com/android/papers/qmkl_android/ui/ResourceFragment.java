@@ -28,8 +28,10 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileDetailActivity;
@@ -144,11 +146,17 @@ public class ResourceFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        initOnCreateView();
+
+
         // 为fragement加载布局
         View view = inflater.inflate(R.layout.fragment_resource, container, false);
         ButterKnife.bind(this, view);
@@ -298,6 +306,12 @@ public class ResourceFragment extends Fragment
 
         lvFolder.setOnScrollListener(this);
 
+    }
+
+    //初始化界面时对标题栏做的一些准备工作
+    private void initOnCreateView(){
+        RelativeLayout layout = (RelativeLayout) getActivity().findViewById(R.id.toolbar_layout);
+        layout.setPadding(40,0,0,0);
     }
 
     public void setChooseSchoolListener() {

@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.papers.qmkl_android.R;
@@ -55,11 +56,8 @@ public class DownloadedFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_downloaded, container, false);
         ButterKnife.bind(this, view);
-        TextView title= Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
-        title.setText("已下载");
-        title.setOnClickListener(null);
-        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setVisibility(View.INVISIBLE);
-        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setOnClickListener(null);
+
+        initOnCreateView();
 
         checkDownloaded();
 
@@ -80,6 +78,16 @@ public class DownloadedFragment extends Fragment {
         return view;
     }
 
+    //初始化界面时对标题栏做的一些准备工作
+    private void initOnCreateView(){
+        TextView title= Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
+        title.setText("已下载");
+        title.setOnClickListener(null);
+        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setVisibility(View.INVISIBLE);
+        Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setOnClickListener(null);
+        RelativeLayout layout = (RelativeLayout) getActivity().findViewById(R.id.toolbar_layout);
+        layout.setPadding(0,0,0,0);
+    }
     private void checkDownloaded() {
         boolean isEmpty = downloadDB.isEmpty();
         ivNoneFile.setVisibility(isEmpty ? View.VISIBLE : View.INVISIBLE);
