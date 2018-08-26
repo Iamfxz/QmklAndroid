@@ -215,10 +215,19 @@ public class ResourceFragment extends Fragment
         });
 
         WaveSideBar sideBar = getActivity().findViewById(R.id.side_bar);
+        sideBar.setIndexItems("#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
+                "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
         sideBar.setOnSelectIndexItemListener(new WaveSideBar.OnSelectIndexItemListener() {
             @Override
             public void onSelectIndexItem(String index) {
+                int section = -1;
+                int position = 0;
                 Log.d("WaveSideBar", index);
+                if(index.charAt(0) >= 'A' && index.charAt(0) <= 'Z'){
+                    section = index.charAt(0) - 'A';
+                    position = mAdapter.getPositionForSection(section);
+                }
+                lvFolder.setSelection(position);
                 // TODo something here ....
             }
         });
@@ -266,8 +275,6 @@ public class ResourceFragment extends Fragment
                         loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
                     }
 
-                //返回顶部
-                lvFolder.setSelection(0);
             }
         });
 
@@ -305,7 +312,6 @@ public class ResourceFragment extends Fragment
                         } else {
                             loadPaperData(null, loadRefresh, collegeName);//刷新页面
                         }
-                        lvFolder.setSelection(0);
                         ptrFrame.refreshComplete();
                     }
                 }, 0);
@@ -465,6 +471,7 @@ public class ResourceFragment extends Fragment
             @Override
             public void onSearchViewShown() {
 //                searchView.setAdapter(mAdapter);
+                lvFolder.setSelection(0);
 //                ptrFrame.autoRefresh();
                 //Do some magic
             }
@@ -910,13 +917,7 @@ public class ResourceFragment extends Fragment
 
     private class FileAdapter extends BaseAdapter implements Filterable,SectionIndexer {
 
-        /**
-         * Lock used to modify the content of {@link #list}. Any write operation
-         * performed on the array should be synchronized on this lock. This lock is also
-         * used by the filter (see {@link #getFilter()} to make a synchronized copy of
-         * the original array of data.
-         */
-        private final Object mLock = new Object();
+        private final Object mLock = new Object();//锁住数据
 
         // A copy of the original mObjects array, initialized from and then used instead as soon as
         // the mFilter ArrayFilter is used. mObjects will then only contain the filtered values.
@@ -972,6 +973,20 @@ public class ResourceFragment extends Fragment
                 holder.tvFolderSize.setVisibility(View.INVISIBLE);
                 holder.imgFolderArrow.setVisibility(View.VISIBLE);
             }
+
+            if(position == 0 && getPositionForSection(getSectionForPosition(position)) == -1){
+                holder.tvFolderHead.setVisibility(View.VISIBLE);
+                holder.tvFolderHead.setText("#");
+            }else if(position == getPositionForSection(getSectionForPosition(position))){
+                holder.tvFolderHead.setVisibility(View.VISIBLE);
+                //把section index转化为大写字母
+                char c = (char) (getSectionForPosition(position) + 65);
+                if(c >= 'A' && c <= 'Z'){
+                    holder.tvFolderHead.setText(String.valueOf(c));
+                }
+            }else{
+                holder.tvFolderHead.setVisibility(View.GONE);
+            }
             return convertView;
         }
 
@@ -985,17 +1000,31 @@ public class ResourceFragment extends Fragment
 
         @Override
         public Object[] getSections() {
-            return new Object[0];
+            return null;
         }
 
         @Override
-        public int getPositionForSection(int sectionIndex) {
-            return 0;
+        public int getPositionForSection(int arg0) {              //关键方法，通过section index获取在ListView中的位置
+            //根据参数arg0，加上65后得到对应的大写字母
+            char c = (char)(arg0 + 65);
+            //循环遍历ListView中的数据，遇到第一个首字母为上面的就是要找的位置
+            for(int i = 0; i < getCount(); i++){
+                if(Pinyin.toPinyin(list.get(i),"").toUpperCase().charAt(0) == c){
+                    return i;
+                }
+            }
+            return -1;//找不到返回-1
         }
-
         @Override
-        public int getSectionForPosition(int position) {
-            return 0;
+        public int getSectionForPosition(int arg0) {              //关键方法，通过在ListView中的位置获取Section index
+            //获取该位置的城市名首字母
+            char c = Pinyin.toPinyin(list.get(arg0),"").toUpperCase().charAt(0);
+            //如果该字母在A和Z之间，则返回A到Z的索引，从0到25
+            if(c >= 'A' && c <= 'Z'){
+                return c - 'A';
+            }
+            //如果首字母不是A到Z的字母，则返回26，该类型将会被分类到#下面
+            return 26;
         }
 
         /**
@@ -1089,6 +1118,8 @@ public class ResourceFragment extends Fragment
         TextView tvFolderSize;
         @BindView(R.id.img_folder_arrow)
         ImageView imgFolderArrow;
+        @BindView(R.id.tv_folder_head)
+        TextView tvFolderHead;
 
         mItemViewHolder(View view) {
             ButterKnife.bind(this, view);
@@ -1127,6 +1158,8 @@ public class ResourceFragment extends Fragment
                     }
                     list = new ArrayList<>(mData.getData().keySet());
                     mAdapter.notifyDataSetChanged();//UI界面就刷新
+                    //如果加载数据完成自动返回顶部
+                    lvFolder.setSelection(0);
                     result = true;
                     break;
                 case 2:

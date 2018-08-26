@@ -59,7 +59,7 @@ public class FileRes implements Parcelable{
 //            String string1 = Pinyin.toPinyin(o1.getKey().charAt(0)).toLowerCase();
 //            String string2 = Pinyin.toPinyin(o2.getKey().charAt(0)).toLowerCase();
 //            return string1.compareTo(string2);
-            return  Pinyin.toPinyin(o1.getKey(),"").compareTo(Pinyin.toPinyin(o2.getKey(),""));
+            return  Pinyin.toPinyin(o1.getKey(),"").toUpperCase().compareTo(Pinyin.toPinyin(o2.getKey(),"").toUpperCase());
         }
     }
 
