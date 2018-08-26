@@ -27,8 +27,7 @@
                 android:id="@+id/lv_folder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/white"
-                android:fastScrollEnabled="true"><!--android:focusable="true"-->
+                android:background="@color/white"><!--android:focusable="true"-->
             </ListView>
 
 
@@ -76,26 +75,6 @@
                 fab:fab_colorNormal="@color/blue"
                 fab:fab_colorPressed="@color/btn_blue"
                 fab:fab_label="到主目录"
-                fab:fab_size="mini" />
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fab14"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/return_top"
-                fab:fab_colorNormal="@color/blue"
-                fab:fab_colorPressed="@color/btn_blue"
-                fab:fab_label="返回顶部"
-                fab:fab_size="mini" />
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fab15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/return_bottom"
-                fab:fab_colorNormal="@color/blue"
-                fab:fab_colorPressed="@color/btn_blue"
-                fab:fab_label="跳到底部"
                 fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton

@@ -169,8 +169,6 @@ public class ResourceFragment extends Fragment
         //五个悬浮按钮，从上往下
         FloatingActionButton fabUpload = view.findViewById(R.id.fab11);
         FloatingActionButton fabReturnToMain = view.findViewById(R.id.fab13);
-        FloatingActionButton fabReturnTop = view.findViewById(R.id.fab14);
-        FloatingActionButton fabReturnBottom = view.findViewById(R.id.fab15);
         FloatingActionButton fabPreviousMenu = view.findViewById(R.id.fab16);
 
         //悬浮菜单及按钮监听
@@ -186,22 +184,6 @@ public class ResourceFragment extends Fragment
             public void onClick(View v) {
                 BasePath = "/";
                 loadPaperData(null, 4, collegeName);//返回主页面
-            }
-        });
-
-        fabReturnTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lvFolder.setSelection(0);
-            }
-        });
-
-        fabReturnBottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO 速度太慢
-                lvFolder.setSelection(mAdapter.getCount() - 1);
-
             }
         });
 

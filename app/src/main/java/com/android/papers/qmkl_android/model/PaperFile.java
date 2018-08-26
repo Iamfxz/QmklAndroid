@@ -81,6 +81,9 @@ public class PaperFile implements Parcelable {
 
         dest.writeString(this.md5);
         dest.writeInt(this.id);
+
+        dest.writeString(this.createAt);
+        dest.writeString(this.updateAt);
     }
 
     private PaperFile(Parcel in) {
@@ -98,6 +101,9 @@ public class PaperFile implements Parcelable {
 
         this.md5 = in.readString();
         this.id = in.readInt();
+
+        this.createAt = in.readString();
+        this.updateAt = in.readString();
     }
 
     public static final Creator<PaperFile> CREATOR = new Creator<PaperFile>() {
