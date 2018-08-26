@@ -56,10 +56,10 @@ public class SDCardUtils {
     /**
      * 获取App文件目录
      *
-     * @return {SDCardPath}/PapersApp/
+     * @return {SDCardPath}/FinalExam/
      */
     public static String getAppPath() {
-        String appPath = getSDCardPath() + "PapersApp" + File.separator;
+        String appPath = getSDCardPath() + "FinalExam" + File.separator;
         checkPath(appPath);
         return appPath;
     }

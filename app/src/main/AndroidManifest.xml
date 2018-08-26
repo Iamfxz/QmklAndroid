@@ -40,7 +40,6 @@
         <activity
             android:name=".activity.MainActivity"
             android:label=""
-<<<<<<< HEAD
             android:windowSoftInputMode="adjustPan"
             android:launchMode="singleTop"/>
         <activity android:name=".activity.WebViewActivity"/>
@@ -55,20 +54,8 @@
         <activity android:name=".studentCircle.dwcorephoto.MixShowActivity"/>
         <activity android:name=".studentCircle.dwcorephoto.BaseActivity"/>
         <activity android:name=".studentCircle.dwcorephoto.PreviewImage"/>
-=======
-            android:launchMode="singleTop"
-            android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".activity.WebViewActivity" />
-        <activity android:name=".activity.FileDetailActivity" />
-        <activity android:name=".activity.UserInfoActivity" />
-        <activity android:name=".activity.ForgetPswActivity" />
-        <activity android:name=".activity.RegisterActivity" />
-        <activity android:name=".activity.PerfectInfoActivity" />
-        <activity android:name=".activity.AuthPerUserInfo" />
-        <activity android:name=".activity.BaseActivity" />
-        <activity android:name=".activity.UpLoadActivity" />
 
->>>>>>> f7b84ede5d531bbfbb07b46271b7c28d2eee8933
+
 
         <!--友盟配置-->
         <meta-data

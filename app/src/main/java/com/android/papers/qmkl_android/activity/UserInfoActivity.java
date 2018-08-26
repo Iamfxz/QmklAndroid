@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -104,7 +105,8 @@ public class UserInfoActivity extends BaseActivity {
         builder.setTitle("请输入昵称").setView(view);
         // 创建对话框
         final AlertDialog alertDialog = builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
+//        alertDialog.setCanceledOnTouchOutside(false);
+
         alertDialog.show();
 
         Button confirm=view.findViewById(R.id.btn_confirm);
@@ -203,7 +205,14 @@ public class UserInfoActivity extends BaseActivity {
             }
         });
         AlertDialog alertDialog=builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
+//        alertDialog.setCanceledOnTouchOutside(false);
+        //添加弹框取消事件，弹框取消时，加载等待的进度框也消失
+        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                dialog.dismiss();
+            }
+        });
         alertDialog.show();
     }
 
@@ -236,7 +245,14 @@ public class UserInfoActivity extends BaseActivity {
             }
         });
         AlertDialog alertDialog=builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
+//        alertDialog.setCanceledOnTouchOutside(false);
+        //添加弹框取消事件，弹框取消时，加载等待的进度框也消失
+        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                dialog.dismiss();
+            }
+        });
         alertDialog.show();
     }
 

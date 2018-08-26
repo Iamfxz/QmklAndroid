@@ -30,11 +30,11 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
-<<<<<<< HEAD
+
 import android.widget.RelativeLayout;
-=======
+
 import android.widget.SectionIndexer;
->>>>>>> f7b84ede5d531bbfbb07b46271b7c28d2eee8933
+
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -337,7 +337,7 @@ public class ResourceFragment extends Fragment
                         .setHintText("loading...")
                         .setCanceledOnTouchOutside(false)
                         .show();
-                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), R.style.dialog_warn);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), R.style.dialog);
 
                 postAllColleges(builder, title, dialog);
             }
@@ -353,7 +353,7 @@ public class ResourceFragment extends Fragment
                         .setCanceledOnTouchOutside(false)
                         .show();
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), R.style.dialog_warn);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), R.style.dialog);
 
                 postAllColleges(builder, title, dialog);
 
@@ -874,8 +874,10 @@ public class ResourceFragment extends Fragment
                     tv.setText(CHOOSE_COLLEGE);    //内容
                     tv.setTextColor(Color.BLACK);//颜色
                     tv.setTextSize(20);
-                    tv.setPadding(30, 0, 10, 10);//位置
+
+                    tv.setPadding(30, 15, 10, 10);//位置
                     builder.setCustomTitle(tv);//不是setTitle()
+
                     builder.setItems(colleges, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int which) {
@@ -887,7 +889,8 @@ public class ResourceFragment extends Fragment
                         }
                     });
                     AlertDialog alertDialog = builder.create();
-                    alertDialog.setCanceledOnTouchOutside(false);
+                    //触摸外部可以取消
+//                    alertDialog.setCanceledOnTouchOutside(false);
                     alertDialog.show();
                 } else if (resultCode == tokenInvalidCode) {
                     handler.sendEmptyMessage(3);

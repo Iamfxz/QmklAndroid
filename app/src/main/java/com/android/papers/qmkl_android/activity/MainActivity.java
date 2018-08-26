@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity
     };
 
     //tab栏的字
-    private String mTextArray[] = {"资源", "已下载", "学生圈", "发现"};
+    private String mTextArray[] = {"资源", "已下载", "趣聊", "发现"};
     private static Boolean isExit = false; //是否退出
 
 

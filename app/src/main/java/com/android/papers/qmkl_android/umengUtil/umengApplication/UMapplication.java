@@ -24,7 +24,7 @@ public class UMapplication extends Application {
     }
 
     {
-        PlatformConfig.setQQZone("1107433093", "7oudnQfOjU9E4BtI");
+        PlatformConfig.setQQZone("1104895232", "Blozk0r9zHIksbos");
     }
 
     //返回

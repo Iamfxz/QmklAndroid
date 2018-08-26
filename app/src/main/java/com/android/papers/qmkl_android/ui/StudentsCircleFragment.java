@@ -64,7 +64,7 @@ public class StudentsCircleFragment extends Fragment {
     private void initOnCreateView(){
 
         TextView title= Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.title);
-        title.setText("学生圈");
+        title.setText("趣聊");
         title.setOnClickListener(null);
         Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setVisibility(View.INVISIBLE);
         Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setOnClickListener(null);

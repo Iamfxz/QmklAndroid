@@ -14,6 +14,6 @@
     <string name="title_activity_web_activity_test">WebActivityTest</string>
     <string name="title_activity_ads">AdsActivity</string>
     <string name="companyName">©趣考网络</string>
-    <string name="sd_papersapp_download_address">文件存储位置 sd卡/PapersApp/download/</string>
+    <string name="sd_papersapp_download_address">文件存储位置 sd卡/FinalExam/download/</string>
     <string name="fileOpenTip">打开文档需WPS. 压缩包需解压软件</string>
 </resources>

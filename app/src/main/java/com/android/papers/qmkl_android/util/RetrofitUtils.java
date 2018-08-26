@@ -644,7 +644,16 @@ public class RetrofitUtils {
                                         }
                                     });
                             AlertDialog alertDialog = builder.create();
-                            alertDialog.setCanceledOnTouchOutside(false);
+                            //触摸外部可取消弹框
+                            //alertDialog.setCanceledOnTouchOutside(false);
+                            //添加弹框取消事件，弹框取消时，加载等待的进度框也消失
+                            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialogInterface) {
+                                    dialog.dismiss();
+                                    Log.d(TAG, "onDismiss: ");
+                                }
+                            });
                             alertDialog.show();
                         } else {
                             Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
@@ -679,7 +688,16 @@ public class RetrofitUtils {
                         }
                     });
             AlertDialog alertDialog = builder.create();
-            alertDialog.setCanceledOnTouchOutside(false);
+            //触摸外部可取消弹框
+            //alertDialog.setCanceledOnTouchOutside(false);
+            //添加弹框取消事件，弹框取消时，加载等待的进度框也消失
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialogInterface) {
+                    dialog.dismiss();
+                    Log.d(TAG, "onDismiss: ");
+                }
+            });
             alertDialog.show();
         }
     }
@@ -722,7 +740,16 @@ public class RetrofitUtils {
                                         }
                                     });
                             AlertDialog alertDialog = builder.create();
-                            alertDialog.setCanceledOnTouchOutside(false);
+                            //触摸外部可取消弹框
+                            //alertDialog.setCanceledOnTouchOutside(false);
+                            //添加弹框取消事件，弹框取消时，加载等待的进度框也消失
+                            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialogInterface) {
+                                    dialog.dismiss();
+                                    Log.d(TAG, "onDismiss: ");
+                                }
+                            });
                             alertDialog.show();
                         } else {
                             Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
@@ -752,7 +779,16 @@ public class RetrofitUtils {
                         }
                     });
             AlertDialog alertDialog = builder.create();
-            alertDialog.setCanceledOnTouchOutside(false);
+            //触摸外部可取消弹框
+            //alertDialog.setCanceledOnTouchOutside(false);
+            //添加弹框取消事件，弹框取消时，加载等待的进度框也消失
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialogInterface) {
+                    dialog.dismiss();
+                    Log.d(TAG, "onDismiss: ");
+                }
+            });
             alertDialog.show();
             dialog.dismiss();
         }
@@ -781,7 +817,8 @@ public class RetrofitUtils {
                                 });
 
                         AlertDialog alertDialog = builder.create();
-                        alertDialog.setCanceledOnTouchOutside(false);
+                        //触摸外部可取消弹框
+                        //alertDialog.setCanceledOnTouchOutside(false);
                         alertDialog.show();
                         dialog.dismiss();
                     } else {
