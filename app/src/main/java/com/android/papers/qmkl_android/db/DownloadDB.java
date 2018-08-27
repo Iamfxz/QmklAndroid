@@ -34,6 +34,7 @@ public class DownloadDB extends SQLiteOpenHelper {
     private static final String LIKE_NUM = "likeNum";
     private static final String DISLIKE_NUM = "dislikeNum";
     private static final String MD5 = "md5";
+    private static final String CREATE_TIME = "createAt";
 
     //根据PATH查找文件所有信息
     private static final String QUERY_DOWNLOADED = "SELECT * FROM " + TABLE_NAME
@@ -42,8 +43,8 @@ public class DownloadDB extends SQLiteOpenHelper {
     private static final String ADD_DOWNLOADED = "INSERT INTO " + TABLE_NAME
             + "(" + NAME + ", " + COURSE + ", " + SIZE + ", " + TYPE + ", "+ URL +
             ", " + TIME + ", " + PATH + ", " + FILE_ID + ", " + LIKE_NUM + ", " + DISLIKE_NUM
-            + ", " + MD5 +") "
-            + "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            + ", " + MD5 + "," +CREATE_TIME +") "
+            + "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     //根据PATH删除该文件所有信息
     private static final String REMOVE_DOWNLOADED = "DELETE FROM " + TABLE_NAME + " WHERE "
             + PATH + " = ?";
@@ -87,7 +88,8 @@ public class DownloadDB extends SQLiteOpenHelper {
                 + FILE_ID + " TEXT NOT NULL,"
                 + LIKE_NUM + " TEXT NOT NULL,"
                 + DISLIKE_NUM + " TEXT NOT NULL,"
-                + MD5 + " TEXT NOT NULL)");
+                + MD5 + " TEXT NOT NULL,"
+                + CREATE_TIME + " TEXT NOT NULL )");
     }
 
     @Override
@@ -117,7 +119,8 @@ public class DownloadDB extends SQLiteOpenHelper {
                 String.valueOf(paperFile.getId()),
                 String.valueOf(paperFile.getLikeNum()),
                 String.valueOf(paperFile.getDislikeNum()),
-                paperFile.getMd5()
+                paperFile.getMd5(),
+                paperFile.getCreateAt()
         });
     }
 
@@ -160,6 +163,7 @@ public class DownloadDB extends SQLiteOpenHelper {
             file.setLikeNum(cursor.getString(cursor.getColumnIndex(LIKE_NUM)));
             file.setDislikeNum(cursor.getString(cursor.getColumnIndex(DISLIKE_NUM)));
             file.setMd5(cursor.getString(cursor.getColumnIndex(MD5)));
+            file.setCreateAt(cursor.getString(cursor.getColumnIndex(CREATE_TIME)));
 
             downloadedFile.setFile(file);
             downloadedFile.setDownloadTime(cursor.getString(cursor.getColumnIndex(TIME)));

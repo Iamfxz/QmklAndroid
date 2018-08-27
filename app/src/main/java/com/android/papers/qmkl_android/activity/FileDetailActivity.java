@@ -178,7 +178,7 @@ public class FileDetailActivity extends BaseActivity {
         tvFileSize.setText(String.valueOf(mFile.getSize()));
         tvLikeTip.setText(String.valueOf(mFile.getLikeNum()));
         tvDislikeTip.setText(String.valueOf(mFile.getDislikeNum()));
-        tvCreateTime.setText(mFile.getCreateAt().substring(0,mFile.getCreateAt().indexOf(" ")));
+        tvCreateTime.setText(mFile.getCreateAt());
 
         //显示图标
         imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType().toLowerCase()));
