@@ -55,7 +55,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * 登录后的主界面
  */
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = "MainActivity";
@@ -101,18 +101,18 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initView(getApplicationContext());
 
-        //状态栏透明设置
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            //状态栏透明 需要在创建SystemBarTintManager 之前调用。
-            setTranslucentStatus(true);
-            SystemBarTintManager tintManager = new SystemBarTintManager(this);
-            tintManager.setStatusBarTintEnabled(true);
-            //使StatusBarTintView 和 actionbar的颜色保持一致，风格统一。
-            tintManager.setStatusBarTintResource(R.color.blue);
-            // 设置状态栏的文字颜色
-            tintManager.setStatusBarDarkMode(true, this);
-        }
-        StatusBarUtil.fullScreen(this);
+//        //状态栏透明设置
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            //状态栏透明 需要在创建SystemBarTintManager 之前调用。
+//            setTranslucentStatus(true);
+//            SystemBarTintManager tintManager = new SystemBarTintManager(this);
+//            tintManager.setStatusBarTintEnabled(true);
+//            //使StatusBarTintView 和 actionbar的颜色保持一致，风格统一。
+//            tintManager.setStatusBarTintResource(R.color.blue);
+//            // 设置状态栏的文字颜色
+//            tintManager.setStatusBarDarkMode(true, this);
+//        }
+//        StatusBarUtil.fullScreen(this);
 
         //设置顶部工具栏
         toolbar = findViewById(R.id.toolbar);
