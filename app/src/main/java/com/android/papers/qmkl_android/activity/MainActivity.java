@@ -3,9 +3,7 @@ package com.android.papers.qmkl_android.activity;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -15,7 +13,6 @@ import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -26,23 +23,19 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.papers.qmkl_android.R;
-import com.android.papers.qmkl_android.ui.DiscoveryFragment;
 import com.android.papers.qmkl_android.ui.DownloadedFragment;
 import com.android.papers.qmkl_android.ui.ResourceFragment;
 import com.android.papers.qmkl_android.ui.StudentsCircleFragment;
+import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
-import com.android.papers.qmkl_android.util.StatusBarUtil;
-import com.android.papers.qmkl_android.util.SystemBarTintManager;
-import com.gjiazhe.wavesidebar.WaveSideBar;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
@@ -50,6 +43,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import ezy.boost.update.ICheckAgent;
+import ezy.boost.update.IUpdateChecker;
+import ezy.boost.update.IUpdateParser;
+import ezy.boost.update.UpdateInfo;
+import ezy.boost.update.UpdateManager;
+
+import static com.android.papers.qmkl_android.util.ConstantUtils.mCheckUrl;
 
 
 /**
@@ -92,7 +92,8 @@ public class MainActivity extends BaseActivity
     //tab栏的字
     private String mTextArray[] = {"资源", "已下载", "趣聊", "发现"};
     private static Boolean isExit = false; //是否退出
-
+    //新版本安装包地址
+    private String mUpdateUrl = "https://qmkl000.oss-cn-shenzhen.aliyuncs.com/apk/app-release.apk";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +101,17 @@ public class MainActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView(getApplicationContext());
+
+        //版本更新设置 TODO 失败
+        UpdateManager.setDebuggable(true);
+        UpdateManager.setWifiOnly(false);
+        UpdateManager.setUrl(mCheckUrl,"umeng_test");//渠道
+        UpdateManager.check(UMapplication.getContext());
+        check(true, true, false, false, false, 998);
+        // 在设置界面点击检查更新
+        UpdateManager.checkManual(UMapplication.getContext());
+        // 如果有已经下载好了的更新包就强制安装，可以在app启动时调用
+        UpdateManager.install(UMapplication.getContext());
 
 //        //状态栏透明设置
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -191,6 +203,42 @@ public class MainActivity extends BaseActivity
             winParams.flags &= ~bits;
         }
         win.setAttributes(winParams);
+    }
+    /**
+     *
+     * @param isManual 是否更新
+     * @param hasUpdate 是否有新版本
+     * @param isForce 支持强制安装：不安装无法使用app
+     * @param isSilent 支持静默下载：有新版本时不提示直接下载
+     * @param isIgnorable 支持可忽略版本
+     * @param notifyId
+     */
+    void check(boolean isManual, final boolean hasUpdate, final boolean isForce, final boolean isSilent, final boolean isIgnorable, final int
+            notifyId) {
+        UpdateManager.create(this).setChecker(new IUpdateChecker() {
+            @Override
+            public void check(ICheckAgent agent, String url) {
+                Log.e("ezy.update", "checking");
+                System.out.println("checking");
+                agent.setInfo("");
+            }
+        }).setUrl(mCheckUrl).setManual(isManual).setNotifyId(notifyId).setParser(new IUpdateParser() {
+            @Override
+            public UpdateInfo parse(String source) throws Exception {
+                UpdateInfo info = new UpdateInfo();
+                info.hasUpdate = hasUpdate;
+                info.updateContent = "• 支持文字、贴纸、背景音乐，尽情展现欢乐气氛；\n• 两人视频通话支持实时滤镜，丰富滤镜，多彩心情；\n• 图片编辑新增艺术滤镜，一键打造文艺画风；\n• 资料卡新增点赞排行榜，看好友里谁是魅力之王。";
+                info.versionCode = 587;
+                info.versionName = "5.8.7";
+                info.url = mUpdateUrl;
+                info.md5 = "0178EDBB79ABFAC72CAE50774A313759";
+                info.size = 10149314;
+                info.isForce = isForce;
+                info.isIgnorable = isIgnorable;
+                info.isSilent = isSilent;
+                return info;
+            }
+        }).check();
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.android.papers.qmkl_android.activity;
 import android.content.Context;
 import android.content.DialogInterface;
-
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,6 +19,7 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.umengUtil.MyUMAuthListener;
 import com.android.papers.qmkl_android.util.ActivityManager;
+import com.android.papers.qmkl_android.util.ConstantUtils;
 import com.android.papers.qmkl_android.util.MyTextWatcher;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
@@ -37,6 +37,13 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import ezy.boost.update.ICheckAgent;
+import ezy.boost.update.IUpdateChecker;
+import ezy.boost.update.IUpdateParser;
+import ezy.boost.update.UpdateInfo;
+import ezy.boost.update.UpdateManager;
+
+import static com.android.papers.qmkl_android.util.ConstantUtils.mCheckUrl;
 
 public class LoginActivity extends BaseActivity {
     private static final int errorCode=404;
@@ -84,24 +91,13 @@ public class LoginActivity extends BaseActivity {
             e.printStackTrace();
 
         }
-//        //闪退的通过try可以解决，但是如果是必要执行的不要使用try
-//        try{
-//            if(SharedPreferencesUtils.getStoredMessage(this,"phone").equals("")
-//                    ||SharedPreferencesUtils.getStoredMessage(this,"phone")==null){
-//                //设置默认账号
-//                userPhoneNum.getEditText().setText(SharedPreferencesUtils.getStoredMessage(this,"phone"));
-//                //初始焦点位于输入密码位置
-//                userPsw.getEditText().requestFocus();
-//            }
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
 
         //初始时登录按钮不可用
         loginBtn.setEnabled(false);
         //帐号密码都不为空时,登录按钮变色
         Objects.requireNonNull(userPhoneNum.getEditText()).addTextChangedListener(new MyTextWatcher(this,loginBtn,userPhoneNum,userPsw));
         Objects.requireNonNull(userPsw.getEditText()).addTextChangedListener(new MyTextWatcher(this,loginBtn,userPhoneNum,userPsw));
+
 
     }
 

@@ -15,6 +15,7 @@ public class ConstantUtils {
 
     //服务端基础url
     public static final String BaseUrl = "http://120.77.32.233/";//后端版本
+    public static final String mCheckUrl = "http://120.77.32.233/qmkl1.0.0/app/update";//检查版本更新信息的地址
 
     //服务器返回正确与错误代码
     public static final int SUCCESS_CODE = 200;//请求成功
