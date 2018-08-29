@@ -109,39 +109,44 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-    protected void setToolbar(int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setTranslucentStatus(true);
-        }
-        SystemBarTintManager tintManager = new SystemBarTintManager(this);
-        // enable status bar tint
-        tintManager.setStatusBarTintEnabled(true);
-        // enable navigation bar tint
-        tintManager.setNavigationBarTintEnabled(true);
-//        int color = Color.argb(255, Color.red(255), Color.green(255), Color.blue(255));
-        tintManager.setTintColor(color);
-    }
+//    protected void setToolbar(int color) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            setTranslucentStatus(true);
+//        }
+//        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+//        // enable status bar tint
+//        tintManager.setStatusBarTintEnabled(true);
+//        // enable navigation bar tint
+//        tintManager.setNavigationBarTintEnabled(true);
+////        int color = Color.argb(255, Color.red(255), Color.green(255), Color.blue(255));
+//        tintManager.setTintColor(color);
+//    }
 
-    @TargetApi(19)
-    private void setTranslucentStatus(boolean on) {
-        Window win = getWindow();
-        WindowManager.LayoutParams winParams = win.getAttributes();
-        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-        if (on) {
-            winParams.flags |= bits;
-        } else {
-            winParams.flags &= ~bits;
-        }
-        win.setAttributes(winParams);
-    }
+//    @TargetApi(19)
+//    private void setTranslucentStatus(boolean on) {
+//        Window win = getWindow();
+//        WindowManager.LayoutParams winParams = win.getAttributes();
+//        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+//        if (on) {
+//            winParams.flags |= bits;
+//        } else {
+//            winParams.flags &= ~bits;
+//        }
+//        win.setAttributes(winParams);
+//    }
 
     /**
      * 添加头部
      */
     protected void AddToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.id_toolbar);
-        toolbar.setLogo(R.mipmap.ic_launcher);
+//        toolbar.setLogo(R.mipmap.ic_launcher);
+//        toolbar.setTitle("趣聊");
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
+
+        //左边的小箭头（注意需要在setSupportActionBar(toolbar)之后才有效果）
+//        toolbar.setNavigationIcon(R.mipmap.back_white);
     }
 
 

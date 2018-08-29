@@ -27,7 +27,6 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.QueryAcademiesRequest;
 import com.android.papers.qmkl_android.requestModel.TokenRequest;
 import com.android.papers.qmkl_android.requestModel.UpdateUserRequest;
-import com.android.papers.qmkl_android.umengUtil.MyUMAuthListener;
 import com.android.papers.qmkl_android.umengUtil.umengApplication.UMapplication;
 import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
@@ -37,8 +36,8 @@ import com.android.papers.qmkl_android.util.PermissionUtils;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
-import com.umeng.socialize.UMShareAPI;
-import com.umeng.socialize.bean.SHARE_MEDIA;
+
+import com.tencent.tauth.Tencent;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -46,6 +45,9 @@ import com.zyao89.view.zloading.Z_TYPE;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+
+import static com.android.papers.qmkl_android.util.ConstantUtils.*;
 
 public class UserInfoActivity extends BaseActivity {
 
@@ -274,7 +276,15 @@ public class UserInfoActivity extends BaseActivity {
                     RetrofitUtils.postExitLogin(SharedPreferencesUtils.getStoredMessage(getApplicationContext(),"username"),UserInfoActivity.this,dialog);
                 }
                 else if(SharedPreferencesUtils.getStoredMessage(UserInfoActivity.this,"platform").equals("qq")){
-                    UMShareAPI.get(UserInfoActivity.this).deleteOauth(UserInfoActivity.this, SHARE_MEDIA.QQ,new MyUMAuthListener(UserInfoActivity.this,UserInfoActivity.this,"qq",false));
+//                    UMShareAPI.get(UserInfoActivity.this).deleteOauth(UserInfoActivity.this, SHARE_MEDIA.QQ,new MyUMAuthListener(UserInfoActivity.this,UserInfoActivity.this,"qq",false));
+                    if (LoginActivity.mTencent == null) {
+                        LoginActivity.mTencent = Tencent.createInstance(APP_ID, UserInfoActivity.this.getApplicationContext());
+                    }
+                    LoginActivity.mTencent.logout(UserInfoActivity.this);
+                    SharedPreferencesUtils.setStoredMessage(UserInfoActivity.this,"hasLogin","false");
+                    SharedPreferencesUtils.setStoredMessage(UserInfoActivity.this,"token",null);
+                    startActivity(new Intent(UserInfoActivity.this,LoginActivity.class));
+                    finish();
                 }
             }
         });

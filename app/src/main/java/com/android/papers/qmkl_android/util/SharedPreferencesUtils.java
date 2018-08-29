@@ -31,6 +31,8 @@ public class SharedPreferencesUtils {
      *  registerToken:用户注册时使用，作为下次添加用户的凭证仅一次有效 添加成功后token就失效
      *  imagePath:上传头像的本地路径
      *  uid:qq第三方登录ID，即用户上传openid
+     *  accessToken:qq第三方登录获取，用于判断登录是否失效
+     *  expires:qq第三方登录获取，用于判断登录是否失效
      *  platform:存储用户登录平台
      *  hasRequestSDPermission:是否是第一次申请SD读写权限
      */

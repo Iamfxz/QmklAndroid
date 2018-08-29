@@ -16,6 +16,9 @@ public class ConstantUtils {
     //服务端基础url
     public static final String BaseUrl = "http://120.77.32.233/";//后端版本
 
+    //官方获取的APPID，QQ第三方登录使用
+    public static final String APP_ID = "1107433093";
+
     //服务器返回正确与错误代码
     public static final int SUCCESS_CODE = 200;//请求成功
     public static final int NORMAL_ERROR_CODE = 202;//常规错误，可以直接抛出msg给用户

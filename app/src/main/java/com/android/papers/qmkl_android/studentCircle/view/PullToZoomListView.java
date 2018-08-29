@@ -78,7 +78,7 @@ public class PullToZoomListView extends ListView implements
 		this.mHeaderImage = (ImageView)this.mHeaderContainer.findViewById(R.id.maxshowimg);
 		ImageView userview = (ImageView)mHeaderContainer.findViewById(R.id.userimg);
 //		this.mHeaderImage.setBackgroundResource(R.mipmap.ic_launcher);
-		ImageLoaders.setsendimg("http://imgsrc.baidu.com/forum/pic/item/8b82b9014a90f603fa18d50f3912b31bb151edca.jpg", userview);
+		ImageLoaders.setsendimg("http://120.77.32.233/qmkl1.0.0/user/download/avatar/2ac644684a06318eb628257798d3d357.jpg", userview);
 		int i = localDisplayMetrics.widthPixels;
 		setHeaderViewSize(i, (int) (9.0F * (i / 12.0F)));
 //		this.mHeaderContainer.addView(this.mHeaderImage);
