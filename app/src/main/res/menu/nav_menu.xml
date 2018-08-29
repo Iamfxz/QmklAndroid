@@ -7,12 +7,12 @@
         <item
             android:id="@+id/my_dynamic"
             android:icon="@drawable/my_dynamic"
-            android:title="我的动态"
+            android:title="清除缓存"
             />
         <item
             android:id="@+id/my_collection"
             android:icon="@drawable/my_collection"
-            android:title="我的收藏" />
+            android:title="检查更新" />
         <item
             android:id="@+id/my_comment"
             android:icon="@drawable/my_comment"

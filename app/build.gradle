@@ -11,12 +11,13 @@ android {
         }
     }
     compileSdkVersion 27
+
     defaultConfig {
         applicationId "com.android.papers.qmkl_android"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode 1//为设备识别app版本，用于app升级所使用，值为int类型，主要用于判断app是否需要等级，第一次是1，以后每次递增。
+        versionName "1.0"//指的是app的版本号，就是平常所说的app的版本，主要是显示给用户看的app版本号。
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -67,20 +68,35 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+<<<<<<< HEAD
 //    //友盟通用接口
 //    implementation 'com.umeng.sdk:common:1.5.3'
 //    implementation 'com.umeng.sdk:utdid:1.1.5.3'
 //    //友盟PushSDK
 //    implementation 'com.umeng.sdk:push:4.2.0'
+=======
+    //gson转换
+    implementation 'com.google.code.gson:gson:2.8.5'
+    //友盟通用接口
+    implementation 'com.umeng.sdk:common:1.5.3'
+    implementation 'com.umeng.sdk:utdid:1.1.5.3'
+    //友盟PushSDK
+    implementation 'com.umeng.sdk:push:4.2.0'
+>>>>>>> c283b05435c23d8c8332909d6b7d6b1342665e94
     //侧滑界面,未使用，以后可以用
     implementation 'com.mikepenz:materialdrawer:6.0.9'
     //a-z侧边栏
     implementation 'com.gjiazhe:wavesidebar:1.3'
     //屏幕适配
     implementation 'me.jessyan:autosize:0.8.0'
+<<<<<<< HEAD
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+=======
+    //版本更新框架
+    implementation 'com.github.czy1121:update:1.1.1'
+>>>>>>> c283b05435c23d8c8332909d6b7d6b1342665e94
     //Android图片轮播控件
     implementation 'com.youth.banner:banner:1.4.10'
     implementation 'com.github.bumptech.glide:glide:3.7.0'
@@ -90,4 +106,7 @@ dependencies {
     implementation 'com.facebook.rebound:rebound:0.3.8'
     implementation 'com.nineoldandroids:library:2.4.0'
     implementation 'com.github.chrisbanes.photoview:library:1.2.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }

@@ -42,6 +42,7 @@ import android.widget.Toolbar;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileDetailActivity;
 import com.android.papers.qmkl_android.activity.LoginActivity;
+import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.activity.UpLoadActivity;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.impl.PostAllColleges;
@@ -59,6 +60,7 @@ import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.gjiazhe.wavesidebar.WaveSideBar;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -221,7 +223,6 @@ public class ResourceFragment extends Fragment
                     position = mAdapter.getPositionForSection(section);
                 }
                 lvFolder.setSelection(position);
-                // TODo something here ....
             }
         });
     }
@@ -954,7 +955,6 @@ public class ResourceFragment extends Fragment
         public View getView(int position, View convertView, ViewGroup parent) {
 
             mItemViewHolder holder;
-            String folderName = list.get(position);
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
                 convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
@@ -965,10 +965,11 @@ public class ResourceFragment extends Fragment
             }
 
             //从Data中取出数据填充到ListView列表项中
-            holder.tvFolderName.setText(folderName);
-            holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
-            if (!PaperFileUtils.typeIsFolder(folderName)) {
-                holder.tvFolderSize.setText(mData.getData().get(folderName));
+            holder.tvFolderName.setText(list.get(position));
+            holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(list.get(position)))));
+
+            if (!PaperFileUtils.typeIsFolder(list.get(position))) {
+                holder.tvFolderSize.setText(mData.getData().get(list.get(position)));
                 holder.tvFolderSize.setVisibility(View.VISIBLE);
                 holder.imgFolderArrow.setVisibility(View.INVISIBLE);
             } else {

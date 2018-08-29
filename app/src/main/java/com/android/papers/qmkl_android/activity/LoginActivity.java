@@ -1,7 +1,6 @@
 package com.android.papers.qmkl_android.activity;
 import android.content.Context;
 import android.content.DialogInterface;
-
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,6 +19,7 @@ import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.requestModel.LoginRequest;
 import com.android.papers.qmkl_android.requestModel.UMengLoginRequest;
 import com.android.papers.qmkl_android.util.ActivityManager;
+import com.android.papers.qmkl_android.util.ConstantUtils;
 import com.android.papers.qmkl_android.util.MyTextWatcher;
 import com.android.papers.qmkl_android.util.RetrofitUtils;
 import com.android.papers.qmkl_android.util.SHAArithmetic;
@@ -44,6 +44,13 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import ezy.boost.update.ICheckAgent;
+import ezy.boost.update.IUpdateChecker;
+import ezy.boost.update.IUpdateParser;
+import ezy.boost.update.UpdateInfo;
+import ezy.boost.update.UpdateManager;
+
+import static com.android.papers.qmkl_android.util.ConstantUtils.mCheckUrl;
 
 import static com.android.papers.qmkl_android.util.ConstantUtils.*;
 
@@ -95,13 +102,17 @@ public class LoginActivity extends BaseActivity {
             e.printStackTrace();
 
         }
+<<<<<<< HEAD
         mTencent = Tencent.createInstance(APP_ID, this.getApplicationContext());
+=======
+>>>>>>> c283b05435c23d8c8332909d6b7d6b1342665e94
 
         //初始时登录按钮不可用
         loginBtn.setEnabled(false);
         //帐号密码都不为空时,登录按钮变色
         Objects.requireNonNull(userPhoneNum.getEditText()).addTextChangedListener(new MyTextWatcher(this,loginBtn,userPhoneNum,userPsw));
         Objects.requireNonNull(userPsw.getEditText()).addTextChangedListener(new MyTextWatcher(this,loginBtn,userPhoneNum,userPsw));
+
 
     }
 
