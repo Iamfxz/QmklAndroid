@@ -54,6 +54,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import ezy.boost.update.ICheckAgent;
 import ezy.boost.update.IUpdateChecker;
 import ezy.boost.update.IUpdateParser;
+import ezy.boost.update.OnFailureListener;
 import ezy.boost.update.UpdateError;
 import ezy.boost.update.UpdateInfo;
 import ezy.boost.update.UpdateManager;
@@ -86,7 +87,7 @@ public class MainActivity extends BaseActivity
     private Class mFragmentArray[] = {
             ResourceFragment.class,//资源页面
             DownloadedFragment.class,//已下载页面
-            StudentsCircleFragment.class,//学生圈界面
+//            StudentsCircleFragment.class,//学生圈界面
 //            DiscoveryFragment.class//发现界面
     };
 
@@ -95,15 +96,13 @@ public class MainActivity extends BaseActivity
     private int mImageArray[] = {
             R.drawable.tab_resource,
             R.drawable.tab_downloaded,
-            R.drawable.tab_students,
+//            R.drawable.tab_students,
 //            R.drawable.tab_discovery
     };
 
     //tab栏的字
     private String mTextArray[] = {"资源", "已下载", "趣聊", "发现"};
     private static Boolean isExit = false; //是否退出
-    //新版本安装包地址
-    private String mUpdateUrl = "https://qmkl000.oss-cn-shenzhen.aliyuncs.com/apk/app-release.apk";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,11 +111,7 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         initView(getApplicationContext());
 
-        //版本更新设置
-        UpdateManager.setDebuggable(true);
-        UpdateManager.setWifiOnly(false);
-        UpdateManager.setUrl(mCheckUrl, "application");//渠道
-        getVersioncode();
+//        //测试更新 TODO
 //        check(true, true, false, false, true, 998);
 
 //        //状态栏透明设置
@@ -202,6 +197,7 @@ public class MainActivity extends BaseActivity
 
 
     /**
+     * isManual hasUpdate isForce isSilent isIgnorable
      * 检查是否需要更新
      * check(true, true, false, false, true, 998);
      * 不能忽视的更新
@@ -213,17 +209,25 @@ public class MainActivity extends BaseActivity
      * 检查更新静默
      * check(true, true, false, true, true, 998);
      *
-     * @param isManual    是否手动检查更新
-     * hasUpdate   是否有新版本
-     * isForce     是否强制安装：不安装无法使用app
-     * isSilent    是否静默下载：有新版本时不提示直接下载,
-     *                    只能为false，否则java.lang.NoClassDefFoundError，
-     *                    从 com.android.support:support-compat:27.0.0 开始，
-     *                    NotificationCompat 已经从 v7 移动到 v4 了
-     * isIgnorable 是否已经忽略版本
+     *                 isManual    是否手动检查更新
+     *                 hasUpdate   是否有新版本
+     *                 isForce     是否强制安装：不安装无法使用app
+     *                 isSilent    是否静默下载：有新版本时不提示直接下载,
+     *                 只能为false，否则java.lang.NoClassDefFoundError，
+     *                 从 com.android.support:support-compat:27.0.0 开始，
+     *                 NotificationCompat 已经从 v7 移动到 v4 了
+     *                 isIgnorable 是否已经忽略版本
      */
-    void check(boolean isManual) {
-        UpdateManager.create(this).setChecker(new IUpdateChecker() {
+    void UpdateSetting() {
+        //版本更新设置
+        UpdateManager.setDebuggable(true);
+        UpdateManager.setWifiOnly(false);
+        UpdateManager.create(this).setOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(UpdateError error) {
+                Toast.makeText(MainActivity.this, "update "+ error.toString(), Toast.LENGTH_LONG).show();
+            }
+        }).setChecker(new IUpdateChecker() {
             @Override
             public void check(ICheckAgent agent, String url) {
                 Log.e("ezy.update", "checking");
@@ -246,16 +250,16 @@ public class MainActivity extends BaseActivity
                     }
                 }
             }
-        }).setUrl(mCheckUrl).setManual(isManual).setParser(new IUpdateParser() {
+        }).setUrl(mCheckUrl).setParser(new IUpdateParser() {
             @Override
             public UpdateInfo parse(String source) throws Exception {
                 Gson gson = new Gson();
                 UpdateInfo info = gson.fromJson(source, UpdateInfo.class);
                 System.out.println("source" + source);
                 info.isSilent = false;//强制为false
-
-                if(getVersioncode() >= info.versionCode){
-                    info.hasUpdate = true;
+                info.isAutoInstall = false;//不自动安装
+                if (getVersioncode() >= info.versionCode) {
+                    info.hasUpdate = false;
                     info.isAutoInstall = false;
                 }
 
@@ -289,7 +293,6 @@ public class MainActivity extends BaseActivity
             mTabHost.addTab(tabSpec, mFragmentArray[i], null);
             mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.tab_background);
         }
-
     }
 
     private View getTabItemView(int index) {
@@ -299,18 +302,18 @@ public class MainActivity extends BaseActivity
         return view;
     }
 
-    private int getVersioncode(){
-        PackageManager packageManager= MainActivity.this.getPackageManager();
+    private int getVersioncode() {
+        PackageManager packageManager = MainActivity.this.getPackageManager();
         PackageInfo packageInfo;
         int versionCode = 0;
         try {
-            packageInfo=packageManager.getPackageInfo(MainActivity.this.getPackageName(),0);
-            versionCode=packageInfo.versionCode;
-            Log.e(TAG,String.valueOf(versionCode));
+            packageInfo = packageManager.getPackageInfo(MainActivity.this.getPackageName(), 0);
+            versionCode = packageInfo.versionCode;
+            Log.e(TAG, String.valueOf(versionCode));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        return  versionCode;
+        return versionCode;
     }
 
     /**
@@ -333,9 +336,7 @@ public class MainActivity extends BaseActivity
                 exitBy2Click();
             }
         }
-        //测试更新 TODO
-//        check(true);
-        getVersioncode();
+
         return true;
     }
 
@@ -370,8 +371,6 @@ public class MainActivity extends BaseActivity
             Log.d("退出", "退出期末考啦");
             ActivityManager.AppExit(getApplicationContext());
         }
-        // 手动点击检查更新 TODO
-        UpdateManager.checkManual(MainActivity.this);
     }
 
     //设置侧滑页面的监听事件
@@ -381,9 +380,11 @@ public class MainActivity extends BaseActivity
         switch (item.getItemId()) {
             case R.id.my_dynamic:
                 item.setChecked(true);
+                UpdateUtil.clean(this);
                 break;
             case R.id.my_collection:
                 item.setChecked(true);
+                UpdateSetting();
                 break;
             case R.id.my_comment:
                 item.setChecked(true);

@@ -8,8 +8,8 @@ android {
         applicationId "com.android.papers.qmkl_android"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 4//为设备识别app版本，用于app升级所使用，值为int类型，主要用于判断app是否需要等级，第一次是1，以后每次递增。
-        versionName "1.1"//指的是app的版本号，就是平常所说的app的版本，主要是显示给用户看的app版本号。
+        versionCode 1//为设备识别app版本，用于app升级所使用，值为int类型，主要用于判断app是否需要等级，第一次是1，以后每次递增。
+        versionName "1.0"//指的是app的版本号，就是平常所说的app的版本，主要是显示给用户看的app版本号。
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {

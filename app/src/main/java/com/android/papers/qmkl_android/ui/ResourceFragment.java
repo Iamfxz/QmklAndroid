@@ -955,7 +955,6 @@ public class ResourceFragment extends Fragment
         public View getView(int position, View convertView, ViewGroup parent) {
 
             mItemViewHolder holder;
-            String folderName = list.get(position);
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
                 convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
@@ -966,10 +965,11 @@ public class ResourceFragment extends Fragment
             }
 
             //从Data中取出数据填充到ListView列表项中
-            holder.tvFolderName.setText(folderName);
-            holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(folderName))));
-            if (!PaperFileUtils.typeIsFolder(folderName)) {
-                holder.tvFolderSize.setText(mData.getData().get(folderName));
+            holder.tvFolderName.setText(list.get(position));
+            holder.imgFolderIcon.setImageDrawable(getResources().getDrawable(PaperFileUtils.parseImageResource(PaperFileUtils.typeWithFileName(list.get(position)))));
+
+            if (!PaperFileUtils.typeIsFolder(list.get(position))) {
+                holder.tvFolderSize.setText(mData.getData().get(list.get(position)));
                 holder.tvFolderSize.setVisibility(View.VISIBLE);
                 holder.imgFolderArrow.setVisibility(View.INVISIBLE);
             } else {
