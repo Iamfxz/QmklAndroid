@@ -1,8 +1,11 @@
 package com.android.papers.qmkl_android.activity;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -36,8 +39,13 @@ import com.android.papers.qmkl_android.util.ActivityManager;
 import com.android.papers.qmkl_android.util.CircleDrawable;
 import com.android.papers.qmkl_android.util.SDCardUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
+import com.github.clans.fab.FloatingActionMenu;
+import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -46,8 +54,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import ezy.boost.update.ICheckAgent;
 import ezy.boost.update.IUpdateChecker;
 import ezy.boost.update.IUpdateParser;
+import ezy.boost.update.UpdateError;
 import ezy.boost.update.UpdateInfo;
 import ezy.boost.update.UpdateManager;
+import ezy.boost.update.UpdateUtil;
 
 import static com.android.papers.qmkl_android.util.ConstantUtils.mCheckUrl;
 
@@ -102,16 +112,12 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         initView(getApplicationContext());
 
-        //版本更新设置 TODO 失败
+        //版本更新设置
         UpdateManager.setDebuggable(true);
         UpdateManager.setWifiOnly(false);
-        UpdateManager.setUrl(mCheckUrl,"umeng_test");//渠道
-        UpdateManager.check(UMapplication.getContext());
-        check(true, true, false, false, false, 998);
-        // 在设置界面点击检查更新
-        UpdateManager.checkManual(UMapplication.getContext());
-        // 如果有已经下载好了的更新包就强制安装，可以在app启动时调用
-        UpdateManager.install(UMapplication.getContext());
+        UpdateManager.setUrl(mCheckUrl, "application");//渠道
+        getVersioncode();
+//        check(true, true, false, false, true, 998);
 
 //        //状态栏透明设置
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -141,7 +147,7 @@ public class MainActivity extends BaseActivity
 
         //获取头像文件，先转化为100*100的drawable文件
         Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
-        CircleDrawable circleDrawable = new CircleDrawable(drawable,this,44);
+        CircleDrawable circleDrawable = new CircleDrawable(drawable, this, 44);
         toolbar.setNavigationIcon(circleDrawable);
 
         drawer.addDrawerListener(toggle);
@@ -187,55 +193,79 @@ public class MainActivity extends BaseActivity
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
                 startActivity(intent);
+
             }
         });
-
+//        // 如果有已经下载好了的更新包就强制安装，可以在app启动时调用
+//        UpdateManager.install(MainActivity.this);
     }
 
-    @TargetApi(19)
-    private void setTranslucentStatus(boolean on) {
-        Window win = getWindow();
-        WindowManager.LayoutParams winParams = win.getAttributes();
-        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-        if (on) {
-            winParams.flags |= bits;
-        } else {
-            winParams.flags &= ~bits;
-        }
-        win.setAttributes(winParams);
-    }
+
     /**
+     * 检查是否需要更新
+     * check(true, true, false, false, true, 998);
+     * 不能忽视的更新
+     * check(true, true, false, false, false, 998);
+     * 强制更新
+     * check(true, true, true, false, true, 998);
+     * 没有新版本更新
+     * check(true, false, false, false, true, 998);
+     * 检查更新静默
+     * check(true, true, false, true, true, 998);
      *
-     * @param isManual 是否更新
-     * @param hasUpdate 是否有新版本
-     * @param isForce 支持强制安装：不安装无法使用app
-     * @param isSilent 支持静默下载：有新版本时不提示直接下载
-     * @param isIgnorable 支持可忽略版本
-     * @param notifyId
+     * @param isManual    是否手动检查更新
+     * hasUpdate   是否有新版本
+     * isForce     是否强制安装：不安装无法使用app
+     * isSilent    是否静默下载：有新版本时不提示直接下载,
+     *                    只能为false，否则java.lang.NoClassDefFoundError，
+     *                    从 com.android.support:support-compat:27.0.0 开始，
+     *                    NotificationCompat 已经从 v7 移动到 v4 了
+     * isIgnorable 是否已经忽略版本
      */
-    void check(boolean isManual, final boolean hasUpdate, final boolean isForce, final boolean isSilent, final boolean isIgnorable, final int
-            notifyId) {
+    void check(boolean isManual) {
         UpdateManager.create(this).setChecker(new IUpdateChecker() {
             @Override
             public void check(ICheckAgent agent, String url) {
                 Log.e("ezy.update", "checking");
-                System.out.println("checking");
-                agent.setInfo("");
+                HttpURLConnection connection = null;
+                try {
+                    connection = (HttpURLConnection) new URL(url).openConnection();
+                    connection.setRequestProperty("Accept", "application/json");
+                    connection.connect();
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        agent.setInfo(UpdateUtil.readString(connection.getInputStream()));
+                    } else {
+                        agent.setError(new UpdateError(UpdateError.CHECK_HTTP_STATUS, "" + connection.getResponseCode()));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    agent.setError(new UpdateError(UpdateError.CHECK_NETWORK_IO));
+                } finally {
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
             }
-        }).setUrl(mCheckUrl).setManual(isManual).setNotifyId(notifyId).setParser(new IUpdateParser() {
+        }).setUrl(mCheckUrl).setManual(isManual).setParser(new IUpdateParser() {
             @Override
             public UpdateInfo parse(String source) throws Exception {
-                UpdateInfo info = new UpdateInfo();
-                info.hasUpdate = hasUpdate;
-                info.updateContent = "• 支持文字、贴纸、背景音乐，尽情展现欢乐气氛；\n• 两人视频通话支持实时滤镜，丰富滤镜，多彩心情；\n• 图片编辑新增艺术滤镜，一键打造文艺画风；\n• 资料卡新增点赞排行榜，看好友里谁是魅力之王。";
-                info.versionCode = 587;
-                info.versionName = "5.8.7";
-                info.url = mUpdateUrl;
-                info.md5 = "0178EDBB79ABFAC72CAE50774A313759";
-                info.size = 10149314;
-                info.isForce = isForce;
-                info.isIgnorable = isIgnorable;
-                info.isSilent = isSilent;
+                Gson gson = new Gson();
+                UpdateInfo info = gson.fromJson(source, UpdateInfo.class);
+                System.out.println("source" + source);
+                info.isSilent = false;//强制为false
+
+                if(getVersioncode() >= info.versionCode){
+                    info.hasUpdate = true;
+                    info.isAutoInstall = false;
+                }
+
+                Log.e("ezy.update hasUpdate", String.valueOf(info.hasUpdate));
+                Log.e("ezy.update versionCode", String.valueOf(info.versionCode));
+                Log.e("ezy.update versionName", String.valueOf(info.versionName));
+                Log.e("ezy.update size", String.valueOf(info.size));
+                Log.e("ezy.update isForce", String.valueOf(info.isForce));
+                Log.e("ezy.update isIgnorable", String.valueOf(info.isIgnorable));
+                Log.e("ezy.update isSilent", String.valueOf(info.isSilent));
                 return info;
             }
         }).check();
@@ -263,31 +293,49 @@ public class MainActivity extends BaseActivity
     }
 
     private View getTabItemView(int index) {
-        View view = mLayoutInflater.inflate(R.layout.tab_item_view, null);
+        @SuppressLint("InflateParams") View view = mLayoutInflater.inflate(R.layout.tab_item_view, null);
         ImageView imageView = view.findViewById(R.id.imageview);
         imageView.setImageResource(mImageArray[index]);
         return view;
     }
 
+    private int getVersioncode(){
+        PackageManager packageManager= MainActivity.this.getPackageManager();
+        PackageInfo packageInfo;
+        int versionCode = 0;
+        try {
+            packageInfo=packageManager.getPackageInfo(MainActivity.this.getPackageName(),0);
+            versionCode=packageInfo.versionCode;
+            Log.e(TAG,String.valueOf(versionCode));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return  versionCode;
+    }
+
     /**
-     *      监听返回按键的事件处理
+     * 监听返回按键的事件处理
+     *
      * @param keyCode 点击事件的代码
-     * @param event 事件
+     * @param event   事件
      * @return 有无处理
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (getVisibleFragment() instanceof ResourceFragment && navigationView.getVisibility()==View.INVISIBLE) {
+
+        if (getVisibleFragment() instanceof ResourceFragment && navigationView.getVisibility() == View.INVISIBLE) {
             ((ResourceFragment) getVisibleFragment()).onKeyDown(keyCode);
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if(navigationView.getVisibility()==View.VISIBLE){
+            if (navigationView.getVisibility() == View.VISIBLE) {
                 //当左边的菜单栏是可见的，则关闭
                 drawer.closeDrawer(navigationView);
             } else {
                 exitBy2Click();
             }
-
         }
+        //测试更新 TODO
+//        check(true);
+        getVersioncode();
         return true;
     }
 
@@ -322,6 +370,8 @@ public class MainActivity extends BaseActivity
             Log.d("退出", "退出期末考啦");
             ActivityManager.AppExit(getApplicationContext());
         }
+        // 手动点击检查更新 TODO
+        UpdateManager.checkManual(MainActivity.this);
     }
 
     //设置侧滑页面的监听事件
@@ -343,16 +393,16 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.feedback:
                 item.setChecked(true);
-                intent=new Intent(MainActivity.this,WebViewActivity.class);
-                intent.putExtra("url","http://cn.mikecrm.com/LGpy5Kn");
-                intent.putExtra("title","意见反馈");
+                intent = new Intent(MainActivity.this, WebViewActivity.class);
+                intent.putExtra("url", "http://cn.mikecrm.com/LGpy5Kn");
+                intent.putExtra("title", "意见反馈");
                 startActivity(intent);
                 break;
             case R.id.join_us:
                 item.setChecked(true);
-                intent=new Intent(MainActivity.this,WebViewActivity.class);
-                intent.putExtra("url","http://cn.mikecrm.com/6lMhybb");
-                intent.putExtra("title","加入我们");
+                intent = new Intent(MainActivity.this, WebViewActivity.class);
+                intent.putExtra("url", "http://cn.mikecrm.com/6lMhybb");
+                intent.putExtra("title", "加入我们");
                 startActivity(intent);
 
                 break;

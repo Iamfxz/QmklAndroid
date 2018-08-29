@@ -42,6 +42,7 @@ import android.widget.Toolbar;
 import com.android.papers.qmkl_android.R;
 import com.android.papers.qmkl_android.activity.FileDetailActivity;
 import com.android.papers.qmkl_android.activity.LoginActivity;
+import com.android.papers.qmkl_android.activity.MainActivity;
 import com.android.papers.qmkl_android.activity.UpLoadActivity;
 import com.android.papers.qmkl_android.db.DownloadDB;
 import com.android.papers.qmkl_android.impl.PostAllColleges;
@@ -59,6 +60,7 @@ import com.android.papers.qmkl_android.util.CommonUtils;
 import com.android.papers.qmkl_android.util.PaperFileUtils;
 import com.android.papers.qmkl_android.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.gjiazhe.wavesidebar.WaveSideBar;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -221,7 +223,6 @@ public class ResourceFragment extends Fragment
                     position = mAdapter.getPositionForSection(section);
                 }
                 lvFolder.setSelection(position);
-                // TODo something here ....
             }
         });
     }
