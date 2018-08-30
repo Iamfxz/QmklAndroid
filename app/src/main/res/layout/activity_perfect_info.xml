@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/splash"
-    tools:context="com.android.papers.qmkl_android.activity.LoginActivity">
+    tools:context="com.example.robin.papers.activity.LoginActivity">
 
     <ImageView
         android:id="@+id/back"

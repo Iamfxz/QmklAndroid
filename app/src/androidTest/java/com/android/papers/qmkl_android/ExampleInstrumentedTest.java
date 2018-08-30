@@ -1,4 +1,4 @@
-package com.android.papers.qmkl_android;
+package com.example.robin.papers;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.android.papers.qmkl_android", appContext.getPackageName());
+        assertEquals("com.example.robin.papers", appContext.getPackageName());
     }
 }

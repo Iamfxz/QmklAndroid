@@ -6,7 +6,7 @@
     android:clipToPadding="false"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".studentCircle.dwcorephoto.MixShowActivity">
+    tools:context="com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity">
 
 
     <android.support.v7.widget.Toolbar
@@ -38,7 +38,7 @@
     </android.support.v7.widget.Toolbar>
     <!--<include layout="@layout/bar_activity_all_list"/>-->
 
-    <com.android.papers.qmkl_android.studentCircle.view.PullToZoomListView
+    <com.example.robin.papers.studentCircle.view.PullToZoomListView
         android:id="@+id/mixlist"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"

@@ -1,4 +1,4 @@
-package com.android.papers.qmkl_android;
+package com.example.robin.papers;
 
 import org.junit.Test;
 

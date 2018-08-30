@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.android.papers.qmkl_android">
+    package="com.example.robin.papers">
 
     <!-- 必须的权限 -->
     <!-- 检测网络状态 -->
@@ -19,40 +19,40 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".umengUtil.umengApplication.UMapplication"
+        android:name="com.example.robin.papers.umengUtil.umengApplication.UMapplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.SplashActivity">
+        <activity android:name="com.example.robin.papers.activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.LoginActivity" />
-        <activity android:name=".activity.AdsActivity" />
-        <activity android:name=".activity.AdsDetailsActivity" />
+        <activity android:name="com.example.robin.papers.activity.LoginActivity" />
+        <activity android:name="com.example.robin.papers.activity.AdsActivity" />
+        <activity android:name="com.example.robin.papers.activity.AdsDetailsActivity" />
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.example.robin.papers.activity.MainActivity"
             android:label=""
             android:windowSoftInputMode="adjustPan"
             android:launchMode="singleTop"/>
-        <activity android:name=".activity.WebViewActivity"/>
-        <activity android:name=".activity.FileDetailActivity"/>
-        <activity android:name=".activity.UserInfoActivity"/>
-        <activity android:name=".activity.ForgetPswActivity"/>
-        <activity android:name=".activity.RegisterActivity"/>
-        <activity android:name=".activity.PerfectInfoActivity"/>
-        <activity android:name=".activity.AuthPerUserInfo"/>
-        <activity android:name=".activity.BaseActivity"/>
-        <activity android:name=".activity.UpLoadActivity"/>
-        <activity android:name=".studentCircle.dwcorephoto.MixShowActivity"/>
-        <activity android:name=".studentCircle.dwcorephoto.BaseActivity"/>
-        <activity android:name=".studentCircle.dwcorephoto.PreviewImage"/>
+        <activity android:name="com.example.robin.papers.activity.WebViewActivity"/>
+        <activity android:name="com.example.robin.papers.activity.FileDetailActivity"/>
+        <activity android:name="com.example.robin.papers.activity.UserInfoActivity"/>
+        <activity android:name="com.example.robin.papers.activity.ForgetPswActivity"/>
+        <activity android:name="com.example.robin.papers.activity.RegisterActivity"/>
+        <activity android:name="com.example.robin.papers.activity.PerfectInfoActivity"/>
+        <activity android:name="com.example.robin.papers.activity.AuthPerUserInfo"/>
+        <activity android:name="com.example.robin.papers.activity.BaseActivity"/>
+        <activity android:name="com.example.robin.papers.activity.UpLoadActivity"/>
+        <activity android:name="com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity"/>
+        <activity android:name="com.example.robin.papers.studentCircle.dwcorephoto.BaseActivity"/>
+        <activity android:name="com.example.robin.papers.studentCircle.dwcorephoto.PreviewImage"/>
 
 
 
@@ -74,7 +74,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="tencent1107433093" />
+                <data android:scheme="tencent1104895232" />
             </intent-filter>
         </activity>
         <activity
@@ -85,7 +85,7 @@
         <!--provider使用失败？？TODO-->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.android.papers.qmkl_android.fileProvider"
+            android:authorities="com.example.robin.papers.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
