@@ -44,12 +44,6 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import ezy.boost.update.ICheckAgent;
-import ezy.boost.update.IUpdateChecker;
-import ezy.boost.update.IUpdateParser;
-import ezy.boost.update.UpdateInfo;
-import ezy.boost.update.UpdateManager;
-
 import static com.android.papers.qmkl_android.util.ConstantUtils.mCheckUrl;
 
 import static com.android.papers.qmkl_android.util.ConstantUtils.*;
@@ -102,10 +96,8 @@ public class LoginActivity extends BaseActivity {
             e.printStackTrace();
 
         }
-<<<<<<< HEAD
         mTencent = Tencent.createInstance(APP_ID, this.getApplicationContext());
-=======
->>>>>>> c283b05435c23d8c8332909d6b7d6b1342665e94
+
 
         //初始时登录按钮不可用
         loginBtn.setEnabled(false);

@@ -14,13 +14,21 @@
         <com.youth.banner.Banner
             android:id="@+id/banner"
             android:layout_width="match_parent"
-            android:layout_height="370dp"
+            android:layout_height="220dp"
             />
 
-        <Button
-            android:id="@+id/next"
+        <!--<Button-->
+            <!--android:id="@+id/next"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="进入朋友圈"/>-->
+
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:hint="趣聊正在紧张开发中blabla"
+            android:layout_marginTop="150dp"
+            android:textSize="20sp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="进入朋友圈"/>
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </RelativeLayout>
