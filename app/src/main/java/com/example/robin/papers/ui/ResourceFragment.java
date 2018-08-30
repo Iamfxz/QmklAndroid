@@ -85,6 +85,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.example.robin.papers.util.CommonUtils.isFastDoubleClick;
+
 /**
  * A simple {@link Fragment} subclass.
  * 主页面四个tab之一: 资源页面
@@ -137,6 +139,9 @@ public class ResourceFragment extends Fragment
 
     //是否退出程序，连续点两次返回则退出
     private static Boolean isExit = false;
+
+    //判断应不应该有列表加载动画
+    boolean shouldAnimate = false;
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
      */
@@ -230,6 +235,7 @@ public class ResourceFragment extends Fragment
         if(searchView.isSearchOpen()){
             searchView.closeSearch();
         }
+        shouldAnimate = false;
     }
 
     private void initView() {
@@ -262,7 +268,9 @@ public class ResourceFragment extends Fragment
                     if (PaperFileUtils.typeWithFileName(folder).equals("folder")) {
                         loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
                     } else {
-                        loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
+                        if(!isFastDoubleClick()){
+                            loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
+                        }
                     }
 
             }
@@ -366,7 +374,7 @@ public class ResourceFragment extends Fragment
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         //listview第一次载入时，两者都为-1
-        boolean shouldAnimate = (mFirstVisibleItem != -1) && (mLastVisibleItem != -1);
+        shouldAnimate = (mFirstVisibleItem != -1) && (mLastVisibleItem != -1);
         //滚动时最后一个item的位置
         int lastVisibleItem = firstVisibleItem + visibleItemCount - 1;
         if (shouldAnimate) {//第一次不需要加载动画
@@ -1017,10 +1025,14 @@ public class ResourceFragment extends Fragment
         @Override
         public int getSectionForPosition(int arg0) {              //关键方法，通过在ListView中的位置获取Section index
             //获取该位置的城市名首字母
-            char c = Pinyin.toPinyin(list.get(arg0),"").toUpperCase().charAt(0);
-            //如果该字母在A和Z之间，则返回A到Z的索引，从0到25
-            if(c >= 'A' && c <= 'Z'){
-                return c - 'A';
+            try{
+                char c = Pinyin.toPinyin(list.get(arg0),"").toUpperCase().charAt(0);
+                //如果该字母在A和Z之间，则返回A到Z的索引，从0到25
+                if(c >= 'A' && c <= 'Z'){
+                    return c - 'A';
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
             //如果首字母不是A到Z的字母，则返回26，该类型将会被分类到#下面
             return 26;
@@ -1078,11 +1090,9 @@ public class ResourceFragment extends Fragment
                         } else if (valuePinyin.equals(queryPinyin)) {//拼音完全匹配
                             newValues.add(value);
                             break;
-                        } else if (value.contains(queryString)) {//判断是否包含搜索字符串
+                        } else if (value.contains(queryString)){//判断是否包含搜索字符串的中文
                             newValues.add(value);
                         } else if (valuePinyin.contains(queryPinyin)) {//判断是否包含搜索字符串的拼音
-                            newValues.add(value);
-                        } else if (CommonUtils.levenshtein(valuePinyin2, queryPinyin2) >= 0.6) {//相似度大于0.6
                             newValues.add(value);
                         }
 

@@ -56,6 +56,7 @@ import ezy.boost.update.UpdateInfo;
 import ezy.boost.update.UpdateManager;
 import ezy.boost.update.UpdateUtil;
 
+import static com.example.robin.papers.util.CommonUtils.isFastDoubleClick;
 import static com.example.robin.papers.util.ConstantUtils.mCheckUrl;
 
 
@@ -83,7 +84,7 @@ public class MainActivity extends BaseActivity
     private Class mFragmentArray[] = {
             ResourceFragment.class,//资源页面
             DownloadedFragment.class,//已下载页面
-            StudentsCircleFragment.class,//学生圈界面
+//            StudentsCircleFragment.class,//学生圈界面
 //            DiscoveryFragment.class//发现界面
     };
 
@@ -92,7 +93,7 @@ public class MainActivity extends BaseActivity
     private int mImageArray[] = {
             R.drawable.tab_resource,
             R.drawable.tab_downloaded,
-            R.drawable.tab_students,
+//            R.drawable.tab_students,
 //            R.drawable.tab_discovery
     };
 
@@ -106,22 +107,6 @@ public class MainActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView(getApplicationContext());
-
-//        //测试更新 TODO
-//        check(true, true, false, false, true, 998);
-
-//        //状态栏透明设置
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            //状态栏透明 需要在创建SystemBarTintManager 之前调用。
-//            setTranslucentStatus(true);
-//            SystemBarTintManager tintManager = new SystemBarTintManager(this);
-//            tintManager.setStatusBarTintEnabled(true);
-//            //使StatusBarTintView 和 actionbar的颜色保持一致，风格统一。
-//            tintManager.setStatusBarTintResource(R.color.blue);
-//            // 设置状态栏的文字颜色
-//            tintManager.setStatusBarDarkMode(true, this);
-//        }
-//        StatusBarUtil.fullScreen(this);
 
         //设置顶部工具栏
         toolbar = findViewById(R.id.toolbar);
@@ -151,12 +136,14 @@ public class MainActivity extends BaseActivity
         navigationView.inflateHeaderView(R.layout.nav_header);
         navigationView.inflateMenu(R.menu.nav_menu);
 
-
         navigationView.setItemIconTintList(null);
+
         //设置menu的监听事件
         navigationView.setNavigationItemSelectedListener(this);
+
         //获取头部布局
         navHeaderView = navigationView.getHeaderView(0);
+
         //初始化头像等内容
         userInfo = navHeaderView.findViewById(R.id.user_info);
         headImg = navHeaderView.findViewById(R.id.head_img);
@@ -165,6 +152,7 @@ public class MainActivity extends BaseActivity
         headImg.setImageDrawable(drawable);
         userName.setText(SharedPreferencesUtils.getStoredMessage(this, "nickname"));
         userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this, "college"));
+
         //因为修改默认按钮，这个图标的点击事件会消失，点击图标不能打开侧边栏，所以添加点击事件
         //设置点击事件，点击弹出menu界面
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -178,6 +166,7 @@ public class MainActivity extends BaseActivity
                 drawer.openDrawer(GravityCompat.START);
             }
         });
+
         //设置监听事件
         userInfo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,8 +176,9 @@ public class MainActivity extends BaseActivity
 
             }
         });
-//        // 如果有已经下载好了的更新包就强制安装，可以在app启动时调用
-//        UpdateManager.install(MainActivity.this);
+
+        //自动检查是否需要更新
+        UpdateSetting(false);
     }
 
 
@@ -205,7 +195,7 @@ public class MainActivity extends BaseActivity
      * 检查更新静默
      * check(true, true, false, true, true, 998);
      *
-     *                 isManual    是否手动检查更新
+     *                 isManual    是否手动检查更新(有无提示)
      *                 hasUpdate   是否有新版本
      *                 isForce     是否强制安装：不安装无法使用app
      *                 isSilent    是否静默下载：有新版本时不提示直接下载,
@@ -214,32 +204,33 @@ public class MainActivity extends BaseActivity
      *                 NotificationCompat 已经从 v7 移动到 v4 了
      *                 isIgnorable 是否已经忽略版本
      */
-    void UpdateSetting() {
+    void UpdateSetting(boolean isManual) {
         //版本更新设置
         UpdateManager.setDebuggable(true);
         UpdateManager.setWifiOnly(false);
         UpdateManager.create(this)
-                .setUrl(mCheckUrl)
-                .setManual(true)
+                .setUrl(mCheckUrl+getVersioncode())
+                .setManual(isManual)
                 .setPostData("version="+getVersioncode())
                 .setParser(new IUpdateParser() {
             @Override
             public UpdateInfo parse(String source) throws Exception {
-                Gson gson = new Gson();
-                UpdateInfo info = gson.fromJson(source, UpdateInfo.class);
-                System.out.println("UpdateInfo" + source);
-
-                info.isSilent = false;//强制为false
-
+                UpdateInfo info;
+                try{
+                    Gson gson = new Gson();
+                    info = gson.fromJson(source, UpdateInfo.class);
+                }catch (Exception e){
+                    throw new Exception(e);
+                }
+                Log.e("UpdateInfo" , source);
+                info.isSilent = false;//强制为false,框架坏了，无法静默更新
                 if (getVersioncode() >= info.versionCode) {
                     info.hasUpdate = false;
                     info.isAutoInstall = false;
                 }
-
                 Log.e("ezy.update versionCode",getVersioncode()+"----" + info.versionCode);
                 Log.e("ezy.update hasUpdate", String.valueOf(info.hasUpdate));
                 Log.e("ezy.update versionCode", String.valueOf(info.versionCode));
-                Log.e("ezy.update size", String.valueOf(info.size));
                 Log.e("ezy.update AutoInstall", String.valueOf(info.isAutoInstall));
                 return info;
             }
@@ -327,7 +318,7 @@ public class MainActivity extends BaseActivity
 
     //双击返回键退出app
     private void exitBy2Click() {
-        Timer tExit = null;
+        Timer tExit;
         if (!isExit) {
             isExit = true; // 准备退出
             Toast.makeText(this, "再按一次退出期末考啦", Toast.LENGTH_SHORT).show();
@@ -350,33 +341,70 @@ public class MainActivity extends BaseActivity
         Intent intent;
         switch (item.getItemId()) {
             case R.id.my_dynamic:
-                item.setChecked(true);
-                UpdateUtil.clean(this);
+                if(item.isChecked()){
+                    item.setChecked(false);
+                }else {
+                    item.setChecked(true);
+                    if(!isFastDoubleClick()){
+                        //TODO
+                    }
+                }
                 break;
             case R.id.my_collection:
-                item.setChecked(true);
-                UpdateSetting();
+                if(item.isChecked()){
+                    item.setChecked(false);
+                }else {
+                    item.setChecked(true);
+                    if(!isFastDoubleClick()){
+                        //TODO
+                    }
+                }
                 break;
             case R.id.my_comment:
-                item.setChecked(true);
+                if(item.isChecked()){
+                    item.setChecked(false);
+                }else {
+                    item.setChecked(true);
+                    if(!isFastDoubleClick()){
+                        //TODO
+                    }
+                }
                 break;
-            case R.id.my_praise:
-                item.setChecked(true);
+            case R.id.check_update:
+                if(item.isChecked()){
+                    item.setChecked(false);
+                }else {
+                    item.setChecked(true);
+                    if(!isFastDoubleClick()){
+                        UpdateSetting(true);//手动检查更新
+                    }
+                }
                 break;
             case R.id.feedback:
-                item.setChecked(true);
-                intent = new Intent(MainActivity.this, WebViewActivity.class);
-                intent.putExtra("url", "http://cn.mikecrm.com/LGpy5Kn");
-                intent.putExtra("title", "意见反馈");
-                startActivity(intent);
+                if(item.isChecked()){
+                    item.setChecked(false);
+                }else {
+                    item.setChecked(true);
+                    if(!isFastDoubleClick()){
+                        intent = new Intent(MainActivity.this, WebViewActivity.class);
+                        intent.putExtra("url", "http://cn.mikecrm.com/LGpy5Kn");
+                        intent.putExtra("title", "意见反馈");
+                        startActivity(intent);
+                    }
+                }
                 break;
             case R.id.join_us:
-                item.setChecked(true);
-                intent = new Intent(MainActivity.this, WebViewActivity.class);
-                intent.putExtra("url", "http://cn.mikecrm.com/6lMhybb");
-                intent.putExtra("title", "加入我们");
-                startActivity(intent);
-
+                if(item.isChecked()){
+                    item.setChecked(false);
+                }else {
+                    item.setChecked(true);
+                    if(!isFastDoubleClick()){
+                        intent = new Intent(MainActivity.this, WebViewActivity.class);
+                        intent.putExtra("url", "http://cn.mikecrm.com/6lMhybb");
+                        intent.putExtra("title", "加入我们");
+                        startActivity(intent);
+                    }
+                }
                 break;
 
         }
