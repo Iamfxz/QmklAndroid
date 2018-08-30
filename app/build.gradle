@@ -13,7 +13,7 @@ android {
     compileSdkVersion 27
 
     defaultConfig {
-        applicationId "com.android.papers.qmkl_android"
+        applicationId "com.example.robin.papers"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 3//为设备识别app版本，用于app升级所使用，值为int类型，主要用于判断app是否需要等级，第一次是1，以后每次递增。

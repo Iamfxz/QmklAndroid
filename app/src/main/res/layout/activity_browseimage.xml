@@ -5,13 +5,13 @@
     android:background="@android:color/black"
      >
 
-    <com.android.papers.qmkl_android.studentCircle.view.HackyViewPager
+    <com.example.robin.papers.studentCircle.view.HackyViewPager
         android:id="@+id/bi_viewpager"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:visibility="gone"
         android:layout_below="@+id/id_toolbar">
-    </com.android.papers.qmkl_android.studentCircle.view.HackyViewPager>
+    </com.example.robin.papers.studentCircle.view.HackyViewPager>
 
 
     <RelativeLayout

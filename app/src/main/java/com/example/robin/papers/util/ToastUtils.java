@@ -1,0 +1,91 @@
+package com.example.robin.papers.util;
+
+import android.content.Context;
+import android.widget.Toast;
+
+/**
+ * Created by 凌子文 on 15/7/22.
+ * Content Toast相关工具
+ *      用于弹出各种提示的综合管理
+ */
+public class ToastUtils {
+
+    private ToastUtils()
+    {
+        /** cannot be instantiated**/
+        throw new UnsupportedOperationException("不能实例化");
+    }
+
+    public static boolean isShow = true;
+    /**
+     * 短时间显示Toast
+     *
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
+     */
+    public static void showShort(Context context, CharSequence message)
+    {
+        if (isShow)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 短时间显示Toast
+     *
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
+     */
+    public static void showShort(Context context, int message)
+    {
+        if (isShow)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+    /**
+     * 长时间显示Toast
+     *
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
+     */
+    public static void showLong(Context context, CharSequence message)
+    {
+        if (isShow)
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * 长时间显示Toast
+     *
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
+     */
+    public static void showLong(Context context, int message)
+    {
+        if (isShow)
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+    /**
+     * 自定义显示Toast时间
+     *
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
+     * @param duration 持续的时间
+     */
+    public static void show(Context context, CharSequence message, int duration)
+    {
+        if (isShow)
+            Toast.makeText(context, message, duration).show();
+    }
+
+    /**
+     * 自定义显示Toast时间
+     *
+     * @param context 上下文，可当成所在页面
+     * @param message 显示的信息
+     * @param duration 持续的时间
+     */
+    public static void show(Context context, int message, int duration)
+    {
+        if (isShow)
+            Toast.makeText(context, message, duration).show();
+    }
+}
