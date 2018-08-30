@@ -96,6 +96,10 @@ public class LoginActivity extends BaseActivity {
             e.printStackTrace();
 
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> df75e90d1c10a80f0a31421e5e1d081720f76a5c
         mTencent = Tencent.createInstance(APP_ID, this.getApplicationContext());
 
 

@@ -250,26 +250,25 @@ public class MainActivity extends BaseActivity
                     }
                 }
             }
-        }).setUrl(mCheckUrl).setParser(new IUpdateParser() {
+        }).setUrl(mCheckUrl).setManual(true).setParser(new IUpdateParser() {
             @Override
             public UpdateInfo parse(String source) throws Exception {
                 Gson gson = new Gson();
                 UpdateInfo info = gson.fromJson(source, UpdateInfo.class);
-                System.out.println("source" + source);
+                System.out.println("UpdateInfo" + source);
+
                 info.isSilent = false;//强制为false
-                info.isAutoInstall = false;//不自动安装
+
                 if (getVersioncode() >= info.versionCode) {
                     info.hasUpdate = false;
                     info.isAutoInstall = false;
                 }
 
+                Log.e("ezy.update versionCode",getVersioncode()+"----" + info.versionCode);
                 Log.e("ezy.update hasUpdate", String.valueOf(info.hasUpdate));
                 Log.e("ezy.update versionCode", String.valueOf(info.versionCode));
-                Log.e("ezy.update versionName", String.valueOf(info.versionName));
                 Log.e("ezy.update size", String.valueOf(info.size));
-                Log.e("ezy.update isForce", String.valueOf(info.isForce));
-                Log.e("ezy.update isIgnorable", String.valueOf(info.isIgnorable));
-                Log.e("ezy.update isSilent", String.valueOf(info.isSilent));
+                Log.e("ezy.update AutoInstall", String.valueOf(info.isAutoInstall));
                 return info;
             }
         }).check();
@@ -309,10 +308,10 @@ public class MainActivity extends BaseActivity
         try {
             packageInfo = packageManager.getPackageInfo(MainActivity.this.getPackageName(), 0);
             versionCode = packageInfo.versionCode;
-            Log.e(TAG, String.valueOf(versionCode));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+        Log.e(TAG, String.valueOf(versionCode));
         return versionCode;
     }
 
