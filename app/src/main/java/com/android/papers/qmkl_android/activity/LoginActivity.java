@@ -102,10 +102,9 @@ public class LoginActivity extends BaseActivity {
             e.printStackTrace();
 
         }
-<<<<<<< HEAD
+
         mTencent = Tencent.createInstance(APP_ID, this.getApplicationContext());
-=======
->>>>>>> c283b05435c23d8c8332909d6b7d6b1342665e94
+
 
         //初始时登录按钮不可用
         loginBtn.setEnabled(false);
