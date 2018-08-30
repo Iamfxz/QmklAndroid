@@ -222,35 +222,11 @@ public class MainActivity extends BaseActivity
         //版本更新设置
         UpdateManager.setDebuggable(true);
         UpdateManager.setWifiOnly(false);
-        UpdateManager.create(this).setOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(UpdateError error) {
-                Toast.makeText(MainActivity.this, "update "+ error.toString(), Toast.LENGTH_LONG).show();
-            }
-        }).setChecker(new IUpdateChecker() {
-            @Override
-            public void check(ICheckAgent agent, String url) {
-                Log.e("ezy.update", "checking");
-                HttpURLConnection connection = null;
-                try {
-                    connection = (HttpURLConnection) new URL(url).openConnection();
-                    connection.setRequestProperty("Accept", "application/json");
-                    connection.connect();
-                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        agent.setInfo(UpdateUtil.readString(connection.getInputStream()));
-                    } else {
-                        agent.setError(new UpdateError(UpdateError.CHECK_HTTP_STATUS, "" + connection.getResponseCode()));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    agent.setError(new UpdateError(UpdateError.CHECK_NETWORK_IO));
-                } finally {
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                }
-            }
-        }).setUrl(mCheckUrl).setManual(true).setParser(new IUpdateParser() {
+        UpdateManager.create(this)
+                .setUrl(mCheckUrl)
+                .setManual(true)
+                .setPostData("version="+getVersioncode())
+                .setParser(new IUpdateParser() {
             @Override
             public UpdateInfo parse(String source) throws Exception {
                 Gson gson = new Gson();
