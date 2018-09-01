@@ -30,11 +30,8 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
-
 import android.widget.RelativeLayout;
-
 import android.widget.SectionIndexer;
-
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +39,7 @@ import com.example.robin.papers.R;
 import com.example.robin.papers.activity.FileDetailActivity;
 import com.example.robin.papers.activity.LoginActivity;
 import com.example.robin.papers.activity.UpLoadActivity;
+import com.example.robin.papers.activity.UserInfoActivity;
 import com.example.robin.papers.db.DownloadDB;
 import com.example.robin.papers.impl.PostAllColleges;
 import com.example.robin.papers.impl.PostFile;
@@ -54,10 +52,9 @@ import com.example.robin.papers.model.FileUrlRes;
 import com.example.robin.papers.model.PaperFile;
 import com.example.robin.papers.requestModel.FileRequest;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
-import com.example.robin.papers.util.CommonUtils;
+import com.example.robin.papers.util.ConstantUtils;
 import com.example.robin.papers.util.PaperFileUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
-import com.example.robin.papers.util.ConstantUtils;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.gjiazhe.wavesidebar.WaveSideBar;
@@ -71,6 +68,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -79,6 +77,7 @@ import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
 import in.srain.cube.views.ptr.header.StoreHouseHeader;
 import in.srain.cube.views.ptr.util.PtrLocalDisplay;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -86,6 +85,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.robin.papers.util.CommonUtils.isFastDoubleClick;
+import static com.example.robin.papers.util.ConstantUtils.DEFAULT_TIMEOUT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -181,18 +181,25 @@ public class ResourceFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
 
         //五个悬浮按钮，从上往下
+        FloatingActionButton fabUserInfo = view.findViewById(R.id.fab10);
         FloatingActionButton fabUpload = view.findViewById(R.id.fab11);
         FloatingActionButton fabReturnToMain = view.findViewById(R.id.fab13);
         FloatingActionButton fabPreviousMenu = view.findViewById(R.id.fab16);
 
         //悬浮菜单及按钮监听
+        fabUserInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), UserInfoActivity.class);
+                startActivity(intent);
+            }
+        });
         fabUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(), UpLoadActivity.class));
             }
         });
-
         fabReturnToMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -200,23 +207,22 @@ public class ResourceFragment extends Fragment
                 loadPaperData(null, 4, collegeName);//返回主页面
             }
         });
-
         fabPreviousMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (path.toString().equals("/"))
-                    Toast.makeText(getContext(), "当前已经是根目录了", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "当前已经是主目录了", Toast.LENGTH_SHORT).show();
                 loadPaperData(null, loadPreviousFolder, collegeName);//返回上级文件夹
             }
         });
 
-        WaveSideBar sideBar = getActivity().findViewById(R.id.side_bar);
+        WaveSideBar sideBar = Objects.requireNonNull(getActivity()).findViewById(R.id.side_bar);
         sideBar.setIndexItems("#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
                 "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
         sideBar.setOnSelectIndexItemListener(new WaveSideBar.OnSelectIndexItemListener() {
             @Override
             public void onSelectIndexItem(String index) {
-                int section = -1;
+                int section;
                 int position = 0;
                 Log.d("WaveSideBar", index);
                 if(index.charAt(0) >= 'A' && index.charAt(0) <= 'Z'){
@@ -327,7 +333,7 @@ public class ResourceFragment extends Fragment
 
     //初始化界面时对标题栏做的一些准备工作
     private void initOnCreateView(){
-        RelativeLayout layout = (RelativeLayout) getActivity().findViewById(R.id.toolbar_layout);
+        RelativeLayout layout = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar_layout);
         layout.setPadding(40,0,0,0);
     }
 
@@ -586,9 +592,15 @@ public class ResourceFragment extends Fragment
             String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
             if (token != null) {
                 //创建Retrofit对象
+                OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                        .retryOnConnectionFailure(false)
+                        .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+                        .build();
+
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
                         .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                        .client(okHttpClient)
                         .build();
 
                 //创建 网络请求接口 的实例
@@ -725,9 +737,14 @@ public class ResourceFragment extends Fragment
         String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
         if (token != null) {
             //创建Retrofit对象
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .retryOnConnectionFailure(false)
+                    .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+                    .build();
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
                     .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                    .client(okHttpClient)
                     .build();
 
             //创建 网络请求接口 的实例
@@ -792,9 +809,14 @@ public class ResourceFragment extends Fragment
         String token = SharedPreferencesUtils.getStoredMessage(Objects.requireNonNull(this.getContext()), "token");
         if (token != null) {
             //创建Retrofit对象
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .retryOnConnectionFailure(false)
+                    .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+                    .build();
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(this.getContext().getString(R.string.base_url))// 设置 网络请求 Url,1.0.0版本
                     .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                    .client(okHttpClient)
                     .build();
 
             //创建 网络请求接口 的实例
@@ -849,9 +871,14 @@ public class ResourceFragment extends Fragment
      */
     public void postAllColleges(final AlertDialog.Builder builder, final TextView textView, final ZLoadingDialog dialog) {
         //创建Retrofit对象
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .retryOnConnectionFailure(false)
+                .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ConstantUtils.BaseUrl)// 设置 网络请求 Url,1.0.0版本
                 .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                .client(okHttpClient)
                 .build();
 
         //监听返回键，返回则取消加载动画
@@ -1067,8 +1094,6 @@ public class ResourceFragment extends Fragment
                     String queryString = query.toString().replace(" ", "").toLowerCase();
                     //转化为中文拼音且小写，去除空格
                     String queryPinyin = Pinyin.toPinyin(query.toString().replace(" ", ""), "").toLowerCase();
-                    //转化为中文拼音且小写且空格分开且去除空格
-                    String queryPinyin2 = Pinyin.toPinyin(query.toString().replace(" ", ""), " ").toLowerCase();
 
                     ArrayList<String> values;
                     synchronized (mLock) {
@@ -1081,7 +1106,6 @@ public class ResourceFragment extends Fragment
                     for (int i = 0; i < count; i++) {
                         final String value = values.get(i);//单个数据项的名字
                         final String valuePinyin = Pinyin.toPinyin(value, "").toLowerCase();//转化为拼音用于搜索
-                        final String valuePinyin2 = Pinyin.toPinyin(value, " ").toLowerCase();//转化为拼音用于搜索,用空格区分中文
 
                         // 搜索匹配算法
                         if (value.equals(queryString)) {//完全匹配

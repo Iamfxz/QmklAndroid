@@ -63,6 +63,16 @@
             fab:menu_labels_showAnimation="@anim/fab_scale_up">
 
             <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/user_info"
+                fab:fab_colorNormal="@color/blue"
+                fab:fab_colorPressed="@color/btn_blue"
+                fab:fab_label="个人资料"
+                fab:fab_size="mini" />
+
+            <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -76,7 +86,7 @@
                 android:id="@+id/fab13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/refesh_list"
+                android:src="@drawable/return_main_folder"
                 fab:fab_colorNormal="@color/blue"
                 fab:fab_colorPressed="@color/btn_blue"
                 fab:fab_label="到主目录"
@@ -91,6 +101,7 @@
                 fab:fab_colorPressed="@color/btn_blue"
                 fab:fab_label="上级目录"
                 fab:fab_size="mini" />
+
         </com.github.clans.fab.FloatingActionMenu>
     </FrameLayout>
 

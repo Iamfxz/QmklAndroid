@@ -60,9 +60,11 @@ import com.zyao89.view.zloading.Z_TYPE;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -89,9 +91,14 @@ import static com.example.robin.papers.util.ConstantUtils.*;
 public class RetrofitUtils {
 
     //实例化Retrofit对象
+    private static OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .retryOnConnectionFailure(false)
+            .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+            .build();
     private static Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BaseUrl)// 设置 网络请求 Url,1.0.0版本
             .addConverterFactory(GsonConverterFactory.create())//设置使用Gson解析(记得加入依赖)
+            .client(okHttpClient)
             .build();
 
 

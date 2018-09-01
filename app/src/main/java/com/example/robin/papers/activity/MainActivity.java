@@ -211,7 +211,6 @@ public class MainActivity extends BaseActivity
         UpdateManager.create(this)
                 .setUrl(mCheckUrl+getVersioncode())
                 .setManual(isManual)
-                .setPostData("version="+getVersioncode())
                 .setParser(new IUpdateParser() {
             @Override
             public UpdateInfo parse(String source) throws Exception {
@@ -346,7 +345,7 @@ public class MainActivity extends BaseActivity
                 }else {
                     item.setChecked(true);
                     if(!isFastDoubleClick()){
-                        //TODO
+                        Toast.makeText(MainActivity.this,"聊天板块正在紧张刺激的开发当中，敬请期待~",Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
@@ -356,7 +355,7 @@ public class MainActivity extends BaseActivity
                 }else {
                     item.setChecked(true);
                     if(!isFastDoubleClick()){
-                        //TODO
+                        Toast.makeText(MainActivity.this,"聊天板块正在紧张刺激的开发当中，敬请期待~",Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
@@ -366,7 +365,7 @@ public class MainActivity extends BaseActivity
                 }else {
                     item.setChecked(true);
                     if(!isFastDoubleClick()){
-                        //TODO
+                        Toast.makeText(MainActivity.this,"聊天板块正在紧张刺激的开发当中，敬请期待~",Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
