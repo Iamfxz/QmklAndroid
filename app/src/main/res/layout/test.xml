@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+
+<android.support.percent.PercentFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
@@ -8,180 +10,137 @@
     android:fillViewport="true">
 
 
-    <include layout="@layout/bar_activity_upload"/>
+    <include layout="@layout/bar_activity_upload"
+        android:layout_marginTop="0dp"
+        android:layout_height="52dp"
+        android:layout_width="match_parent" />
 
-    <LinearLayout
+
+    <EditText
+        android:id="@+id/file_path"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_marginTopPercent="20%"
+        app:layout_marginLeftPercent="5%"
+        app:layout_heightPercent="5%"
+        app:layout_widthPercent="70%"
+        android:background="@drawable/margin_edittext"
+        android:gravity="center"
+        android:enabled="false"
+        android:hint="还未选择文件"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btn_choose_file"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_marginTopPercent="20%"
+        app:layout_marginLeftPercent="77%"
+        app:layout_heightPercent="5%"
+        app:layout_widthPercent="20%"
+        android:background="@color/blue1"
+        android:text="选择文件"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/school_name"
+        android:layout_width="268dp"
+        android:layout_height="40dp"
+        app:layout_marginTopPercent="30%"
+        app:layout_marginLeftPercent="5%"
+        app:layout_heightPercent="5%"
+        app:layout_widthPercent="70%"
+        android:background="@drawable/margin_edittext"
+        android:gravity="center"
+        android:hint="还未填写学校"
+        android:textSize="15sp" />
+
+
+    <TextView
+        android:id="@+id/btn_choose_school"
+        android:layout_width="99dp"
+        android:layout_height="40dp"
+        app:layout_marginTopPercent="30%"
+        app:layout_marginLeftPercent="77%"
+        app:layout_heightPercent="5%"
+        app:layout_widthPercent="23%"
+        android:text="所属学校*"
+        android:textColor="@color/black"
+        android:textSize="12sp" />
+
+
+    <EditText
+        android:id="@+id/course_name"
+        android:layout_width="268dp"
+        android:layout_height="40dp"
+        app:layout_marginTopPercent="40%"
+        app:layout_marginLeftPercent="5%"
+        app:layout_heightPercent="5%"
+        app:layout_widthPercent="70%"
+        android:background="@drawable/margin_edittext"
+        android:gravity="center"
+        android:hint="还未填写课程目录"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/btn_choose_course"
+        android:layout_width="99dp"
+        android:layout_height="40dp"
+        app:layout_marginTopPercent="40%"
+        app:layout_marginLeftPercent="77%"
+        app:layout_heightPercent="5%"
+        app:layout_widthPercent="23%"
+        android:text="课程目录*"
+        android:textColor="@color/black"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/remarks_info"
+        android:layout_width="268dp"
+        android:layout_height="150dp"
+        app:layout_marginTopPercent="50%"
+        app:layout_marginLeftPercent="5%"
+        app:layout_heightPercent="20%"
+        app:layout_widthPercent="70%"
+        android:background="@drawable/margin_edittext"
+        android:gravity="center"
+        android:hint="请填写上传备注"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tv_remarks"
+        android:layout_width="98dp"
+        android:layout_height="wrap_content"
+        app:layout_marginTopPercent="58%"
+        app:layout_marginLeftPercent="77%"
+        app:layout_heightPercent="5%"
+        app:layout_widthPercent="23%"
+        android:text="文件备注"
+        android:textColor="@color/black"
+        android:textSize="12sp" />
+
+
+    <Button
+        android:id="@+id/btn_upload"
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        app:layout_marginTopPercent="75%"
+        app:layout_marginLeftPercent="20%"
+        app:layout_heightPercent="5%"
+        app:layout_widthPercent="20%"
+        android:background="@color/blue1"
+        android:text="上传"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <CheckBox
+        android:id="@+id/anonymous_upload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/layout_upload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
-
-
-            <LinearLayout
-                android:id="@+id/file"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/file_path"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/margin_edittext"
-                    android:enabled="false"
-                    android:gravity="center"
-                    android:hint="还未选择文件"
-                    android:textSize="15sp" />
-
-                <Button
-                    android:id="@+id/btn_choose_file"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:background="@color/blue1"
-                    android:text="选择文件"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/school"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/school_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/margin_edittext"
-                    android:gravity="center"
-                    android:hint="还未填写学校"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:id="@+id/btn_choose_school"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="学校"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/must_write_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="*"
-                    android:textColor="@color/red1"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/course"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/school"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/course_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/margin_edittext"
-                    android:gravity="center"
-                    android:hint="还未填写课程目录"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:id="@+id/btn_choose_course"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="课程目录"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/remarks"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/course"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/remarks_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/margin_edittext"
-                    android:gravity="center"
-                    android:hint="请填写上传备注"
-                    android:inputType="textMultiLine"
-                    android:minLines="8"
-                    android:textSize="15sp"
-                    android:maxLines="10"
-                    android:scrollbars="vertical" />
-
-                <TextView
-                    android:id="@+id/tv_remarks"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="备注"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/upload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/layout_upload"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_upload"
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:background="@color/blue1"
-                android:text="上传"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-
-            <CheckBox
-                android:id="@+id/anonymous_upload"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="匿名上传" />
-        </LinearLayout>
-    </LinearLayout>
-
-</RelativeLayout>
+        app:layout_marginTopPercent="75%"
+        app:layout_marginLeftPercent="45%"
+        app:layout_heightPercent="5%"
+        app:layout_widthPercent="30%"
+        android:text="匿名上传"/>
+</android.support.percent.PercentFrameLayout>

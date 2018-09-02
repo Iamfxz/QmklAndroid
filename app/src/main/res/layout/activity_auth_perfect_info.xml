@@ -192,6 +192,26 @@
         </RelativeLayout>
 
 
+        <LinearLayout
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/agree_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+            </CheckBox>
+
+            <TextView
+                android:id="@+id/agree_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="我已阅读并同意该软件的用户协议和隐私政策"/>
+        </LinearLayout>
+
         <Button
             android:id="@+id/next"
             android:layout_width="match_parent"

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
@@ -14,11 +15,21 @@ import android.provider.MediaStore;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.robin.papers.R;
@@ -37,6 +48,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.example.robin.papers.util.ConstantUtils.agreementUrl;
+import static com.example.robin.papers.util.ConstantUtils.policyUrl;
 
 //用户注册界面二--完善个人信息
 public class PerfectInfoActivity extends BaseActivity {
@@ -81,6 +95,11 @@ public class PerfectInfoActivity extends BaseActivity {
     TextInputEditText enterYearNum;
     @BindView(R.id.next)
     Button nextBtn;
+    @BindView(R.id.agree_cb)
+    CheckBox agreeBtn;
+    @BindView(R.id.agree_tv)
+    TextView agreeTv;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,16 +108,9 @@ public class PerfectInfoActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         nextBtn.setEnabled(false);
-        //所有信息都不为空时,下一步按钮变色
-        Objects.requireNonNull(userPhone.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
-        Objects.requireNonNull(userPsw.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
-        Objects.requireNonNull(confirmPsw.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
-        Objects.requireNonNull(userNickname.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
-        Objects.requireNonNull(genderLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
-        Objects.requireNonNull(collegeLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
-        Objects.requireNonNull(academyLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
-        Objects.requireNonNull(enterYearLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
 
+        setTextWatcher();
+        setAgreement();
 
         //初始化用户名（手机号），此内容不可更改
         userPhone.getEditText().setText(SharedPreferencesUtils.getStoredMessage(this,"phone"));
@@ -346,4 +358,67 @@ public class PerfectInfoActivity extends BaseActivity {
             Toast.makeText(this,"图片获取失败",Toast.LENGTH_SHORT).show();
         }
     }
+
+    //所有信息都不为空以及服从条款时,下一步按钮变色
+    private void setTextWatcher(){
+        Objects.requireNonNull(userPhone.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,agreeBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
+        Objects.requireNonNull(userPsw.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,agreeBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
+        Objects.requireNonNull(confirmPsw.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,agreeBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
+        Objects.requireNonNull(userNickname.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,agreeBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
+        Objects.requireNonNull(genderLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,agreeBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
+        Objects.requireNonNull(collegeLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,agreeBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
+        Objects.requireNonNull(academyLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,agreeBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
+        Objects.requireNonNull(enterYearLayout.getEditText()).addTextChangedListener(new MyTextWatcher(this,nextBtn,agreeBtn,userPhone,userPsw,confirmPsw,userNickname,genderLayout,collegeLayout,academyLayout,enterYearLayout));
+    }
+
+
+
+
+    //添加用户许可条例
+    private void setAgreement(){
+        //借助SpannableString类实现超链接文字
+        agreeTv.setText(getClickableSpan());
+        //设置超链接可点击
+        agreeTv.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * 获取可点击的SpannableString
+     * @return
+     */
+    private SpannableString getClickableSpan() {
+        SpannableString spannableString = new SpannableString("我已阅读并同意该软件的用户协议和隐私政策");
+        //设置下划线文字
+        spannableString.setSpan(new UnderlineSpan(), 11, 15, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //设置文字的单击事件
+        spannableString.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                Intent intent=new Intent(PerfectInfoActivity.this,WebViewActivity.class);
+                intent.putExtra("url", agreementUrl);
+                intent.putExtra("title","用户协议");
+                startActivity(intent);
+            }
+        }, 11, 15, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //设置文字的前景色
+        spannableString.setSpan(new ForegroundColorSpan(Color.RED), 11, 15, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        //设置下划线文字
+        spannableString.setSpan(new UnderlineSpan(), 16, 20, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //设置文字的单击事件
+        spannableString.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                Intent intent=new Intent(PerfectInfoActivity.this,WebViewActivity.class);
+                intent.putExtra("url", policyUrl);
+                intent.putExtra("title","隐私政策");
+                startActivity(intent);
+            }
+        }, 16, 20, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //设置文字的前景色
+        spannableString.setSpan(new ForegroundColorSpan(Color.RED), 16, 20, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannableString;
+    }
+
+
 }

@@ -2,20 +2,31 @@ package com.example.robin.papers.activity;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.robin.papers.R;
 import com.example.robin.papers.requestModel.AuthPerInfoRequest;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
+import com.example.robin.papers.util.ConstantUtils;
 import com.example.robin.papers.util.DownLoader;
 import com.example.robin.papers.util.EditTextFilter;
 import com.example.robin.papers.util.MyTextWatcher;
@@ -32,6 +43,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.example.robin.papers.util.ConstantUtils.*;
 
 //完善第三方登录时用户资料
 public class AuthPerUserInfo extends BaseActivity{
@@ -52,7 +65,10 @@ public class AuthPerUserInfo extends BaseActivity{
     TextInputLayout academyLayout;
     @BindView(R.id.enterYear_tiLayout)//用户年级
     TextInputLayout enterYearLayout;
-
+    @BindView(R.id.agree_cb)
+    CheckBox agreeBtn;
+    @BindView(R.id.agree_tv)
+    TextView agreeTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +115,9 @@ public class AuthPerUserInfo extends BaseActivity{
         //获取第三方性别
         String gender = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"gender");
         Objects.requireNonNull(genderLayout.getEditText()).setText(gender);
+
+        //添加用户协议
+        setAgreement();
 
         //下一步按钮不可用
         nextBtn.setEnabled(false);
@@ -223,5 +242,51 @@ public class AuthPerUserInfo extends BaseActivity{
                 finish();
                 break;
         }
+    }
+
+    //添加用户许可条例
+    private void setAgreement(){
+        //借助SpannableString类实现超链接文字
+        agreeTv.setText(getClickableSpan());
+        //设置超链接可点击
+        agreeTv.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * 获取可点击的SpannableString
+     * @return
+     */
+    private SpannableString getClickableSpan() {
+        SpannableString spannableString = new SpannableString("我已阅读并同意该软件的用户协议和隐私政策");
+        //设置下划线文字
+        spannableString.setSpan(new UnderlineSpan(), 11, 15, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //设置文字的单击事件
+        spannableString.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                Intent intent=new Intent(AuthPerUserInfo.this,WebViewActivity.class);
+                intent.putExtra("url", agreementUrl);
+                intent.putExtra("title","用户协议");
+                startActivity(intent);
+            }
+        }, 11, 15, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //设置文字的前景色
+        spannableString.setSpan(new ForegroundColorSpan(Color.RED), 11, 15, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        //设置下划线文字
+        spannableString.setSpan(new UnderlineSpan(), 16, 20, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //设置文字的单击事件
+        spannableString.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                Intent intent=new Intent(AuthPerUserInfo.this,WebViewActivity.class);
+                intent.putExtra("url", policyUrl);
+                intent.putExtra("title","隐私政策");
+                startActivity(intent);
+            }
+        }, 16, 20, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //设置文字的前景色
+        spannableString.setSpan(new ForegroundColorSpan(Color.RED), 16, 20, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannableString;
     }
 }

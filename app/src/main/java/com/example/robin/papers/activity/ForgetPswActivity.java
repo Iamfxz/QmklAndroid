@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.robin.papers.R;
@@ -33,7 +34,7 @@ public class ForgetPswActivity extends BaseActivity {
     @BindView(R.id.submit)
     Button submitBtn;
     @BindView(R.id.send_code)
-    Button sendCodeBtn;
+    TextView sendCodeBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

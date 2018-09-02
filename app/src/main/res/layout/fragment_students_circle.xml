@@ -1,50 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<ScrollView android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/background">
-
-    <LinearLayout
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/white">
-
-        <com.youth.banner.Banner
-            android:id="@+id/banner"
+        >
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/white">
 
-        <!--<Button-->
-            <!--android:id="@+id/next"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="进入朋友圈"/>-->
+            <com.youth.banner.Banner
+                android:id="@+id/banner"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                />
 
-        <TextView
-            android:layout_gravity="center_horizontal"
-            android:text="趣聊正在紧张开发中blabla"
-            android:textColor="@color/black"
-            android:layout_marginTop="40dp"
-            android:textSize="23sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <!--<Button-->
+                <!--android:id="@+id/next"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="进入朋友圈"/>-->
 
-        <TextView
-            android:layout_gravity="center_horizontal"
-            android:text="扫描下方二维码关注公众号方便获得更多资讯喔~"
-            android:layout_marginTop="40dp"
-            android:textSize="17sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:layout_gravity="center_horizontal"
+                android:text="趣聊正在紧张开发中blabla"
+                android:textColor="@color/black"
+                android:layout_marginTop="40dp"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <ImageView
-            android:id="@+id/QRCode"
-            android:layout_width="180dp"
-            android:layout_height="180dp"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/qmkl"/>
-    </LinearLayout>
-</RelativeLayout>
+            <TextView
+                android:layout_gravity="center_horizontal"
+                android:text="扫描下方二维码关注公众号获得更多资讯喔"
+                android:layout_marginTop="40dp"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:id="@+id/QRCode"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/qmkl"/>
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>

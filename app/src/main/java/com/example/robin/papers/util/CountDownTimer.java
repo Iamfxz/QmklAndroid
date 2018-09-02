@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.robin.papers.R;
 
@@ -15,6 +16,7 @@ public class CountDownTimer implements Runnable{
 
     private Handler mHandler = new Handler();
     private Button button;
+    private TextView textView;
     private int time;
     private int flag;
     private Context context;
@@ -32,14 +34,21 @@ public class CountDownTimer implements Runnable{
         this.flag=flag;
         this.context=context;
     }
+    public CountDownTimer(int time, TextView textView, int flag, Context context){
+        this.time=time;
+        this.textView=textView;
+        this.flag=flag;
+        this.context=context;
+    }
     @Override
     public void run() {
         if(flag==1){
-            button.post(new Runnable() {
+            textView.post(new Runnable() {
                 @Override
                 public void run() {
-                    button.setEnabled(false);
-                    button.setBackgroundColor(context.getResources().getColor(R.color.btn_unable));
+                    textView.setEnabled(false);
+//                    textView.setBackgroundColor(context.getResources().getColor(R.color.btn_unable));
+                    textView.setTextColor(context.getResources().getColor(R.color.btn_unable));
                 }
             });
         }
@@ -52,7 +61,7 @@ public class CountDownTimer implements Runnable{
                         button.setText("跳过(" + time + "秒)");
                     }
                     else if(flag==1){
-                        button.setText(time + "秒后重新发送");
+                        textView.setText(time + "秒后重新发送");
                     }
 
                 }
@@ -65,13 +74,13 @@ public class CountDownTimer implements Runnable{
             time--;
         }
         if(flag==1){
-            button.post(new Runnable() {
+            textView.post(new Runnable() {
                 @Override
                 public void run() {
-                    button.setText("重新发送");
-                    button.setEnabled(true);
-                    button.setBackgroundColor(context.getResources().getColor(R.color.green1));
-
+                    textView.setText("重新发送");
+                    textView.setEnabled(true);
+//                    textView.setBackgroundColor(context.getResources().getColor(R.color.green1));
+                    textView.setTextColor(context.getResources().getColor(R.color.blue1));
                 }
             });
         }

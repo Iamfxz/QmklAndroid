@@ -31,6 +31,7 @@ import com.example.robin.papers.R;
 import com.example.robin.papers.ui.DownloadedFragment;
 import com.example.robin.papers.ui.ResourceFragment;
 import com.example.robin.papers.ui.StudentsCircleFragment;
+import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.ActivityManager;
 import com.example.robin.papers.util.CircleDrawable;
 import com.example.robin.papers.util.SDCardUtils;
@@ -84,7 +85,7 @@ public class MainActivity extends BaseActivity
     private Class mFragmentArray[] = {
             ResourceFragment.class,//资源页面
             DownloadedFragment.class,//已下载页面
-//            StudentsCircleFragment.class,//学生圈界面
+            StudentsCircleFragment.class,//学生圈界面
 //            DiscoveryFragment.class//发现界面
     };
 
@@ -93,7 +94,7 @@ public class MainActivity extends BaseActivity
     private int mImageArray[] = {
             R.drawable.tab_resource,
             R.drawable.tab_downloaded,
-//            R.drawable.tab_students,
+            R.drawable.tab_students,
 //            R.drawable.tab_discovery
     };
 
@@ -122,11 +123,11 @@ public class MainActivity extends BaseActivity
         Log.d("头像路径", SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
 
         //获取头像文件，先转化为100*100的drawable文件
-        Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
-        CircleDrawable circleDrawable = new CircleDrawable(drawable, this, 44);
-//        toolbar.setNavigationIcon(drawable);
-        toolbar.setNavigationIcon(circleDrawable);
-        drawer.addDrawerListener(toggle);
+        Drawable drawable = UMapplication.getContext().getResources().getDrawable(R.drawable.menu);
+//        CircleDrawable circleDrawable = new CircleDrawable(UMapplication.getContext().getResources().getDrawable(R.drawable.academy), this, 44);
+
+        toolbar.setNavigationIcon(drawable);
+
 
         toggle.syncState();
 
@@ -149,7 +150,8 @@ public class MainActivity extends BaseActivity
         headImg = navHeaderView.findViewById(R.id.head_img);
         userName = navHeaderView.findViewById(R.id.user_name);
         userCollegeName = navHeaderView.findViewById(R.id.user_college_name);
-        headImg.setImageDrawable(drawable);
+        Drawable drawable2 = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
+        headImg.setImageDrawable(drawable2);
         userName.setText(SharedPreferencesUtils.getStoredMessage(this, "nickname"));
         userCollegeName.setText(SharedPreferencesUtils.getStoredMessage(this, "college"));
 

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.robin.papers.R;
@@ -27,7 +28,7 @@ public class RegisterActivity extends BaseActivity{
     @BindView(R.id.verification_code)
     TextInputLayout verificationCode;
     @BindView(R.id.send_code)
-    Button sendCodeBtn;
+    TextView sendCodeBtn;
     @BindView(R.id.next)
     Button nextBtn;
 

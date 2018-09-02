@@ -60,12 +60,10 @@ import com.zyao89.view.zloading.Z_TYPE;
 
 import java.io.File;
 import java.util.Objects;
-<<<<<<< HEAD
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-=======
 import java.util.concurrent.TimeUnit;
->>>>>>> b01179d2311ec0d9d8cb67e4eaffb5b20bfd266d
+
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -920,15 +918,15 @@ public class RetrofitUtils {
                                     }
                                 });
                                 final Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar")));
-                                final CircleDrawable circleDrawable = new CircleDrawable(drawable, UMapplication.getContext(), 44);
+//                                final CircleDrawable circleDrawable = new CircleDrawable(drawable, UMapplication.getContext(), 44);
 //                            final Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar")));
 
-                                MainActivity.toolbar.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        MainActivity.toolbar.setNavigationIcon(circleDrawable);
-                                    }
-                                });
+//                                MainActivity.toolbar.post(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        MainActivity.toolbar.setNavigationIcon(circleDrawable);
+//                                    }
+//                                });
                                 MainActivity.headImg.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -1010,7 +1008,7 @@ public class RetrofitUtils {
 
     //用户注册接口一、找回密码接口一
     //发送手机号并向该手机发送短信验证码，在CountDownTimer中更新按钮状态
-    public static void postGetCode(String phone, final Button sendCodeBtn, final String msg) {
+    public static void postGetCode(String phone, final TextView sendCodeBtn, final String msg) {
 
         PostGetCode request = retrofit.create(PostGetCode.class);
         GetCodeRequest codeRequest = new GetCodeRequest(phone, msg);
