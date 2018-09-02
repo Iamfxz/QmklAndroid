@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.robin.papers.BuildConfig;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 
@@ -201,5 +202,17 @@ public class BaseActivity extends AppCompatActivity {
             {".zip", "application/x-zip-compressed"},
             {"", "*/*"}
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }
 

@@ -25,6 +25,7 @@ import com.example.robin.papers.R;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.ActivityManager;
 import com.example.robin.papers.util.SharedPreferencesUtils;
+import com.umeng.analytics.MobclickAgent;
 
 //"校内服务"页面上的所有web链接打开的webview
 public class WebViewActivity extends BaseActivity {
@@ -163,14 +164,7 @@ public class WebViewActivity extends BaseActivity {
     }
 
 
-    public void onResume() {
-        super.onResume();
-// 友盟的       MobclickAgent.onResume(this);
-    }
-    public void onPause() {
-        super.onPause();
-//        MobclickAgent.onPause(this);
-    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -256,5 +250,16 @@ public class WebViewActivity extends BaseActivity {
         }).start();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }
 

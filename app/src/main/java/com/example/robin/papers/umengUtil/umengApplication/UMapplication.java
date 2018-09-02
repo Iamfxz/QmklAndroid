@@ -7,17 +7,23 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.commonsdk.UMConfigure;
 
 
 public class UMapplication extends Application {
 
     private static Context context;
-
+    private static UMapplication instance;
     @Override
     public void onCreate() {
         super.onCreate();
-//        UMConfigure.init(this, "5b694daf8f4a9d591a000013","umeng_test", UMConfigure.DEVICE_TYPE_PHONE,"b45044924a5e44d09bbd9272e9f7db03");
+        UMConfigure.init(this, "56128c76e0f55aa3ff006c5c","期末考啦", UMConfigure.DEVICE_TYPE_PHONE,"");
+        MobclickAgent.setDebugMode(true);
+        // SDK在统计Fragment时，需要关闭Activity自带的页面统计，
+        // 然后在每个页面中重新集成页面统计的代码(包括调用了 onResume 和 onPause 的Activity)。
+        MobclickAgent.openActivityDurationTrack(false);
+        MobclickAgent.setScenarioType(instance, MobclickAgent.EScenarioType.E_UM_NORMAL);
         context = getApplicationContext();
         initImageLoader(context);
     }

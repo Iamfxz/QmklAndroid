@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.example.robin.papers.R;
 import com.example.robin.papers.util.ActivityManager;
 import com.example.robin.papers.util.SharedPreferencesUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -115,12 +116,16 @@ public class AdsDetailsActivity extends AppCompatActivity {
         finish();
     }
 
-    public void onResume() {
+    @Override
+    protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
     }
 
-    public void onPause() {
+    @Override
+    protected void onPause() {
         super.onPause();
+        MobclickAgent.onPause(this);
     }
 
 }

@@ -60,6 +60,7 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.gjiazhe.wavesidebar.WaveSideBar;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.umeng.analytics.MobclickAgent;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -96,7 +97,7 @@ public class ResourceFragment extends Fragment
         implements NavigationView.OnNavigationItemSelectedListener, AbsListView.OnScrollListener {
 
     final static String TAG = "ResourceFragment";
-
+    private static String mPackageName="com.example.robin.papers.ui.ResourceFragment";
     //文件总数据
     private FileRes mData;
     private List<String> list;//文件名列表，有点乱，还需要理清楚 TODO
@@ -235,15 +236,6 @@ public class ResourceFragment extends Fragment
         });
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        //如果当前页面对用户不可见则关闭搜索框
-        if(searchView.isSearchOpen()){
-            searchView.closeSearch();
-        }
-        shouldAnimate = false;
-    }
 
     private void initView() {
         //设置学校名称
@@ -1225,4 +1217,21 @@ public class ResourceFragment extends Fragment
             return result;
         }
     });
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mPackageName);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //如果当前页面对用户不可见则关闭搜索框
+        if(searchView.isSearchOpen()){
+            searchView.closeSearch();
+        }
+        shouldAnimate = false;
+        MobclickAgent.onPageEnd(mPackageName);
+    }
 }

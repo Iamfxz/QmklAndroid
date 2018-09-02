@@ -23,6 +23,7 @@ import com.example.robin.papers.model.DownloadedFile;
 import com.example.robin.papers.model.PaperFile;
 import com.example.robin.papers.util.LogUtils;
 import com.example.robin.papers.util.PaperFileUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.List;
 import java.util.Objects;
@@ -34,7 +35,7 @@ import butterknife.ButterKnife;
 public class DownloadedFragment extends Fragment {
 
     private static final String TAG = "DownloadedActivityTag";
-
+    private static String mPackageName="com.example.robin.papers.ui.DownloadedFragment";
     private DownloadDB downloadDB;
     private DownloadedAdapter mAdapter;
     private List<DownloadedFile> mFiles;
@@ -178,5 +179,16 @@ public class DownloadedFragment extends Fragment {
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mPackageName);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mPackageName);
     }
 }

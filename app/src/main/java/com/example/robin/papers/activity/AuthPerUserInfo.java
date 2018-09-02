@@ -33,6 +33,7 @@ import com.example.robin.papers.util.MyTextWatcher;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SDCardUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
+import com.umeng.analytics.MobclickAgent;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -288,5 +289,17 @@ public class AuthPerUserInfo extends BaseActivity{
         //设置文字的前景色
         spannableString.setSpan(new ForegroundColorSpan(Color.RED), 16, 20, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableString;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

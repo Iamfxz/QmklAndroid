@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.example.robin.papers.R;
 import com.example.robin.papers.util.MyTextWatcher;
 import com.example.robin.papers.util.RetrofitUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.Objects;
 
@@ -74,5 +75,17 @@ public class RegisterActivity extends BaseActivity{
                 finish();
                 break;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

@@ -22,6 +22,7 @@ import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.ConstantUtils;
 import com.example.robin.papers.util.GlideImageLoader;
 import com.example.robin.papers.util.SDCardUtils;
+import com.umeng.analytics.MobclickAgent;
 import com.youth.banner.Banner;
 
 import java.io.File;
@@ -40,6 +41,8 @@ import static com.example.robin.papers.util.ConstantUtils.*;
 public class StudentsCircleFragment extends Fragment {
 
     private List images = new ArrayList<>(Arrays.asList(R.drawable.glide0,R.drawable.glide1,R.drawable.glide2,R.drawable.glide3,R.drawable.glide4));
+    private static String mPackageName="com.example.robin.papers.ui.StudentsCircleFragment";
+
     @BindView(R.id.QRCode)
     ImageView QRCode;
 
@@ -156,5 +159,17 @@ public class StudentsCircleFragment extends Fragment {
 
             QRCode.setDrawingCacheEnabled(false);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(mPackageName);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mPackageName);
     }
 }

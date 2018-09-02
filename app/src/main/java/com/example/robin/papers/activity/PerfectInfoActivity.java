@@ -39,6 +39,7 @@ import com.example.robin.papers.util.MyTextWatcher;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SHAArithmetic;
 import com.example.robin.papers.util.SharedPreferencesUtils;
+import com.umeng.analytics.MobclickAgent;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -420,5 +421,16 @@ public class PerfectInfoActivity extends BaseActivity {
         return spannableString;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
 }

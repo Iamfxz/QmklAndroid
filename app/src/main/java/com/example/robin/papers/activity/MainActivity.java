@@ -39,6 +39,7 @@ import com.example.robin.papers.util.SharedPreferencesUtils;
 import com.example.robin.papers.util.ConstantUtils;
 import com.google.gson.Gson;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -410,5 +411,17 @@ public class MainActivity extends BaseActivity
 
         }
         return false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

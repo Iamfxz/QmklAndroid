@@ -17,6 +17,7 @@ import com.example.robin.papers.util.RetrofitUtils;
 
 
 import com.example.robin.papers.util.SharedPreferencesUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import static android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
 
@@ -52,14 +53,6 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
         if(ActivityCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED){
             RetrofitUtils.postAd(SplashActivity.this);
         }
-    }
-
-
-    public void onResume() {
-        super.onResume();
-    }
-    public void onPause() {
-        super.onPause();
     }
 
 
@@ -121,4 +114,15 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }

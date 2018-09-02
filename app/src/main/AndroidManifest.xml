@@ -57,12 +57,12 @@
 
 
         <!--友盟配置-->
-        <!--<meta-data-->
-            <!--android:name="UMENG_APPKEY"-->
-            <!--android:value="5b694daf8f4a9d591a000013" />-->
-        <!--<meta-data-->
-            <!--android:name="UMENG_CHANNEL"-->
-            <!--android:value="umeng_test" />-->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="56128c76e0f55aa3ff006c5c" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="期末考啦" />
         <!--qq第三方登录配置-->
         <activity
             android:name="com.tencent.tauth.AuthActivity"

@@ -16,6 +16,7 @@ import com.example.robin.papers.util.ActivityManager;
 import com.example.robin.papers.util.CountDownTimer;
 import com.example.robin.papers.util.SDCardUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 
@@ -135,13 +136,14 @@ public class AdsActivity extends Activity {
     }
 
     @Override
-    public void onResume() {
+    protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         super.onPause();
+        MobclickAgent.onPause(this);
     }
-
 }

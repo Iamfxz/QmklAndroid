@@ -5,7 +5,7 @@
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="rectangle">
             <!-- 圆角深红色按钮 -->
-            <solid android:color="@color/btn_blue"/>
+            <solid android:color="@color/blue"/>
             <corners android:radius="10dip"/>
         </shape>
     </item>
@@ -15,7 +15,7 @@
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="rectangle">
             <!-- 圆角红色按钮 -->
-            <solid android:color="@color/blue"/>
+            <solid android:color="@color/btn_blue"/>
             <corners android:radius="10dip"/>
         </shape>
     </item>

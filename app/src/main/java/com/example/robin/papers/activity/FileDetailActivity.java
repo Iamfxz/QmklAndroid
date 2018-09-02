@@ -36,6 +36,7 @@ import com.example.robin.papers.util.SDCardUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 import com.example.robin.papers.util.ToastUtils;
 import com.jaren.lib.view.LikeView;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 import java.util.Objects;
@@ -512,4 +513,17 @@ public class FileDetailActivity extends BaseActivity {
             return result;
         }
     }) ;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
 }
