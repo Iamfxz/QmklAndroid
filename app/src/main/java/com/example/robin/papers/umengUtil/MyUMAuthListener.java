@@ -1,4 +1,4 @@
-//package com.android.papers.qmkl_android.umengUtil;
+//package com.example.robin.papers.umengUtil;
 //
 //import android.app.Activity;
 //import android.content.Context;

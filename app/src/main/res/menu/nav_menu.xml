@@ -7,20 +7,20 @@
         <item
             android:id="@+id/my_dynamic"
             android:icon="@drawable/my_dynamic"
-            android:title="清除缓存"
+            android:title="我的动态"
             />
         <item
             android:id="@+id/my_collection"
             android:icon="@drawable/my_collection"
-            android:title="检查更新" />
+            android:title="我的收藏" />
         <item
             android:id="@+id/my_comment"
             android:icon="@drawable/my_comment"
             android:title="我的评论" />
         <item
-            android:id="@+id/my_praise"
+            android:id="@+id/check_update"
             android:icon="@drawable/my_praise"
-            android:title="赞我的" />
+            android:title="检查更新" />
     </group>
     <group  android:checkableBehavior="single"
         android:id="@+id/group2">

@@ -55,7 +55,7 @@ public class PermissionUtils {
     public static final String PERMISSION_READ_EXTERNAL_STORAGE = Manifest.permission.READ_EXTERNAL_STORAGE;
     public static final String PERMISSION_WRITE_EXTERNAL_STORAGE = Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-    private static final String packageName="com.android.papers.qmkl_android";
+    private static final String packageName="com.example.robin.papers";
     private static final String[] requestPermissions = {
             PERMISSION_RECORD_AUDIO,
             PERMISSION_GET_ACCOUNTS,

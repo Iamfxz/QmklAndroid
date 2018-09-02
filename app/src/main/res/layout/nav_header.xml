@@ -13,6 +13,7 @@
 
     </RelativeLayout>
 
+
     <LinearLayout
         android:id="@+id/user_info"
         android:layout_width="match_parent"
@@ -25,8 +26,8 @@
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:layout_marginBottom="20dp"
-            android:layout_marginStart="30dp"
             android:layout_marginEnd="15dp"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="15dp"
             android:src="@mipmap/ic_launcher"
             app:civ_border_color="#D7EFFF"
@@ -49,8 +50,8 @@
                     android:id="@+id/user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:singleLine="true"
                     android:maxEms="10"
+                    android:singleLine="true"
                     android:text="期末考啦"
                     android:textColor="@color/blue"
                     android:textSize="18sp" />

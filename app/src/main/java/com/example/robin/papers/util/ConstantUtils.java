@@ -15,7 +15,7 @@ public class ConstantUtils {
 
     //服务端基础url
     public static final String BaseUrl = "http://120.77.32.233/";//后端版本
-    public static final String mCheckUrl = "http://120.77.32.233/qmkl1.0.0/app/update";//检查版本更新信息的地址
+    public static final String mCheckUrl = "http://120.77.32.233/qmkl1.0.0/app/update/";//检查版本更新信息的地址
 
     //官方获取的APPID，QQ第三方登录使用
     public static final String APP_ID = "1104895232";
@@ -25,6 +25,7 @@ public class ConstantUtils {
     public static final int NORMAL_ERROR_CODE = 202;//常规错误，可以直接抛出msg给用户
     public static final int TOKEN_INVALID_CODE = 301;//登陆失效
     public static final int ERROR_CODE = 404;//请求错误
+    public static final long DEFAULT_TIMEOUT = 10000;//默认网络请求超时时间10s
 
     //发送短信接口声明修改密码或者新用户注册
     public static final String FORGET_PSW_MSG = "修改密码";
