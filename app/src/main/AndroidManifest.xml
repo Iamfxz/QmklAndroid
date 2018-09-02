@@ -82,7 +82,6 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
-        <!--provider使用失败？？TODO-->
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.robin.papers.fileProvider"
@@ -97,7 +96,11 @@
 
         <!--<meta-data-->
             <!--android:name="design_width_in_dp"-->
+<<<<<<< HEAD
             <!--android:value="0" />-->
+=======
+            <!--android:value="375" />-->
+>>>>>>> 5470c08cd2cff9a4283130d293f92ce950405ea2
         <meta-data
             android:name="design_height_in_dp"
             android:value="667" />
