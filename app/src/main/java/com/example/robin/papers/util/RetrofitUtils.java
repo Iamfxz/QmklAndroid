@@ -60,12 +60,9 @@ import com.zyao89.view.zloading.Z_TYPE;
 
 import java.io.File;
 import java.util.Objects;
-<<<<<<< HEAD
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-=======
 import java.util.concurrent.TimeUnit;
->>>>>>> b01179d2311ec0d9d8cb67e4eaffb5b20bfd266d
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -82,15 +79,15 @@ import static com.example.robin.papers.util.ConstantUtils.*;
 
 
 /*
-* （一）、postAd(final Activity startAct)
-* 参数：开始任务的活动
-* 功能：向服务发送请求获取广告内容，并判断广告是否可用：
-*       可用下载广告并进入广告页面，不可用直接进入主页面或登录界面
-* （二）、
-*
-*
-*
-* */
+ * （一）、postAd(final Activity startAct)
+ * 参数：开始任务的活动
+ * 功能：向服务发送请求获取广告内容，并判断广告是否可用：
+ *       可用下载广告并进入广告页面，不可用直接进入主页面或登录界面
+ * （二）、
+ *
+ *
+ *
+ * */
 
 
 public class RetrofitUtils {
@@ -117,7 +114,7 @@ public class RetrofitUtils {
         request.getCall().enqueue(new Callback<ResponseInfo<AdData>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<AdData>> call, @NonNull Response<ResponseInfo<AdData>> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     //广告页当前不可用
                     if (Objects.requireNonNull(response.body()).getCode() != SUCCESS_CODE ||
                             !Objects.requireNonNull(response.body()).getData().isEnabled()) {
@@ -138,8 +135,8 @@ public class RetrofitUtils {
                     //广告页当前可用
                     oldAdName = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "AdName");
                     newAdName = getNumbers(Objects.requireNonNull(response.body()).getData().getUpdatedAt());
-                    Log.d(TAG, "createAt:"+Objects.requireNonNull(response.body()).getData().getUpdatedAt());
-                    Log.d(TAG, "createAt保留数字:"+getNumbers(Objects.requireNonNull(response.body()).getData().getUpdatedAt()));
+                    Log.d(TAG, "createAt:" + Objects.requireNonNull(response.body()).getData().getUpdatedAt());
+                    Log.d(TAG, "createAt保留数字:" + getNumbers(Objects.requireNonNull(response.body()).getData().getUpdatedAt()));
                     adPath = Objects.requireNonNull(response.body()).getData().getUrl();
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "fallback",
                             Objects.requireNonNull(response.body()).getData().getFallback());
@@ -219,8 +216,7 @@ public class RetrofitUtils {
                             }
                         }).start();
                     }
-                }
-                else {
+                } else {
                     startAct.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -229,12 +225,13 @@ public class RetrofitUtils {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                            Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                             nextActivity(startAct, LoginActivity.class);
                         }
                     });
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<AdData>> call, @NonNull Throwable t) {
                 Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
@@ -262,11 +259,11 @@ public class RetrofitUtils {
             //请求成功时回调
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     int resultCode = Objects.requireNonNull(response.body()).getCode();
                     System.out.println(resultCode);
                     if (resultCode == ERROR_CODE) {
-                        Toast.makeText(UMapplication.getContext(), CHECK_ACCOUNT_AND_PSW , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UMapplication.getContext(), CHECK_ACCOUNT_AND_PSW, Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     } else if (resultCode == SUCCESS_CODE) {
                         //token存储到本地
@@ -281,9 +278,8 @@ public class RetrofitUtils {
                         Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
-                }
-                else{
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 }
 
@@ -307,7 +303,7 @@ public class RetrofitUtils {
             call.enqueue(new Callback<ResponseInfo>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                    if(response.body()!=null){
+                    if (response.body() != null) {
                         int resultCode = Objects.requireNonNull(response.body()).getCode();
                         System.out.println(resultCode);
                         if (resultCode == SUCCESS_CODE) {
@@ -319,9 +315,10 @@ public class RetrofitUtils {
                         }
                     }
                 }
+
                 @Override
                 public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
-                    Toast.makeText(context,SERVER_REQUEST_FAILURE,Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, SERVER_REQUEST_FAILURE, Toast.LENGTH_LONG).show();
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
                 }
             });
@@ -339,7 +336,7 @@ public class RetrofitUtils {
             call.enqueue(new Callback<UserInfoRes>() {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
-                    if(response.body()!=null){
+                    if (response.body() != null) {
                         //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
                         if (!checkLocalAvatarImage() || SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") == null
                                 || (SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") != null
@@ -382,9 +379,8 @@ public class RetrofitUtils {
                             context.startActivity(intent);
                             startActivity.finish();
                         }
-                    }
-                    else {
-                        Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                         dialog.dismiss();
                     }
                 }
@@ -411,7 +407,7 @@ public class RetrofitUtils {
             call.enqueue(new Callback<UserInfoRes>() {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
-                    if(response.body()!=null){
+                    if (response.body() != null) {
                         //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
                         if (!checkLocalAvatarImage() || SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") == null
                                 || (SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") != null
@@ -444,11 +440,11 @@ public class RetrofitUtils {
                         else {
                             Log.d(TAG, "本地照片存在且未更新头像");
                         }
-                    }
-                    else {
-                        Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                     }
                 }
+
                 //请求失败时回调
                 @Override
                 public void onFailure(@NonNull Call<UserInfoRes> call, @NonNull Throwable t) {
@@ -469,7 +465,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     Log.d(TAG, Objects.requireNonNull(response.body()).getMsg());
                     int responseCode = Objects.requireNonNull(response.body()).getCode();
                     if (responseCode == SUCCESS_CODE) {
@@ -519,9 +515,8 @@ public class RetrofitUtils {
                         Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                     }
 
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                 }
                 if (dialog != null) dialog.dismiss();
             }
@@ -566,7 +561,7 @@ public class RetrofitUtils {
             call.enqueue(new Callback<AcademiesOrCollegesRes>() {
                 @Override
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
-                    if(response.body()!=null){
+                    if (response.body() != null) {
                         int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                         if (responseCode == SUCCESS_CODE) {
                             academies = Objects.requireNonNull(response.body()).getData();
@@ -587,9 +582,8 @@ public class RetrofitUtils {
                             Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                         }
-                    }
-                    else {
-                        Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                         dialog.dismiss();
                     }
                 }
@@ -635,7 +629,7 @@ public class RetrofitUtils {
             call.enqueue(new Callback<AcademiesOrCollegesRes>() {
                 @Override
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
-                    if(response.body()!=null){
+                    if (response.body() != null) {
                         int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                         if (responseCode == SUCCESS_CODE) {
                             colleges = Objects.requireNonNull(response.body()).getData();
@@ -669,9 +663,8 @@ public class RetrofitUtils {
                             Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                         }
-                    }
-                    else {
-                        Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                         dialog.dismiss();
                     }
                 }
@@ -713,7 +706,8 @@ public class RetrofitUtils {
     }
 
     /**
-     *        用户注册界面获取学校信息
+     * 用户注册界面获取学校信息
+     *
      * @param builder 选择对话框实例
      * @param college 大学文本
      * @param academy 专业文本
@@ -736,7 +730,7 @@ public class RetrofitUtils {
             call.enqueue(new Callback<AcademiesOrCollegesRes>() {
                 @Override
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
-                    if(response.body()!=null){
+                    if (response.body() != null) {
                         int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                         if (responseCode == SUCCESS_CODE) {
                             colleges = Objects.requireNonNull(response.body()).getData();
@@ -765,9 +759,8 @@ public class RetrofitUtils {
                             Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                         }
-                    }
-                    else {
-                        Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                     }
                     dialog.dismiss();
                 }
@@ -806,14 +799,14 @@ public class RetrofitUtils {
 
     //用户注册界面获取学院信息
     //传入用户token值该学校所有专业
-    public static void postAllAcademies(String collegeName, final AlertDialog.Builder builder, final EditText academy,final ZLoadingDialog dialog ){
+    public static void postAllAcademies(String collegeName, final AlertDialog.Builder builder, final EditText academy, final ZLoadingDialog dialog) {
 
         PostAllAcademies request = retrofit.create(PostAllAcademies.class);
         Call<AcademiesOrCollegesRes> call = request.getCall(new QueryAcademiesRequest(collegeName));
         call.enqueue(new Callback<AcademiesOrCollegesRes>() {
             @Override
             public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     final int responseCode = Integer.parseInt(Objects.requireNonNull(response.body()).getCode());
                     if (responseCode == SUCCESS_CODE) {
                         academies = Objects.requireNonNull(response.body()).getData();
@@ -835,9 +828,8 @@ public class RetrofitUtils {
                         Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 }
 
@@ -864,14 +856,13 @@ public class RetrofitUtils {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "false");
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", null);
 
                     nextActivity(startAct, LoginActivity.class);
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                 }
                 dialog.dismiss();
             }
@@ -903,7 +894,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull final Response<ResponseInfo<String>> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "avatar", Objects.requireNonNull(response.body()).getData());
                     avatarPath = UMapplication.getContext().getString(R.string.user_info_url) + Objects.requireNonNull(response.body()).getData();
                     new Thread(new Runnable() {
@@ -942,9 +933,8 @@ public class RetrofitUtils {
                             }
                         }
                     }).start();
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 }
             }
@@ -975,7 +965,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull final Response<ResponseInfo<String>> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "avatar", Objects.requireNonNull(response.body()).getData());
                     avatarPath = UMapplication.getContext().getString(R.string.user_info_url) + Objects.requireNonNull(response.body()).getData();
                     new Thread(new Runnable() {
@@ -992,9 +982,8 @@ public class RetrofitUtils {
                             }
                         }
                     }).start();
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 }
             }
@@ -1019,7 +1008,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     int responseCode = Objects.requireNonNull(response.body()).getCode();
                     if (responseCode == SUCCESS_CODE) {
                         if (msg.equals(FORGET_PSW_MSG)) {
@@ -1032,11 +1021,11 @@ public class RetrofitUtils {
                     } else {
                         Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                     }
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
                 Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
@@ -1058,18 +1047,18 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     int responseCode = Objects.requireNonNull(response.body()).getCode();
                     if (responseCode == SUCCESS_CODE) {
                         nextActivity(startAct, LoginActivity.class);
                     } else {
                         Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                     }
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
                 Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
@@ -1091,7 +1080,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     int responseCode = Objects.requireNonNull(response.body()).getCode();
                     if (responseCode == SUCCESS_CODE) {
                         SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "phone", phone);
@@ -1099,9 +1088,8 @@ public class RetrofitUtils {
                     } else {
                         Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                     }
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -1123,7 +1111,7 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     int responseCode = Objects.requireNonNull(response.body()).getCode();
                     if (responseCode == SUCCESS_CODE) {
                         String token = Objects.requireNonNull(response.body()).getData();
@@ -1147,9 +1135,8 @@ public class RetrofitUtils {
                     } else {
                         Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                     }
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -1163,18 +1150,18 @@ public class RetrofitUtils {
     }
 
     //用户第三方登录接口，传入uid，判断用户信息是否完整以及登录
-    public static void postAuthLogin(final Context context, final UMengLoginRequest uMengLoginRequest, final Activity startAct){
+    public static void postAuthLogin(final Context context, final UMengLoginRequest uMengLoginRequest, final Activity startAct) {
         PostAuthLogin request = retrofit.create(PostAuthLogin.class);
 
         Call<ResponseInfo<String>> call = request.getCall(uMengLoginRequest);
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     int responseCode = Objects.requireNonNull(response.body()).getCode();
-                    if(responseCode== SUCCESS_CODE){
-                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token", Objects.requireNonNull(response.body()).getData());
-                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"platform",uMengLoginRequest.getPlatform());
+                    if (responseCode == SUCCESS_CODE) {
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", Objects.requireNonNull(response.body()).getData());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "platform", uMengLoginRequest.getPlatform());
                         //使用com.zyao89:zloading:1.1.2引用別人的加载动画
                         ZLoadingDialog dialog = new ZLoadingDialog(context);
                         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
@@ -1185,37 +1172,36 @@ public class RetrofitUtils {
                         Log.d("token值", Objects.requireNonNull(response.body()).getData());
                         RetrofitUtils.postUserInfo(UMapplication.getContext(), startAct, Objects.requireNonNull(response.body()).getData(), dialog);
 //                    nextActivity(UMapplication.getContext(),startAct,MainActivity.class);
-                    }
-                    else {
-                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(),Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                         nextActivity(startAct, AuthPerUserInfo.class);
                     }
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
-                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE,Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
             }
         });
     }
 
     //用户第三方登录接口，完善用户信息
-    public static void postAuthPerInfo(final Context context, AuthPerInfoRequest authPerInfoRequest, final Activity startAct){
+    public static void postAuthPerInfo(final Context context, AuthPerInfoRequest authPerInfoRequest, final Activity startAct) {
         PostAuthPerInfo request = retrofit.create(PostAuthPerInfo.class);
 
         Call<ResponseInfo<String>> call = request.getCall(authPerInfoRequest);
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
-                if(response.body()!=null){
+                if (response.body() != null) {
                     int responseCode = Objects.requireNonNull(response.body()).getCode();
-                    if(responseCode== SUCCESS_CODE){
-                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"token", Objects.requireNonNull(response.body()).getData());
-                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),"hasLogin","true");
+                    if (responseCode == SUCCESS_CODE) {
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "token", Objects.requireNonNull(response.body()).getData());
+                        SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "hasLogin", "true");
                         //使用com.zyao89:zloading:1.1.2引用別人的加载动画
                         ZLoadingDialog dialog = new ZLoadingDialog(context);
                         dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
@@ -1226,18 +1212,17 @@ public class RetrofitUtils {
                         Log.d("token值", Objects.requireNonNull(response.body()).getData());
                         RetrofitUtils.postUserInfo(UMapplication.getContext(), startAct, Objects.requireNonNull(response.body()).getData(), dialog);
 //                    nextActivity(UMapplication.getContext(),startAct);
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                     }
-                    else {
-                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(),Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),CONNECT_WITH_ME,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
-                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE,Toast.LENGTH_SHORT).show();
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
 
             }
@@ -1246,7 +1231,7 @@ public class RetrofitUtils {
 
 
     //用户上传文件
-    public static void PostUpLoadFiles(String filePath, String spath,String note, String anonymous, final ZLoadingDialog dialog,final Activity startAct){
+    public static void PostUpLoadFiles(String filePath, String spath, String note, String anonymous, final ZLoadingDialog dialog, final Activity startAct) {
         PostUpLoadFiles request = retrofit.create(PostUpLoadFiles.class);
         final File file = new File(filePath);
         String userId = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "id");
@@ -1259,9 +1244,9 @@ public class RetrofitUtils {
 
         RequestBody spathRequest = RequestBody.create(MediaType.parse("multipart/form-data"), spath);
         RequestBody noteRequest;
-        if(note!=null){
+        if (note != null) {
             noteRequest = RequestBody.create(MediaType.parse("multipart/form-data"), note);
-        }else {
+        } else {
             noteRequest = null;
         }
 
@@ -1271,15 +1256,14 @@ public class RetrofitUtils {
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull final Response<ResponseInfo<String>> response) {
-                if(response.body()==null){
-                    Toast.makeText(UMapplication.getContext(),UPLOAD_FILE_BIG, Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(UMapplication.getContext(),UPLOAD_FILE_SUCCESS, Toast.LENGTH_SHORT).show();
+                if (response.body() == null) {
+                    Toast.makeText(UMapplication.getContext(), UPLOAD_FILE_BIG, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(UMapplication.getContext(), UPLOAD_FILE_SUCCESS, Toast.LENGTH_SHORT).show();
                     new AlertDialog.Builder(startAct).setTitle("提示").setMessage("上传文件成功，留在此页还是返回主页面？")
 
                             .setPositiveButton("返回主页面", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which){
+                                public void onClick(DialogInterface dialog, int which) {
                                     startAct.finish();
                                     dialog.dismiss();
                                 }
@@ -1295,7 +1279,7 @@ public class RetrofitUtils {
 
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<String>> call, @NonNull Throwable t) {
-                Log.d(TAG+"上传", "失败");
+                Log.d(TAG + "上传", "失败");
                 Toast.makeText(UMapplication.getContext(), UPLOAD_FILE_FAILURE, Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
@@ -1358,10 +1342,10 @@ public class RetrofitUtils {
     }
 
     //提取字符串中的所有数字作为广告名
-    private static String getNumbers(String adName){
-        String regEx="[^0-9]";
+    private static String getNumbers(String adName) {
+        String regEx = "[^0-9]";
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(adName);
-        return  m.replaceAll("").trim();
+        return m.replaceAll("").trim();
     }
 }

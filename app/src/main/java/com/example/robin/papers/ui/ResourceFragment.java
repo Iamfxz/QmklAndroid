@@ -52,12 +52,8 @@ import com.example.robin.papers.model.FileUrlRes;
 import com.example.robin.papers.model.PaperFile;
 import com.example.robin.papers.requestModel.FileRequest;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
-<<<<<<< HEAD
 import com.example.robin.papers.util.CircleDrawable;
-import com.example.robin.papers.util.CommonUtils;
-=======
 import com.example.robin.papers.util.ConstantUtils;
->>>>>>> b01179d2311ec0d9d8cb67e4eaffb5b20bfd266d
 import com.example.robin.papers.util.PaperFileUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
@@ -338,14 +334,9 @@ public class ResourceFragment extends Fragment
 
     //初始化界面时对标题栏做的一些准备工作
     private void initOnCreateView(){
-<<<<<<< HEAD
         RelativeLayout layout = (RelativeLayout) getActivity().findViewById(R.id.toolbar_layout);
         layout.setPadding(CircleDrawable.dip2px(getContext(),40),0,0,0);
         Log.d(TAG, "CircleDrawable.dip2px(getContext(),40)="+CircleDrawable.dip2px(getContext(),40));
-=======
-        RelativeLayout layout = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar_layout);
-        layout.setPadding(40,0,0,0);
->>>>>>> b01179d2311ec0d9d8cb67e4eaffb5b20bfd266d
     }
 
     public void setChooseSchoolListener() {

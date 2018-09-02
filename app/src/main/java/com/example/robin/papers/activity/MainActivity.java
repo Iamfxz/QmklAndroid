@@ -345,7 +345,7 @@ public class MainActivity extends BaseActivity
                 }else {
                     item.setChecked(true);
                     if(!isFastDoubleClick()){
-                        Toast.makeText(MainActivity.this,"聊天板块正在紧张刺激的开发当中，敬请期待~",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this,"趣聊板块正在紧张刺激的开发当中，敬请期待~",Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
@@ -355,7 +355,7 @@ public class MainActivity extends BaseActivity
                 }else {
                     item.setChecked(true);
                     if(!isFastDoubleClick()){
-                        Toast.makeText(MainActivity.this,"聊天板块正在紧张刺激的开发当中，敬请期待~",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this,"趣聊板块正在紧张刺激的开发当中，敬请期待~",Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
@@ -365,7 +365,7 @@ public class MainActivity extends BaseActivity
                 }else {
                     item.setChecked(true);
                     if(!isFastDoubleClick()){
-                        Toast.makeText(MainActivity.this,"聊天板块正在紧张刺激的开发当中，敬请期待~",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this,"趣聊板块正在紧张刺激的开发当中，敬请期待~",Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
