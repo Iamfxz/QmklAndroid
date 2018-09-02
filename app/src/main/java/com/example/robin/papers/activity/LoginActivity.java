@@ -157,7 +157,7 @@ public class LoginActivity extends BaseActivity {
                 startActivity(new Intent(LoginActivity.this,ForgetPswActivity.class));  //忘记密码 进入短信验证并找回
                 break;
             case R.id.register:
-                startActivity(new Intent(LoginActivity.this,PerfectInfoActivity.class));  //用户注册 进入短信验证
+                startActivity(new Intent(LoginActivity.this,RegisterActivity.class));  //用户注册 进入短信验证
                 break;
             case R.id.qq_quick_login:
 //                友盟

@@ -334,7 +334,7 @@ public class CircleDrawable extends Drawable {
 //        }
 //
 //        return false;
-        if( fSize <1073741824){
+        if( 1 >(double) fSize/104875){
             return false;
         }
         return true;

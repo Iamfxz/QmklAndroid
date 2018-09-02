@@ -343,7 +343,7 @@ public class FileDetailActivity extends BaseActivity {
             intent.setPackage("com.tencent.mobileqq");
             intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
             intent.putExtra(Intent.EXTRA_TEXT,  mFile.getName() + ": " +
-                    ConstantUtils.BaseUrl+"dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
+                    ConstantUtils.BaseUrl+"qmkl1.0.0/dir/download/file/"+mFile.getMd5()+"/"+mFile.getId());
 
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

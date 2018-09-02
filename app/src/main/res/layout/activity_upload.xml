@@ -54,7 +54,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:text="选择文件"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
         </RelativeLayout>
 
@@ -81,14 +81,14 @@
 
             <TextView
                 android:id="@+id/btn_choose_school"
-                android:layout_width="99dp"
+                android:layout_width="95dp"
                 android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
                 android:gravity="center"
                 android:text="所属学校"
                 android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/must_write_icon"
@@ -99,7 +99,7 @@
                 android:gravity="center"
                 android:text="*"
                 android:textColor="@color/red1"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -132,7 +132,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:text="课程目录"
                 android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -164,7 +164,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:text="文件备注"
                 android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
         </RelativeLayout>
 
     </RelativeLayout>

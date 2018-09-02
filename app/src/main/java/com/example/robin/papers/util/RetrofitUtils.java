@@ -63,11 +63,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
-<<<<<<< HEAD
-
-=======
->>>>>>> 5470c08cd2cff9a4283130d293f92ce950405ea2
-
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;

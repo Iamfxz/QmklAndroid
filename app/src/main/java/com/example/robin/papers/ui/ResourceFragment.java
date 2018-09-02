@@ -54,10 +54,6 @@ import com.example.robin.papers.requestModel.FileRequest;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.CircleDrawable;
 import com.example.robin.papers.util.ConstantUtils;
-<<<<<<< HEAD
-
-=======
->>>>>>> 5470c08cd2cff9a4283130d293f92ce950405ea2
 import com.example.robin.papers.util.PaperFileUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
@@ -341,10 +337,6 @@ public class ResourceFragment extends Fragment
         RelativeLayout layout = (RelativeLayout) getActivity().findViewById(R.id.toolbar_layout);
         layout.setPadding(CircleDrawable.dip2px(getContext(),40),0,0,0);
         Log.d(TAG, "CircleDrawable.dip2px(getContext(),40)="+CircleDrawable.dip2px(getContext(),40));
-<<<<<<< HEAD
-
-=======
->>>>>>> 5470c08cd2cff9a4283130d293f92ce950405ea2
     }
 
     public void setChooseSchoolListener() {

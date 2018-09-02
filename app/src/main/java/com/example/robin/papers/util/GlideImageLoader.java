@@ -1,12 +1,16 @@
 package com.example.robin.papers.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.widget.ImageView;
 
 import com.example.robin.papers.R;
 import com.bumptech.glide.Glide;
 import com.youth.banner.loader.ImageLoader;
+
+import java.io.InputStream;
 
 //图片轮播的图片加载器
 public class GlideImageLoader extends ImageLoader {
@@ -28,7 +32,8 @@ public class GlideImageLoader extends ImageLoader {
 //
         //用fresco加载图片简单用法，记得要写下面的createImageView方法
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        imageView.setImageResource((int)path);
+//        imageView.setImageResource((int)path);
+        imageView.setImageBitmap(readBitMap(context,(int)path));
     }
 
     //提供createImageView 方法，如果不用可以不重写这个方法，主要是方便自定义ImageView的创建
@@ -38,4 +43,22 @@ public class GlideImageLoader extends ImageLoader {
 //        ImageView simpleDraweeView=new ImageView(context);
 //        return simpleDraweeView;
 //    }
+
+
+    /**
+     * 以最省内存的方式读取本地资源的图片,防止oom(out of memory)
+     *
+     * @param context
+     * @param resId
+     * @return
+     */
+    public static Bitmap readBitMap(Context context, int resId) {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+        opt.inPurgeable = true;
+        opt.inInputShareable = true;
+        // 获取资源图片
+        InputStream is = context.getResources().openRawResource(resId);
+        return BitmapFactory.decodeStream(is, null, opt);
+    }
 }

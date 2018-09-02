@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@mipmap/splash">
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@mipmap/splash"
-        android:layout_marginTop="0dp"
+        android:layout_height="wrap_content"
         tools:context="com.example.robin.papers.activity.LoginActivity">
 
         <ImageView
@@ -22,14 +20,14 @@
             tools:ignore="HardcodedText" />
 
         <TextView
+            android:id="@+id/register_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="用户注册"
             android:layout_centerHorizontal="true"
             android:textColor="@color/black"
             android:textSize="22sp"
-            android:layout_above="@+id/user_info"
-            android:layout_marginBottom="40dp"
+            android:layout_marginTop="40dp"
             tools:ignore="HardcodedText" />
 
         <LinearLayout
@@ -37,6 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_below="@+id/register_tv"
             android:padding="5dp"
             android:layout_centerInParent="true">
 
