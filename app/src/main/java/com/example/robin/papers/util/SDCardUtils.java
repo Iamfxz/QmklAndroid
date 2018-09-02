@@ -150,6 +150,17 @@ public class SDCardUtils {
 
 
     /**
+     * 获取保存图片地址
+     *
+     * @return {AppPath}/image/
+     */
+    public static String getSaveImagePath() {
+        String saveImagePath = getAppPath() + "image" + File.separator;
+        checkPath(saveImagePath);
+        return saveImagePath;
+    }
+
+    /**
      * 获取SD卡的剩余容量 单位byte
      *
      * @return SD卡的剩余容量

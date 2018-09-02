@@ -56,20 +56,20 @@ public class AdsActivity extends Activity {
         } else  {
             getSharedPreferences("AppConfig", MODE_PRIVATE).edit().putInt("ad_version", 0).apply();
         }
-
-        //广告图片点击处理
-        ivAd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isClicked=true;
-                Log.d(TAG, "点击广告"+SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "fallback"));
-                Intent intent=new Intent(AdsActivity.this,WebViewActivity.class);
-                intent.putExtra("url",SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "fallback"));
-                intent.putExtra("title",SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"adtitle"));
-                startActivity(intent);
-                finish();
-            }
-        });
+            //暂时去除广告点击效果
+//        //广告图片点击处理
+//        ivAd.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                isClicked=true;
+//                Log.d(TAG, "点击广告"+SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "fallback"));
+//                Intent intent=new Intent(AdsActivity.this,WebViewActivity.class);
+//                intent.putExtra("url",SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "fallback"));
+//                intent.putExtra("title",SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"adtitle"));
+//                startActivity(intent);
+//                finish();
+//            }
+//        });
 
         //广告页面跳过按钮点击处理，停留3秒
         new Thread(new CountDownTimer(3,skip,0)).start();

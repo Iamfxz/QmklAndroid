@@ -48,4 +48,7 @@ public class ConstantUtils {
     public static final String UNKNOWN_ERROR = "很抱歉出现未知异常，可以反馈给我们吗~谢谢~";
     public static final String CONNECT_WITH_ME = "服务器已经崩了，请联系13375983207陈同学";
 
+    public static final String SAVE_PICTURE = "保存至手机";
+    public static final String SAVE_PICTURE_FAILED ="保存失败";
+    public static final String SAVE_PICTURE_SUCCESS = "图片成功保存至%s目录";
 }

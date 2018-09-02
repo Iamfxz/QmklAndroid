@@ -25,10 +25,26 @@
 
         <TextView
             android:layout_gravity="center_horizontal"
-            android:hint="趣聊正在紧张开发中blabla"
-            android:layout_marginTop="150dp"
-            android:textSize="20sp"
+            android:text="趣聊正在紧张开发中blabla"
+            android:textColor="@color/black"
+            android:layout_marginTop="40dp"
+            android:textSize="23sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:text="扫描下方二维码关注公众号方便获得更多资讯喔~"
+            android:layout_marginTop="40dp"
+            android:textSize="17sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/QRCode"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/qmkl"/>
     </LinearLayout>
 </RelativeLayout>

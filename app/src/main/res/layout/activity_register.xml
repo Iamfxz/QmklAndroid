@@ -72,11 +72,13 @@
 
             <Button
                 android:id="@+id/send_code"
-                android:layout_width="140sp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/green1"
                 android:text="发送验证码"
                 android:textSize="18sp"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="5dp"
                 android:layout_alignEnd="@id/verification_code"/>
         </RelativeLayout>
 

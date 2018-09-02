@@ -21,14 +21,17 @@ import android.util.Log;
 import android.util.TypedValue;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 
 //制作圆形图片以及图像压缩
 
 public class CircleDrawable extends Drawable {
 
+    private static final String TAG="CircleDrawable";
     private Bitmap bitmap;
 
     private BitmapShader bitmapShader;
@@ -44,7 +47,9 @@ public class CircleDrawable extends Drawable {
     public CircleDrawable(Drawable drawable, Context context, int size) {
         if(drawable!=null){
             size = dip2px(context, size);
+            Log.d(TAG, "size:"+size+"dip2px(context, size):"+dip2px(context, size));
             drawable = zoomDrawable(drawable, dip2px(context, size), dip2px(context, size));
+
             this.bitmap = drawableToBitmap(drawable);
             bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
 
@@ -99,7 +104,7 @@ public class CircleDrawable extends Drawable {
     /**
      * dp to px
      * */
-    private int dip2px(Context context, float dipValue) {
+    public static int dip2px(Context context, float dipValue) {
         Resources resources = context.getResources();
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, resources.getDisplayMetrics());
     }
@@ -207,32 +212,45 @@ public class CircleDrawable extends Drawable {
         //原文件
         File oldFile = new File(filePath);
 
-
-        //压缩文件路径 照片路径/
-        String targetPath = oldFile.getPath();
-        int quality = 50;//压缩比例0-100
-        Bitmap bm = getSmallBitmap(filePath);//获取一定尺寸的图片
-        int degree = getRotateAngle(filePath);//获取相片拍摄角度
-
-        if (degree != 0) {//旋转照片角度，防止头像横着显示
-            bm = setRotateAngle(degree,bm);
-        }
-        File outputFile = new File(targetPath);
         try {
-            if (!outputFile.exists()) {
-                outputFile.getParentFile().mkdirs();
-                //outputFile.createNewFile();
-            } else {
-                outputFile.delete();
+            //图片超过1M压缩
+            if(isMoreThanOneM(getFileSize(oldFile))){
+                Log.d(TAG, "图片超过1M");
+                //压缩文件路径 照片路径/
+                String targetPath = oldFile.getPath();
+                int quality = 50;//压缩比例0-100
+                Bitmap bm = getSmallBitmap(filePath);//获取一定尺寸的图片
+                int degree = getRotateAngle(filePath);//获取相片拍摄角度
+
+                if (degree != 0) {//旋转照片角度，防止头像横着显示
+                    bm = setRotateAngle(degree,bm);
+                }
+                File outputFile = new File(targetPath);
+                try {
+                    if (!outputFile.exists()) {
+                        outputFile.getParentFile().mkdirs();
+                        //outputFile.createNewFile();
+                    } else {
+                        outputFile.delete();
+                    }
+                    FileOutputStream out = new FileOutputStream(outputFile);
+                    bm.compress(Bitmap.CompressFormat.JPEG, quality, out);
+                    out.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return filePath;
+                }
+                return outputFile.getPath();
             }
-            FileOutputStream out = new FileOutputStream(outputFile);
-            bm.compress(Bitmap.CompressFormat.JPEG, quality, out);
-            out.close();
+            else {
+                Log.d(TAG, "图片未超过1M");
+                return filePath;
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return filePath;
         }
-        return outputFile.getPath();
+        return filePath;
+
     }
 
     /**
@@ -262,6 +280,66 @@ public class CircleDrawable extends Drawable {
         }
         return inSampleSize;
     }
+
+
+    public static long getFileSize(File f) throws Exception{
+
+        long l=0;
+
+        if ( f.exists() ){
+
+            FileInputStream mFIS = new FileInputStream(f);
+
+            l= mFIS.available();
+
+            mFIS.close();
+        } else {
+
+            l=0;
+
+        }
+
+        return l;
+
+    }
+
+    /**
+
+     * 将文件大小转换成字节，返回文件大小是否超过1M
+
+     */
+
+    public static boolean isMoreThanOneM(long fSize){
+
+        DecimalFormat df = new DecimalFormat("#.00");
+
+        String fileSizeString = "";
+
+//        if(fSize<1024 && fSize < 104875){
+//
+//            fileSizeString = df.format((double) fSize) + "B";
+//
+//        } else if ( fSize >104875 &&fSize < 1073741824){
+//
+//            fileSizeString = df.format((double) fSize/1024) + "K";
+//
+//        } else if ( fSize >1073741824){
+//
+//            fileSizeString = df.format((double) fSize/104875 ) + "M";
+//            return true;
+//        } else {
+//
+//            fileSizeString = df.format((double) fSize/1073741824) + "G";
+//            return true;
+//        }
+//
+//        return false;
+        if( fSize <1073741824){
+            return false;
+        }
+        return true;
+    }
+
 
 
 }

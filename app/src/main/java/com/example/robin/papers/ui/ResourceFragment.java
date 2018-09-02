@@ -54,6 +54,7 @@ import com.example.robin.papers.model.FileUrlRes;
 import com.example.robin.papers.model.PaperFile;
 import com.example.robin.papers.requestModel.FileRequest;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
+import com.example.robin.papers.util.CircleDrawable;
 import com.example.robin.papers.util.CommonUtils;
 import com.example.robin.papers.util.PaperFileUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
@@ -320,7 +321,8 @@ public class ResourceFragment extends Fragment
     //初始化界面时对标题栏做的一些准备工作
     private void initOnCreateView(){
         RelativeLayout layout = (RelativeLayout) getActivity().findViewById(R.id.toolbar_layout);
-        layout.setPadding(40,0,0,0);
+        layout.setPadding(CircleDrawable.dip2px(getContext(),40),0,0,0);
+        Log.d(TAG, "CircleDrawable.dip2px(getContext(),40)="+CircleDrawable.dip2px(getContext(),40));
     }
 
     public void setChooseSchoolListener() {

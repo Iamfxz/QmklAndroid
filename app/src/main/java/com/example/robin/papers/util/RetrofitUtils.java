@@ -60,6 +60,8 @@ import com.zyao89.view.zloading.Z_TYPE;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -125,7 +127,9 @@ public class RetrofitUtils {
                     }
                     //广告页当前可用
                     oldAdName = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "AdName");
-                    newAdName = Objects.requireNonNull(response.body()).getData().getUpdatedAt();
+                    newAdName = getNumbers(Objects.requireNonNull(response.body()).getData().getUpdatedAt());
+                    Log.d(TAG, "createAt:"+Objects.requireNonNull(response.body()).getData().getUpdatedAt());
+                    Log.d(TAG, "createAt保留数字:"+getNumbers(Objects.requireNonNull(response.body()).getData().getUpdatedAt()));
                     adPath = Objects.requireNonNull(response.body()).getData().getUrl();
                     SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "fallback",
                             Objects.requireNonNull(response.body()).getData().getFallback());
@@ -329,7 +333,7 @@ public class RetrofitUtils {
                         //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
                         if (!checkLocalAvatarImage() || SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") == null
                                 || (SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") != null
-                                && !SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar").equals(Objects.requireNonNull(response.body()).getData().getAcademy()))) {
+                                && !SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar").equals(Objects.requireNonNull(response.body()).getData().getAvatar()))) {
                             SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "nickname", Objects.requireNonNull(response.body()).getData().getNickname());
                             SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "academy", Objects.requireNonNull(response.body()).getData().getAcademy());
                             SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "avatar", Objects.requireNonNull(response.body()).getData().getAvatar());
@@ -401,7 +405,7 @@ public class RetrofitUtils {
                         //本地头像不存在或头像已上传更新，重新缓存头像信息并显示
                         if (!checkLocalAvatarImage() || SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") == null
                                 || (SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar") != null
-                                && !SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar").equals(Objects.requireNonNull(response.body()).getData().getAcademy()))) {
+                                && !SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "avatar").equals(Objects.requireNonNull(response.body()).getData().getAvatar()))) {
                             SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "nickname", Objects.requireNonNull(response.body()).getData().getNickname());
                             SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "academy", Objects.requireNonNull(response.body()).getData().getAcademy());
                             SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), "avatar", Objects.requireNonNull(response.body()).getData().getAvatar());
@@ -1341,5 +1345,13 @@ public class RetrofitUtils {
                 startAct.finish();
             }
         });
+    }
+
+    //提取字符串中的所有数字作为广告名
+    private static String getNumbers(String adName){
+        String regEx="[^0-9]";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(adName);
+        return  m.replaceAll("").trim();
     }
 }

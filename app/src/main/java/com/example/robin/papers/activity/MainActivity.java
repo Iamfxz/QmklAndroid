@@ -137,8 +137,8 @@ public class MainActivity extends BaseActivity
         //获取头像文件，先转化为100*100的drawable文件
         Drawable drawable = Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(getApplicationContext(), "avatar")));
         CircleDrawable circleDrawable = new CircleDrawable(drawable, this, 44);
+//        toolbar.setNavigationIcon(drawable);
         toolbar.setNavigationIcon(circleDrawable);
-
         drawer.addDrawerListener(toggle);
 
         toggle.syncState();

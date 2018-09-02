@@ -85,7 +85,7 @@ public class DownloadedFragment extends Fragment {
         Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setVisibility(View.INVISIBLE);
         Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar).findViewById(R.id.choose_school).setOnClickListener(null);
         RelativeLayout layout = (RelativeLayout) getActivity().findViewById(R.id.toolbar_layout);
-        layout.setPadding(0,0,0,0);
+        layout.setPadding(13,0,0,0);
     }
     private void checkDownloaded() {
         boolean isEmpty = downloadDB.isEmpty();
