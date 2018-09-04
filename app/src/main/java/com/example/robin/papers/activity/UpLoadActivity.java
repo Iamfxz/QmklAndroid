@@ -93,6 +93,8 @@ public class UpLoadActivity extends BaseActivity {
                     .setHintText("UpLoading...")
                     .setCanceledOnTouchOutside(false)
                     .show();
+            //监听用户上传文件
+            MobclickAgent.onEvent(this, "upload_file");
             RetrofitUtils.PostUpLoadFiles(path,
                     "学校:" + school.getText().toString() + "课程目录:"+course.getText().toString(),
                     remarks.getText().toString().equals("")?null:remarks.getText().toString(),

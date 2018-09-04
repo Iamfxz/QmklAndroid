@@ -44,6 +44,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
+                            android:singleLine="true"
+                            android:ellipsize="end"
                             android:text="我和发现"
                             android:textColor="@color/white_content"
                             android:textSize="20sp" />

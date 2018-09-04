@@ -1,6 +1,8 @@
 package com.example.robin.papers.ui;
 
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -259,10 +262,11 @@ public class ResourceFragment extends Fragment
 
                 final String folder = list.get(position);
 
+                if(searchView.isSearchOpen()){
+                    hide_keyboard_from(getContext(),getView());
+                    searchView.closeSearch();
+                }
 
-                    if (searchView.isSearchOpen()) {
-                        searchView.closeSearch();
-                    }
                     //点击的是文件夹 TODO 添加在加载数据时候的加载动画
                     if (PaperFileUtils.typeWithFileName(folder).equals("folder")) {
                         loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
@@ -323,7 +327,12 @@ public class ResourceFragment extends Fragment
 
         lvFolder.setOnScrollListener(this);
     }
-
+    public void hide_keyboard_from(Context context, View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
     //初始化界面时对标题栏做的一些准备工作
     private void initOnCreateView(){
         RelativeLayout layout = (RelativeLayout) getActivity().findViewById(R.id.toolbar_layout);
@@ -425,7 +434,6 @@ public class ResourceFragment extends Fragment
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                String defaultQuery = lvFolder.getItemAtPosition(0).toString();//默认搜索第一个
 
                 if (queryIsExist(query)) {
                     Toast.makeText(getContext(), "您搜索的是《" + query + "》", Toast.LENGTH_SHORT).show();
@@ -433,7 +441,8 @@ public class ResourceFragment extends Fragment
                         loadPaperData(query, loadFolder, collegeName);//加载文件夹
                     else
                         loadPaperData(query, loadFile, collegeName);//加载具体文件
-                } else if (!lvFolder.getItemAtPosition(0).toString().isEmpty()) {
+                } else if (lvFolder.getCount() > 0) {
+                    String defaultQuery = lvFolder.getItemAtPosition(0).toString();//默认搜索第一个
                     if (queryIsExist(defaultQuery)) {
                         if (PaperFileUtils.typeWithFileName(defaultQuery).equals("folder"))
                             loadPaperData(defaultQuery, loadFolder, collegeName);//加载文件夹
@@ -690,6 +699,7 @@ public class ResourceFragment extends Fragment
     public void onKeyDown(int keyCode) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (searchView.isSearchOpen()) {
+                hide_keyboard_from(getContext(),getView());
                 searchView.closeSearch();//关闭搜索框
             } else if (path.toString().equals("/")) {
                 exitBy2Click();

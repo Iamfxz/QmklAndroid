@@ -93,5 +93,9 @@ public class MyTextWatcher implements TextWatcher {
             changeBtn.setBackgroundColor(context.getResources().getColor(R.color.blue));
             changeBtn.setEnabled(true);
         }
+        else{
+            changeBtn.setBackgroundColor(context.getResources().getColor(R.color.btn_unable));
+            changeBtn.setEnabled(false);
+        }
     }
 }

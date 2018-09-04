@@ -44,6 +44,9 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        //监听用户启动应用
+        MobclickAgent.onEvent(this, "app_launch");
+
         //获取SD卡读写权限
         PermissionUtils.requestPermission(SplashActivity.this, PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE);
 

@@ -259,7 +259,8 @@ public class FileDetailActivity extends BaseActivity {
      */
     private void startDownloadProcess() {
         if (!mFile.isDownload()) {
-
+            //监听用户下载文件
+            MobclickAgent.onEvent(this, "download_file");
             //未下载 执行下载进程
             setDownloadViewVisible();
             System.out.println("文件资源URL:"+mFile.getUrl());
@@ -349,6 +350,8 @@ public class FileDetailActivity extends BaseActivity {
             intent.putExtra(Intent.EXTRA_TITLE, "发至电脑");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(Intent.createChooser(intent, "选择\"发送到我的电脑\""));
+            //监听用户分享文件
+            MobclickAgent.onEvent(this, "share_file");
         }catch (Exception e){
             Toast.makeText(getApplicationContext(),"你没有安装QQ",Toast.LENGTH_LONG).show();
         }
@@ -483,11 +486,15 @@ public class FileDetailActivity extends BaseActivity {
             boolean result = false;
             if (msg.what == 1) {
                 //点赞成功+1
+                //监听用户点赞
+                MobclickAgent.onEvent(FileDetailActivity.this, "like_click");
                 mFile.setLikeNum(mFile.getLikeNum()+1);
                 tvLikeTip.setText(String.valueOf(mFile.getLikeNum()));
                 result = true;
             }else if (msg.what == 2){
                 //点踩成功+1
+                //监听用户点踩
+                MobclickAgent.onEvent(FileDetailActivity.this, "dislike_click");
                 mFile.setDislikeNum(mFile.getDislikeNum()+1);
                 tvDislikeTip.setText(String.valueOf(mFile.getDislikeNum()));
                 result = true;

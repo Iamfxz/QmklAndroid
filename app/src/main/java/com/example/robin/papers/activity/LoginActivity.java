@@ -141,6 +141,8 @@ public class LoginActivity extends BaseActivity {
                 userPsw.setErrorEnabled(false);
                 break;
             case R.id.login_btn:
+                //监听用户点击登录
+                MobclickAgent.onEvent(this, "login_click");
                 if (Objects.requireNonNull(userPhoneNum.getEditText()).getText().toString().length() != 11) {
                     Toast.makeText(getApplicationContext(),"手机号长度不正确",Toast.LENGTH_SHORT).show();
                 } else if ((Objects.requireNonNull(userPsw.getEditText()).getText().toString().length() < 6) &&
