@@ -64,7 +64,7 @@
             android:value="56128c76e0f55aa3ff006c5c" />
         <meta-data
             android:name="UMENG_CHANNEL"
-            android:value="期末考啦" />
+            android:value="期末考啦1" />
         <!--qq第三方登录配置-->
         <activity
             android:name="com.tencent.tauth.AuthActivity"

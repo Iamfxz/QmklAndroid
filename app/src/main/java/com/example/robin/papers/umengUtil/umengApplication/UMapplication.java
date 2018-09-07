@@ -1,5 +1,6 @@
 package com.example.robin.papers.umengUtil.umengApplication;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 
@@ -18,8 +19,8 @@ public class UMapplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        UMConfigure.init(this, "56128c76e0f55aa3ff006c5c","期末考啦", UMConfigure.DEVICE_TYPE_PHONE,"");
-        MobclickAgent.setDebugMode(true);
+        UMConfigure.init(this, "56128c76e0f55aa3ff006c5c","期末考啦1", UMConfigure.DEVICE_TYPE_PHONE,"");
+        MobclickAgent.setDebugMode(false);
         // SDK在统计Fragment时，需要关闭Activity自带的页面统计，
         // 然后在每个页面中重新集成页面统计的代码(包括调用了 onResume 和 onPause 的Activity)。
         MobclickAgent.openActivityDurationTrack(false);
@@ -56,4 +57,6 @@ public class UMapplication extends Application {
         // Initialize ImageLoader with configuration.
         ImageLoader.getInstance().init(config);
     }
+
+
 }

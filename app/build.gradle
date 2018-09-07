@@ -42,6 +42,18 @@ android {
         // but continue the build even whenerrorsarefound:
         abortOnError false
     }
+
+//    productFlavors{
+//        yingyongbao{}
+//        baidu{}
+//        xiaomi{}
+//        huawei{}
+//    }
+//
+//    productFlavors.all{
+//        flavor ->
+//            flavor.mainfestPlaceholders =[CHANNEL_VAALUE:"期末考啦"]
+//    }
 }
 
 dependencies {
