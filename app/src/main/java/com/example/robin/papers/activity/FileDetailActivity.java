@@ -108,8 +108,10 @@ public class FileDetailActivity extends BaseActivity {
     TextView tvDislikeTip;
     @BindView(R.id.likeTip)//点赞人数
     TextView tvLikeTip;
-    @BindView(R.id.create_time)
+    @BindView(R.id.create_time)//创建时间
     TextView tvCreateTime;
+    @BindView(R.id.uploader)//上传者
+    TextView tvUploader;
 
     //监听退出和删除按钮
     @OnClick({R.id.iv_exit, R.id.tv_delete})
@@ -179,6 +181,8 @@ public class FileDetailActivity extends BaseActivity {
         tvLikeTip.setText(String.valueOf(mFile.getLikeNum()));
         tvDislikeTip.setText(String.valueOf(mFile.getDislikeNum()));
         tvCreateTime.setText(mFile.getCreateAt());
+        String uploader = getResources().getString(R.string.uploader);//使用占位符
+        tvUploader.setText(String.format(uploader,mFile.getNick()));
 
         //显示图标
         imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType().toLowerCase()));
