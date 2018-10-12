@@ -112,10 +112,14 @@ public class FileDetailActivity extends BaseActivity {
     TextView tvDislikeTip;
     @BindView(R.id.likeTip)//点赞人数
     TextView tvLikeTip;
-    @BindView(R.id.create_time)
+    @BindView(R.id.create_time)//创建时间
     TextView tvCreateTime;
     @BindView((R.id.online_view))
     TextView onlineView;
+
+    @BindView(R.id.uploader)//上传者
+    TextView tvUploader;
+
 
     //监听退出和删除按钮
     @OnClick({R.id.iv_exit, R.id.tv_delete})
@@ -191,6 +195,8 @@ public class FileDetailActivity extends BaseActivity {
         tvLikeTip.setText(String.valueOf(mFile.getLikeNum()));
         tvDislikeTip.setText(String.valueOf(mFile.getDislikeNum()));
         tvCreateTime.setText(mFile.getCreateAt());
+        String uploader = getResources().getString(R.string.uploader);//使用占位符
+        tvUploader.setText(String.format(uploader,mFile.getNick()));
 
         //显示图标
         imgFileIcon.setImageResource(PaperFileUtils.parseImageResource(mFile.getType().toLowerCase()));
@@ -242,7 +248,8 @@ public class FileDetailActivity extends BaseActivity {
                 !PaperFileUtils.typeWithFileName(mFile.getName()).equals("xlsx") &&
                 !PaperFileUtils.typeWithFileName(mFile.getName()).equals("ppt") &&
                 !PaperFileUtils.typeWithFileName(mFile.getName()).equals("jpg") &&
-                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("png")){
+                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("png") &&
+                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("pdf")){
             onlineView.setVisibility(View.GONE);
         }
     }
@@ -555,7 +562,8 @@ public class FileDetailActivity extends BaseActivity {
                 PaperFileUtils.typeWithFileName(mFile.getName()).equals("xls") ||
                 PaperFileUtils.typeWithFileName(mFile.getName()).equals("docx") ||
                 PaperFileUtils.typeWithFileName(mFile.getName()).equals("pptx") ||
-                PaperFileUtils.typeWithFileName(mFile.getName()).equals("xlsx")){
+                PaperFileUtils.typeWithFileName(mFile.getName()).equals("xlsx") ||
+                PaperFileUtils.typeWithFileName(mFile.getName()).equals("ppt")){
             url=onlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName());
         }
         return url;

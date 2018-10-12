@@ -154,6 +154,16 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/uploader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="73dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="@string/uploader" />
+
     <RelativeLayout
         android:id="@+id/rl_tool_bar"
         android:layout_width="match_parent"

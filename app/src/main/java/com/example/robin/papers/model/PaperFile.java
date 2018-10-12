@@ -42,7 +42,7 @@ public class PaperFile implements Parcelable {
         this.createAt = fileDetailRes.getData().createAt;
         this.updateAt = fileDetailRes.getData().updateAt;
         this.md5 = fileDetailRes.getData().md5;//文件的md5
-        this.nick = fileDetailRes.getData().md5;//上传文件的用户昵称
+        this.nick = fileDetailRes.getData().nick;//上传文件的用户昵称
         this.dislikeNum = fileDetailRes.getData().dislikeNum;//踩的人数
         this.likeNum = fileDetailRes.getData().likeNum;//赞的人数
         this.uid = fileDetailRes.getData().uid;//用户id
@@ -84,6 +84,8 @@ public class PaperFile implements Parcelable {
 
         dest.writeString(this.createAt);
         dest.writeString(this.updateAt);
+
+        dest.writeString(this.nick);
     }
 
     private PaperFile(Parcel in) {
@@ -104,6 +106,8 @@ public class PaperFile implements Parcelable {
 
         this.createAt = in.readString();
         this.updateAt = in.readString();
+
+        this.nick = in.readString();
     }
 
     public static final Creator<PaperFile> CREATOR = new Creator<PaperFile>() {

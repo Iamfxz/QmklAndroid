@@ -100,7 +100,7 @@ public class ResourceFragment extends Fragment
         implements NavigationView.OnNavigationItemSelectedListener, AbsListView.OnScrollListener {
 
     final static String TAG = "ResourceFragment";
-    private static String mPackageName="com.example.robin.papers.ui.ResourceFragment";
+    private static String mPackageName = "com.example.robin.papers.ui.ResourceFragment";
     //文件总数据
     private FileRes mData;
     private List<String> list;//文件名列表，有点乱，还需要理清楚 TODO
@@ -137,6 +137,9 @@ public class ResourceFragment extends Fragment
     private MaterialSearchView searchView;
     MenuItem searchItem;
 
+    //侧边快捷搜索条
+    WaveSideBar sideBar;
+
     //显示学校名称或当前所在文件夹
     private TextView title;
     //下拉选择学校
@@ -147,6 +150,11 @@ public class ResourceFragment extends Fragment
 
     //判断应不应该有列表加载动画
     boolean shouldAnimate = false;
+
+    //用于存放用户上次在主界面的位置
+    int lastPosition = 0;
+    //成功记录用户上次在主界面的位置
+    boolean recordSuccess = false;
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
      */
@@ -209,7 +217,7 @@ public class ResourceFragment extends Fragment
             @Override
             public void onClick(View v) {
                 BasePath = "/";
-                loadPaperData(null, 4, collegeName);//返回主页面
+                loadPaperData(null, loadMainFolder, collegeName);//返回主页面
             }
         });
         fabPreviousMenu.setOnClickListener(new View.OnClickListener() {
@@ -221,7 +229,7 @@ public class ResourceFragment extends Fragment
             }
         });
 
-        WaveSideBar sideBar = Objects.requireNonNull(getActivity()).findViewById(R.id.side_bar);
+        sideBar = Objects.requireNonNull(getActivity()).findViewById(R.id.side_bar);
         sideBar.setIndexItems("#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
                 "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
         sideBar.setOnSelectIndexItemListener(new WaveSideBar.OnSelectIndexItemListener() {
@@ -230,7 +238,7 @@ public class ResourceFragment extends Fragment
                 int section;
                 int position = 0;
                 Log.d("WaveSideBar", index);
-                if(index.charAt(0) >= 'A' && index.charAt(0) <= 'Z'){
+                if (index.charAt(0) >= 'A' && index.charAt(0) <= 'Z') {
                     section = index.charAt(0) - 'A';
                     position = mAdapter.getPositionForSection(section);
                 }
@@ -262,19 +270,18 @@ public class ResourceFragment extends Fragment
 
                 final String folder = list.get(position);
 
-                if(searchView.isSearchOpen()){
-                    hide_keyboard_from(getContext(),getView());
+                if (searchView.isSearchOpen()) {
                     searchView.closeSearch();
                 }
 
-                    //点击的是文件夹 TODO 添加在加载数据时候的加载动画
-                    if (PaperFileUtils.typeWithFileName(folder).equals("folder")) {
-                        loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
-                    } else {
-                        if(!isFastDoubleClick()){
-                            loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
-                        }
+                //点击的是文件夹 TODO 添加在加载数据时候的加载动画
+                if (PaperFileUtils.typeWithFileName(folder).equals("folder")) {
+                    loadPaperData(folder, loadFolder, collegeName);//指定文件夹路径
+                } else {
+                    if (!isFastDoubleClick()) {
+                        loadPaperData(folder, loadFile, collegeName);//点击的是具体某个可以下载的文件
                     }
+                }
 
             }
         });
@@ -327,17 +334,12 @@ public class ResourceFragment extends Fragment
 
         lvFolder.setOnScrollListener(this);
     }
-    public void hide_keyboard_from(Context context, View view) {
-        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null) {
-            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
+
     //初始化界面时对标题栏做的一些准备工作
-    private void initOnCreateView(){
-        RelativeLayout layout = (RelativeLayout) getActivity().findViewById(R.id.toolbar_layout);
-        layout.setPadding(CircleDrawable.dip2px(getContext(),40),0,0,0);
-        Log.d(TAG, "CircleDrawable.dip2px(getContext(),40)="+CircleDrawable.dip2px(getContext(),40));
+    private void initOnCreateView() {
+        RelativeLayout layout = Objects.requireNonNull(getActivity()).findViewById(R.id.toolbar_layout);
+        layout.setPadding(CircleDrawable.dip2px(Objects.requireNonNull(getContext()), 40), 0, 0, 0);
+        Log.d(TAG, "CircleDrawable.dip2px(getContext(),40)=" + CircleDrawable.dip2px(getContext(), 40));
     }
 
     public void setChooseSchoolListener() {
@@ -441,6 +443,7 @@ public class ResourceFragment extends Fragment
                         loadPaperData(query, loadFolder, collegeName);//加载文件夹
                     else
                         loadPaperData(query, loadFile, collegeName);//加载具体文件
+                    searchView.closeSearch();
                 } else if (lvFolder.getCount() > 0) {
                     String defaultQuery = lvFolder.getItemAtPosition(0).toString();//默认搜索第一个
                     if (queryIsExist(defaultQuery)) {
@@ -449,12 +452,13 @@ public class ResourceFragment extends Fragment
                         else
                             loadPaperData(defaultQuery, loadFile, collegeName);//加载具体文件
                     }
-                    Toast.makeText(getContext(), "您搜索的是《" + defaultQuery + "》", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "您最终搜索的是《" + defaultQuery + "》", Toast.LENGTH_SHORT).show();
+                    searchView.closeSearch();
                 } else {
                     Toast.makeText(getContext(), "找不到您搜索的《" + query + "》课程或文件", Toast.LENGTH_SHORT).show();
                 }
 
-                return false;
+                return true;
             }
 
             @Override
@@ -469,14 +473,6 @@ public class ResourceFragment extends Fragment
                         filter.filter(newText);
                     }
                 }
-//                searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                        String query = (String) parent.getItemAtPosition(position);
-//                        searchView.setQuery(query, true);
-//                        searchView.closeSearch();
-//                    }
-//                });
                 return true;
             }
         });
@@ -491,7 +487,6 @@ public class ResourceFragment extends Fragment
 
             @Override
             public void onSearchViewClosed() {
-//                ptrFrame.autoRefresh();
             }
         });
     }
@@ -542,6 +537,9 @@ public class ResourceFragment extends Fragment
         switch (requestCode) {
             case loadFolder:
                 //加载文件夹folder，需要改变BasePath的地址
+                if(BasePath.equals("/")){
+                    lastPosition = lvFolder.getFirstVisiblePosition();
+                }
                 BasePath += folder;
                 BasePath += "/";
                 path = new StringBuffer(BasePath);
@@ -556,10 +554,14 @@ public class ResourceFragment extends Fragment
                 //回退后地址
                 path = new StringBuffer(BasePath);
                 //回退后所在文件夹folder
-                if (!path.toString().equals("/"))
+                if (!path.toString().equals("/")){
                     folder = path.substring(PaperFileUtils.last2IndexOf(path.toString()) + 1, path.lastIndexOf("/"));
-                else
+                    recordSuccess = false;
+                }
+                else{//回到主界面
                     chooseSchool.setVisibility(View.VISIBLE);
+                    recordSuccess = true;
+                }
                 break;
             case loadRefresh:
                 //刷新
@@ -699,7 +701,6 @@ public class ResourceFragment extends Fragment
     public void onKeyDown(int keyCode) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (searchView.isSearchOpen()) {
-                hide_keyboard_from(getContext(),getView());
                 searchView.closeSearch();//关闭搜索框
             } else if (path.toString().equals("/")) {
                 exitBy2Click();
@@ -953,7 +954,7 @@ public class ResourceFragment extends Fragment
 
     }
 
-    private class FileAdapter extends BaseAdapter implements Filterable,SectionIndexer {
+    private class FileAdapter extends BaseAdapter implements Filterable, SectionIndexer {
 
         private final Object mLock = new Object();//锁住数据
 
@@ -1012,17 +1013,17 @@ public class ResourceFragment extends Fragment
                 holder.imgFolderArrow.setVisibility(View.VISIBLE);
             }
 
-            if(position == 0 && getPositionForSection(getSectionForPosition(position)) == -1){
+            if (position == 0 && getPositionForSection(getSectionForPosition(position)) == -1) {
                 holder.tvFolderHead.setVisibility(View.VISIBLE);
                 holder.tvFolderHead.setText("#");
-            }else if(position == getPositionForSection(getSectionForPosition(position))){
+            } else if (position == getPositionForSection(getSectionForPosition(position))) {
                 holder.tvFolderHead.setVisibility(View.VISIBLE);
                 //把section index转化为大写字母
                 char c = (char) (getSectionForPosition(position) + 65);
-                if(c >= 'A' && c <= 'Z'){
+                if (c >= 'A' && c <= 'Z') {
                     holder.tvFolderHead.setText(String.valueOf(c));
                 }
-            }else{
+            } else {
                 holder.tvFolderHead.setVisibility(View.GONE);
             }
             return convertView;
@@ -1044,25 +1045,26 @@ public class ResourceFragment extends Fragment
         @Override
         public int getPositionForSection(int arg0) {              //关键方法，通过section index获取在ListView中的位置
             //根据参数arg0，加上65后得到对应的大写字母
-            char c = (char)(arg0 + 65);
+            char c = (char) (arg0 + 65);
             //循环遍历ListView中的数据，遇到第一个首字母为上面的就是要找的位置
-            for(int i = 0; i < getCount(); i++){
-                if(Pinyin.toPinyin(list.get(i),"").toUpperCase().charAt(0) == c){
+            for (int i = 0; i < getCount(); i++) {
+                if (Pinyin.toPinyin(list.get(i), "").toUpperCase().charAt(0) == c) {
                     return i;
                 }
             }
             return -1;//找不到返回-1
         }
+
         @Override
         public int getSectionForPosition(int arg0) {              //关键方法，通过在ListView中的位置获取Section index
             //获取该位置的城市名首字母
-            try{
-                char c = Pinyin.toPinyin(list.get(arg0),"").toUpperCase().charAt(0);
+            try {
+                char c = Pinyin.toPinyin(list.get(arg0), "").toUpperCase().charAt(0);
                 //如果该字母在A和Z之间，则返回A到Z的索引，从0到25
-                if(c >= 'A' && c <= 'Z'){
+                if (c >= 'A' && c <= 'Z') {
                     return c - 'A';
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             //如果首字母不是A到Z的字母，则返回26，该类型将会被分类到#下面
@@ -1118,7 +1120,7 @@ public class ResourceFragment extends Fragment
                         } else if (valuePinyin.equals(queryPinyin)) {//拼音完全匹配
                             newValues.add(value);
                             break;
-                        } else if (value.contains(queryString)){//判断是否包含搜索字符串的中文
+                        } else if (value.contains(queryString)) {//判断是否包含搜索字符串的中文
                             newValues.add(value);
                         } else if (valuePinyin.contains(queryPinyin)) {//判断是否包含搜索字符串的拼音
                             newValues.add(value);
@@ -1194,9 +1196,16 @@ public class ResourceFragment extends Fragment
                         mData.sort();
                     }
                     list = new ArrayList<>(mData.getData().keySet());
+                    //如果加载数据完成自动返回上次位置（仅限主列表）
+                    if(recordSuccess){
+                        System.out.println("recordSuccess:"+recordSuccess);
+                        lvFolder.setAdapter(mAdapter);
+                        lvFolder.setSelection(lastPosition);
+                        recordSuccess = false;
+                    }else {
+                        lvFolder.setSelection(0);
+                    }
                     mAdapter.notifyDataSetChanged();//UI界面就刷新
-                    //如果加载数据完成自动返回顶部
-                    lvFolder.setSelection(0);
                     result = true;
                     break;
                 case 2:
@@ -1238,7 +1247,7 @@ public class ResourceFragment extends Fragment
     public void onPause() {
         super.onPause();
         //如果当前页面对用户不可见则关闭搜索框
-        if(searchView.isSearchOpen()){
+        if (searchView.isSearchOpen()) {
             searchView.closeSearch();
         }
         shouldAnimate = false;
