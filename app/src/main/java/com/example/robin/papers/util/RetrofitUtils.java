@@ -27,12 +27,16 @@ import com.example.robin.papers.activity.UserInfoActivity;
 import com.example.robin.papers.impl.PostAds;
 import com.example.robin.papers.impl.PostAllAcademies;
 import com.example.robin.papers.impl.PostAllColleges;
+import com.example.robin.papers.impl.PostAllPost;
 import com.example.robin.papers.impl.PostAuthLogin;
 import com.example.robin.papers.impl.PostAuthPerInfo;
 import com.example.robin.papers.impl.PostExitLogin;
 import com.example.robin.papers.impl.PostGetCode;
+import com.example.robin.papers.impl.PostLike;
 import com.example.robin.papers.impl.PostLogin;
 import com.example.robin.papers.impl.PostPerfectInfo;
+import com.example.robin.papers.impl.PostPostIsLike;
+import com.example.robin.papers.impl.PostPostLike;
 import com.example.robin.papers.impl.PostRegister;
 import com.example.robin.papers.impl.PostSetNewPsw;
 import com.example.robin.papers.impl.PostUpLoadFiles;
@@ -41,6 +45,7 @@ import com.example.robin.papers.impl.PostUserAvatar;
 import com.example.robin.papers.impl.PostUserInfo;
 import com.example.robin.papers.model.AcademiesOrCollegesRes;
 import com.example.robin.papers.model.AdData;
+import com.example.robin.papers.model.PostInfo;
 import com.example.robin.papers.model.ResponseInfo;
 import com.example.robin.papers.model.UserInfoRes;
 import com.example.robin.papers.requestModel.AuthPerInfoRequest;
@@ -48,17 +53,24 @@ import com.example.robin.papers.requestModel.ExitLoginRequest;
 import com.example.robin.papers.requestModel.GetCodeRequest;
 import com.example.robin.papers.requestModel.LoginRequest;
 import com.example.robin.papers.requestModel.PerfectInfoRequest;
+import com.example.robin.papers.requestModel.PostIsLikeRequest;
+import com.example.robin.papers.requestModel.PostRequest;
 import com.example.robin.papers.requestModel.QueryAcademiesRequest;
 import com.example.robin.papers.requestModel.RegisterRequest;
 import com.example.robin.papers.requestModel.SetNewPswRequest;
 import com.example.robin.papers.requestModel.TokenRequest;
 import com.example.robin.papers.requestModel.UMengLoginRequest;
 import com.example.robin.papers.requestModel.UpdateUserRequest;
+import com.example.robin.papers.studentCircle.adapter.MixListAdapter;
+import com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity;
+import com.example.robin.papers.studentCircle.model.Mixinfo;
+import com.example.robin.papers.studentCircle.view.PullToZoomListView;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,6 +85,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity.adapterData;
 import static com.example.robin.papers.util.ConstantUtils.*;
 
 
@@ -97,7 +110,7 @@ public class RetrofitUtils {
             .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
             .build();
     private static Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(BaseUrl)// 设置 网络请求 Url,1.0.0版本
+            .baseUrl(BaseUrl)// 设置 网络请求 Url,1.0.0版本，BaseUrl = "http://120.77.32.233/";
             .addConverterFactory(GsonConverterFactory.create())//设置使用Gson解析(记得加入依赖)
             .client(okHttpClient)
             .build();
@@ -1285,6 +1298,171 @@ public class RetrofitUtils {
         });
     }
 
+    //查询所有帖子
+    public static void postAllPost(final Context context, PostRequest postRequest, final ArrayList<Mixinfo> data) {
+        PostAllPost request = retrofit.create(PostAllPost.class);
+        Call<ResponseInfo<PostInfo[]>> call = request.getCall(postRequest);
+        call.enqueue(new Callback<ResponseInfo<PostInfo[]>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<PostInfo[]>> call, @NonNull Response<ResponseInfo<PostInfo[]>> response) {
+                if (response.body() != null) {
+                    int responseCode = Objects.requireNonNull(response.body()).getCode();
+                    if (responseCode == SUCCESS_CODE) {
+                        MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
+                        if(response.body().getData().length==0){
+                            Toast.makeText(UMapplication.getContext(),"到底啦，我也是有底线的~",Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            for(PostInfo postinfo:response.body().getData()){
+                                Mixinfo mixinfo= new Mixinfo(postinfo);
+                                data.add(mixinfo);
+                            }
+                            adapterData.notifyDataSetChanged();
+                        }
+                    } else {
+                        MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<PostInfo[]>> call, @NonNull Throwable t) {
+                MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+    //查询所有帖子
+    public static void postAllPost(final Context context, PostRequest postRequest, final ArrayList<Mixinfo> data, final ZLoadingDialog dialog) {
+        PostAllPost request = retrofit.create(PostAllPost.class);
+        Call<ResponseInfo<PostInfo[]>> call = request.getCall(postRequest);
+        call.enqueue(new Callback<ResponseInfo<PostInfo[]>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<PostInfo[]>> call, @NonNull Response<ResponseInfo<PostInfo[]>> response) {
+                dialog.dismiss();
+                if (response.body() != null) {
+                    int responseCode = Objects.requireNonNull(response.body()).getCode();
+                    if (responseCode == SUCCESS_CODE) {
+                        MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
+                        if(response.body().getData().length==0){
+                            Toast.makeText(UMapplication.getContext(),"到底啦，我也是有底线的~",Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            for(PostInfo postinfo:response.body().getData()){
+                                Mixinfo mixinfo= new Mixinfo(postinfo);
+                                data.add(mixinfo);
+                            }
+                            adapterData.notifyDataSetChanged();
+                        }
+                    } else {
+                        MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<PostInfo[]>> call, @NonNull Throwable t) {
+                dialog.dismiss();
+                MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    //判断是否点赞
+    public static void postIsLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final int position) {
+        PostPostIsLike request = retrofit.create(PostPostIsLike.class);
+        Call<ResponseInfo<Boolean>> call = request.getCall(postIsLikeRequest);
+        call.enqueue(new Callback<ResponseInfo<Boolean>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<Boolean>> call, @NonNull final Response<ResponseInfo<Boolean>> response) {
+                if(response.body()!=null){
+                    if(response.body().getData()){
+                        like.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                like.setImageResource(R.drawable.like2);
+                            }
+                        });
+                        MixShowActivity.data.get(position).is_like=true;
+                    }
+                    else {
+                        MixShowActivity.data.get(position).is_like=false;
+                    }
+                }
+                else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<Boolean>> call, @NonNull Throwable t) {
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    //帖子点赞
+    public static void postLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final TextView like_count, final boolean islike) {
+        PostPostLike request = retrofit.create(PostPostLike.class);
+        Call<ResponseInfo> call = request.getCall(postIsLikeRequest);
+        call.enqueue(new Callback<ResponseInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+                if(response.body()!=null){
+                    if(response.body().getCode()==SUCCESS_CODE){
+                        like.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(islike){
+                                    like.setImageResource(R.drawable.like1);
+                                }
+                                else{
+                                    like.setImageResource(R.drawable.like2);
+                                }
+                            }
+                        });
+                        like_count.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(islike){
+                                    like_count.setText(Integer.parseInt(like_count.getText().toString())-1==0?"":(Integer.parseInt(like_count.getText().toString())-1)+"");
+                                }
+                                else{
+                                    like_count.setText(like_count.getText().toString().equals("")?"1":(String.valueOf(Integer.parseInt(like_count.getText().toString())+1)));
+                                }
+                            }
+                        });
+                    }
+                    else{
+                        Toast.makeText(UMapplication.getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
 
     //获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在
     private static boolean checkLocalADImage() {
@@ -1326,6 +1504,8 @@ public class RetrofitUtils {
             });
         }
     }
+
+
 
     //根据传入参数类决定下一启动活动
     private static void nextActivity(final Activity startAct, final Class endAct) {

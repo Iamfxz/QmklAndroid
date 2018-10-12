@@ -2,9 +2,11 @@ package com.example.robin.papers.studentCircle.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +15,16 @@ import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.robin.papers.R;
+import com.example.robin.papers.requestModel.PostRequest;
+import com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity;
 import com.example.robin.papers.studentCircle.tools.ImageLoaders;
+import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
+import com.example.robin.papers.util.RetrofitUtils;
+import com.example.robin.papers.util.SDCardUtils;
+import com.example.robin.papers.util.SharedPreferencesUtils;
 
 /**
  * Created by DavidWang on 15/10/8.
@@ -41,21 +50,27 @@ public class PullToZoomListView extends ListView implements
 	private ScalingRunnalable mScalingRunnalable;
 	private int mScreenHeight;
 	private BackTouchEvent event;
+	private Context context;
+	public static View mFooterView;
+
 
 	public PullToZoomListView(Context paramContext) {
 		super(paramContext);
+		this.context=paramContext;
 		init(paramContext);
 	}
 
 	public PullToZoomListView(Context paramContext,
 							  AttributeSet paramAttributeSet) {
 		super(paramContext, paramAttributeSet);
+        this.context=paramContext;
 		init(paramContext);
 	}
 
 	public PullToZoomListView(Context paramContext,
 							  AttributeSet paramAttributeSet, int paramInt) {
 		super(paramContext, paramAttributeSet, paramInt);
+        this.context=paramContext;
 		init(paramContext);
 	}
 
@@ -73,12 +88,22 @@ public class PullToZoomListView extends ListView implements
 		((Activity) paramContext).getWindowManager().getDefaultDisplay()
 				.getMetrics(localDisplayMetrics);
 		this.mScreenHeight = localDisplayMetrics.heightPixels;
+		//初始化底部加载动画
+        this.mFooterView = View.inflate(context, R.layout.view_footer, null);
 
 		this.mHeaderContainer = (RelativeLayout) View.inflate(paramContext, R.layout.mixshow_headview, null);
 		this.mHeaderImage = (ImageView)this.mHeaderContainer.findViewById(R.id.maxshowimg);
+		//趣聊头部用户头像
 		ImageView userview = (ImageView)mHeaderContainer.findViewById(R.id.userimg);
 //		this.mHeaderImage.setBackgroundResource(R.mipmap.ic_launcher);
-		ImageLoaders.setsendimg("http://120.77.32.233/qmkl1.0.0/user/download/avatar/2ac644684a06318eb628257798d3d357.jpg", userview);
+		Drawable drawable=Drawable.createFromPath(SDCardUtils.getAvatarImage(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"avatar")));
+		userview.setImageDrawable(drawable);
+//		ImageLoaders.setsendimg("http://120.77.32.233/qmkl1.0.0/user/download/avatar/2ac644684a06318eb628257798d3d357.jpg", userview);
+		//趣聊头部用户名称
+		TextView userID=mHeaderContainer.findViewById(R.id.userID);
+		String username=SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"nickname");
+		userID.setText(username);
+
 		int i = localDisplayMetrics.widthPixels;
 		setHeaderViewSize(i, (int) (9.0F * (i / 12.0F)));
 //		this.mHeaderContainer.addView(this.mHeaderImage);
@@ -121,8 +146,8 @@ public class PullToZoomListView extends ListView implements
 	}
 
 	@Override
-	public void onScroll(AbsListView paramAbsListView, int paramInt1,
-						 int paramInt2, int paramInt3) {
+	public void onScroll(AbsListView paramAbsListView, int firstVisibleItem,
+						 int visibleItemCount, int totalItemCount) {
 		float f = this.mHeaderHeight - this.mHeaderContainer.getBottom();
 		if ((f > 0.0F) && (f < this.mHeaderHeight)) {
 			int i = (int) (0.65D * f);
@@ -131,15 +156,33 @@ public class PullToZoomListView extends ListView implements
 			this.mHeaderImage.scrollTo(0, 0);
 		}
 		if (this.mOnScrollListener != null) {
-			this.mOnScrollListener.onScroll(paramAbsListView, paramInt1,
-					paramInt2, paramInt3);
+			this.mOnScrollListener.onScroll(paramAbsListView, firstVisibleItem,
+                    visibleItemCount, totalItemCount);
 		}
+        if(visibleItemCount+firstVisibleItem==totalItemCount){
+            Log.d(TAG, "滑到底部");
+        }
 	}
 
-	public void onScrollStateChanged(AbsListView paramAbsListView, int paramInt) {
-		if (this.mOnScrollListener != null)
-			this.mOnScrollListener.onScrollStateChanged(paramAbsListView,
-					paramInt);
+	public void onScrollStateChanged(AbsListView paramAbsListView, int scrollState) {
+//		if (this.mOnScrollListener != null)
+//			this.mOnScrollListener.onScrollStateChanged(paramAbsListView,
+//                    scrollState);
+
+        switch (scrollState) {
+            // 当不滚动时
+            case OnScrollListener.SCROLL_STATE_IDLE:
+                // 判断滚动到底部
+                if (paramAbsListView.getLastVisiblePosition() == (paramAbsListView.getCount() - 1)) {
+                    if(getFooterViewsCount()==0){
+                        MixShowActivity.mixlist.addFooterView(mFooterView);
+                        String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
+                        PostRequest postRequest=new PostRequest(token,String.valueOf(MixShowActivity.page++));
+                        RetrofitUtils.postAllPost(context,postRequest,MixShowActivity.data);
+                    }
+                }
+                break;
+        }
 	}
 
 	public boolean onTouchEvent(MotionEvent paramMotionEvent) {

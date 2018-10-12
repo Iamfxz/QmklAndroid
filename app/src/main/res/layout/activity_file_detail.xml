@@ -144,6 +144,13 @@
             android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
             android:text="上传时间未知" />
+        <TextView
+            android:id="@+id/online_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/create_time"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="在线预览" />
 
     </RelativeLayout>
 
