@@ -1,7 +1,9 @@
 package com.example.robin.papers.ui;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,18 +14,21 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.robin.papers.R;
+import com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.ConstantUtils;
 import com.example.robin.papers.util.GlideImageLoader;
 import com.example.robin.papers.util.SDCardUtils;
 import com.umeng.analytics.MobclickAgent;
 import com.youth.banner.Banner;
+import com.zyao89.view.zloading.ZLoadingDialog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,6 +42,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.robin.papers.util.ConstantUtils.*;
+import static com.zyao89.view.zloading.Z_TYPE.CIRCLE;
 
 public class StudentsCircleFragment extends Fragment {
 
@@ -72,7 +78,6 @@ public class StudentsCircleFragment extends Fragment {
 //                        startActivity(intent);
 //                    }
 //                }).start();
-//
 //            }
 //        });
 

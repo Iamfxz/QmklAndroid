@@ -42,7 +42,7 @@ public class BaseActivity extends AppCompatActivity {
     public float Height;
 
     protected ImageView showimg;
-
+    public Toolbar toolbar;
     public View Barview;
 
     private final Spring mSpring = SpringSystem
@@ -136,7 +136,7 @@ public class BaseActivity extends AppCompatActivity {
      * 添加头部
      */
     protected void AddToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.id_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.id_toolbar);
 //        toolbar.setLogo(R.mipmap.ic_launcher);
 //        toolbar.setTitle("趣聊");
         toolbar.setTitle("");

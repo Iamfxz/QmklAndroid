@@ -50,6 +50,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.example.robin.papers.util.ConstantUtils.agreementUrl;
+import static com.example.robin.papers.util.ConstantUtils.myonlineViewUrl;
+import static com.example.robin.papers.util.ConstantUtils.onlineViewUrl;
+
 
 /**
  *
@@ -110,8 +114,12 @@ public class FileDetailActivity extends BaseActivity {
     TextView tvLikeTip;
     @BindView(R.id.create_time)//创建时间
     TextView tvCreateTime;
+    @BindView((R.id.online_view))
+    TextView onlineView;
+
     @BindView(R.id.uploader)//上传者
     TextView tvUploader;
+
 
     //监听退出和删除按钮
     @OnClick({R.id.iv_exit, R.id.tv_delete})
@@ -127,7 +135,7 @@ public class FileDetailActivity extends BaseActivity {
     }
 
     //监听下载和发送到我的电脑和取消下载按钮
-    @OnClick({R.id.btn_download, R.id.btn_send, R.id.btn_cancel})
+    @OnClick({R.id.btn_download, R.id.btn_send, R.id.btn_cancel,R.id.online_view})
     public void btnClicked(View view) {
 
         switch (view.getId()) {
@@ -144,7 +152,13 @@ public class FileDetailActivity extends BaseActivity {
                 LogUtils.d(Tag, "cancel download");
                 cancelDownload();
                 break;
-
+            case R.id.online_view:
+                Intent intent=new Intent(FileDetailActivity.this,WebViewActivity.class);
+                intent.putExtra("url", getOnlineViewUrl());
+                intent.putExtra("info","onlineview");
+                intent.putExtra("title",PaperFileUtils.nameWithPath(mFile.getName()));
+                startActivity(intent);
+                break;
         }
 
     }
@@ -225,6 +239,19 @@ public class FileDetailActivity extends BaseActivity {
                 }
             }
         });
+
+        //根据文件后缀名是否显示在线预览按钮
+        if(!PaperFileUtils.typeWithFileName(mFile.getName()).equals("doc") &&
+                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("xls") &&
+                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("docx") &&
+                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("pptx") &&
+                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("xlsx") &&
+                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("ppt") &&
+                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("jpg") &&
+                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("png") &&
+                !PaperFileUtils.typeWithFileName(mFile.getName()).equals("pdf")){
+            onlineView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -524,6 +551,23 @@ public class FileDetailActivity extends BaseActivity {
             return result;
         }
     }) ;
+
+    public String getOnlineViewUrl(){
+        String url=null;
+        if(PaperFileUtils.typeWithFileName(mFile.getName()).equals("pdf") || PaperFileUtils.typeWithFileName(mFile.getName()).equals("jpg")
+                || PaperFileUtils.typeWithFileName(mFile.getName()).equals("png")){
+            url=myonlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName());
+        }
+        else if(PaperFileUtils.typeWithFileName(mFile.getName()).equals("doc") ||
+                PaperFileUtils.typeWithFileName(mFile.getName()).equals("xls") ||
+                PaperFileUtils.typeWithFileName(mFile.getName()).equals("docx") ||
+                PaperFileUtils.typeWithFileName(mFile.getName()).equals("pptx") ||
+                PaperFileUtils.typeWithFileName(mFile.getName()).equals("xlsx") ||
+                PaperFileUtils.typeWithFileName(mFile.getName()).equals("ppt")){
+            url=onlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName());
+        }
+        return url;
+    }
 
     @Override
     protected void onResume() {

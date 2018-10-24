@@ -217,7 +217,10 @@ public class WebViewActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent keyEvent) {
         if (keyCode == keyEvent.KEYCODE_BACK) {//监听返回键，如果可以后退就后退
-            if (webView.canGoBack()) {
+            if(getIntent().getStringExtra("info").equals("onlineview")){
+                finish();
+            }
+            else if (webView.canGoBack()) {
                 webView.goBack();
                 return true;
             }
@@ -229,6 +232,7 @@ public class WebViewActivity extends BaseActivity {
                     nextActivity(MainActivity.class);
                 }
             }
+
         }
 
         return super.onKeyDown(keyCode, keyEvent);
