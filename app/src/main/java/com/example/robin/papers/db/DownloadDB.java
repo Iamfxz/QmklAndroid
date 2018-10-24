@@ -21,7 +21,8 @@ public class DownloadDB extends SQLiteOpenHelper {
 
     private SQLiteDatabase db;
 
-    private static final String TABLE_NAME = "download_info";//表名
+    //下载文件表
+    private static final String TABLE_NAME = "download_info";
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String COURSE = "course";
@@ -36,10 +37,12 @@ public class DownloadDB extends SQLiteOpenHelper {
     private static final String MD5 = "md5";
     private static final String CREATE_TIME = "createAt";
 
+    //收藏列表
+
     //根据PATH查找文件所有信息
     private static final String QUERY_DOWNLOADED = "SELECT * FROM " + TABLE_NAME
             + " WHERE " + PATH + " = ?";
-    //按照（文件名，课程，大小，类型，URL，时间）插入数据
+    //插入数据
     private static final String ADD_DOWNLOADED = "INSERT INTO " + TABLE_NAME
             + "(" + NAME + ", " + COURSE + ", " + SIZE + ", " + TYPE + ", "+ URL +
             ", " + TIME + ", " + PATH + ", " + FILE_ID + ", " + LIKE_NUM + ", " + DISLIKE_NUM

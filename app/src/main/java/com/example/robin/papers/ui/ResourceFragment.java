@@ -62,13 +62,16 @@ import com.example.robin.papers.util.SharedPreferencesUtils;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.gjiazhe.wavesidebar.WaveSideBar;
+import com.jaren.lib.view.LikeView;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.umeng.analytics.MobclickAgent;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
@@ -104,6 +107,8 @@ public class ResourceFragment extends Fragment
     //文件总数据
     private FileRes mData;
     private List<String> list;//文件名列表，有点乱，还需要理清楚 TODO
+    private List<Map<String,Boolean>> collectList;//收藏列表
+    private Map<String,Boolean> collectMap;//
     private boolean isFirst = true;//第一次刷新数据
 
     //记录上次滚动之后的第一个可见item和最后一个item
@@ -658,23 +663,6 @@ public class ResourceFragment extends Fragment
 
     }
 
-    /**
-     * 单个item的视图绑定
-     */
-    static class ViewHolder {
-        @BindView(R.id.tv_folder_name)
-        TextView tvFolderName;
-        @BindView(R.id.img_folder_icon)
-        ImageView imgFolderIcon;
-        @BindView(R.id.tv_folder_size)
-        TextView tvFolderSize;
-        @BindView(R.id.img_folder_arrow)
-        ImageView imgFolderArrow;
-
-        ViewHolder(View view) {
-            ButterKnife.bind(this, view);
-        }
-    }
 
     /**
      * 判断query是否在当前目录中
@@ -988,9 +976,9 @@ public class ResourceFragment extends Fragment
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
-            mItemViewHolder holder;
+            final mItemViewHolder holder;
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
                 convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
@@ -999,6 +987,26 @@ public class ResourceFragment extends Fragment
             } else {
                 holder = (mItemViewHolder) convertView.getTag();
             }
+
+//            //设置收藏按钮
+//            if(BasePath.equals("/")){
+//                holder.lvFolderCollect.setVisibility(View.VISIBLE);
+//                holder.lvFolderCollect.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        holder.lvFolderCollect.toggle();
+//                        if(holder.lvFolderCollect.isChecked()){
+//                            collectMap.put(getItem(position).toString(),false);
+//                        }else {
+//                            collectMap.put(getItem(position).toString(),true);
+//                        }
+//
+//                        Toast.makeText(getContext(),getItem(position).toString(),Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }else{
+//                holder.lvFolderCollect.setVisibility(View.GONE);
+//            }
 
             //从Data中取出数据填充到ListView列表项中
             holder.tvFolderName.setText(list.get(position));
@@ -1159,6 +1167,7 @@ public class ResourceFragment extends Fragment
         ImageView imgFolderArrow;
         @BindView(R.id.tv_folder_head)
         TextView tvFolderHead;
+
 
         mItemViewHolder(View view) {
             ButterKnife.bind(this, view);
