@@ -35,6 +35,7 @@ public class SharedPreferencesUtils {
      *  expires:qq第三方登录获取，用于判断登录是否失效
      *  platform:存储用户登录平台
      *  hasRequestSDPermission:是否是第一次申请SD读写权限
+     *  {college}{filename}:将用户个人收藏的文件，保存在本地，数据结构为键值对，例如<"福州大学安全管理","1">，为null则为没有收藏
      */
 
 
@@ -52,5 +53,6 @@ public class SharedPreferencesUtils {
         Editor editor=sp.edit();
         editor.putString(key,value);
         editor.commit();
+        //editor是同步的，有返回成功或者失败，这里使用同步比较稳妥
     }
 }
