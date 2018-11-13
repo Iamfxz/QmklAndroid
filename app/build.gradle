@@ -116,11 +116,13 @@ dependencies {
     implementation 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
     implementation 'com.facebook.rebound:rebound:0.3.8'
     implementation 'com.nineoldandroids:library:2.4.0'
-    implementation 'com.github.chrisbanes.photoview:library:1.2.3'
+//    implementation 'com.github.chrisbanes.photoview:library:1.2.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     //上拉
     implementation 'com.wang.avi:library:1.0.1'
+    //pdf预览框架
+    api  'es.voghdev.pdfviewpager:library:1.0.5'
 }

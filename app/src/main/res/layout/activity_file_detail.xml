@@ -144,13 +144,18 @@
             android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
             android:text="上传时间未知" />
+
         <TextView
             android:id="@+id/online_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/create_time"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="50dp"
             android:gravity="center_vertical|center_horizontal"
-            android:text="在线预览" />
+            android:textColor="@color/gray"
+            android:text="该文件支持在线预览" />
+
+
 
     </RelativeLayout>
 
@@ -171,15 +176,19 @@
         android:layout_alignParentBottom="true"
         android:background="@color/background">
 
+
         <Button
             android:id="@+id/btn_download"
             android:layout_width="132dp"
             android:layout_height="50dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="25dp"
+
             android:background="@drawable/selector_universal_button"
             android:text="下载到手机"
             android:textColor="@color/white" />
+
+
 
         <Button
             android:id="@+id/btn_send"

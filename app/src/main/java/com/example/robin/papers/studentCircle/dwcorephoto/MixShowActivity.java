@@ -67,7 +67,6 @@ public class MixShowActivity extends BaseActivity implements AdapterView.OnItemC
     @Override
     protected void findID() {
         super.findID();
-
         mixlist = (PullToZoomListView) findViewById(R.id.mixlist);
         mixlist.getHeaderView().setImageResource(R.drawable.glide1);
         mixlist.getHeaderView().setScaleType(ImageView.ScaleType.CENTER_CROP);

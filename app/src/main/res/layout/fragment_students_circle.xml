@@ -21,11 +21,11 @@
                 android:layout_height="220dp"
                 />
 
-            <!--<Button-->
-                <!--android:id="@+id/next"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:text="进入朋友圈"/>-->
+            <Button
+                android:id="@+id/next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="进入朋友圈"/>
 
             <TextView
                 android:layout_gravity="center_horizontal"

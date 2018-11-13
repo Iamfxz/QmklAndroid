@@ -4,10 +4,17 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -53,6 +60,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.example.robin.papers.util.ConstantUtils.agreementUrl;
 import static com.example.robin.papers.util.ConstantUtils.myonlineViewUrl;
 import static com.example.robin.papers.util.ConstantUtils.onlineViewUrl;
+import static com.example.robin.papers.util.ConstantUtils.policyUrl;
 
 
 /**
@@ -152,13 +160,6 @@ public class FileDetailActivity extends BaseActivity {
                 LogUtils.d(Tag, "cancel download");
                 cancelDownload();
                 break;
-            case R.id.online_view:
-                Intent intent=new Intent(FileDetailActivity.this,WebViewActivity.class);
-                intent.putExtra("url", getOnlineViewUrl());
-                intent.putExtra("info","onlineview");
-                intent.putExtra("title",PaperFileUtils.nameWithPath(mFile.getName()));
-                startActivity(intent);
-                break;
         }
 
     }
@@ -252,6 +253,10 @@ public class FileDetailActivity extends BaseActivity {
                 !PaperFileUtils.typeWithFileName(mFile.getName()).equals("pdf")){
             onlineView.setVisibility(View.GONE);
         }
+        //借助SpannableString类实现超链接文字
+        onlineView.setText(getClickableSpan());
+        //设置超链接可点击
+        onlineView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**
@@ -554,8 +559,9 @@ public class FileDetailActivity extends BaseActivity {
 
     public String getOnlineViewUrl(){
         String url=null;
-        if(PaperFileUtils.typeWithFileName(mFile.getName()).equals("pdf") || PaperFileUtils.typeWithFileName(mFile.getName()).equals("jpg")
-                || PaperFileUtils.typeWithFileName(mFile.getName()).equals("png")){
+        if( PaperFileUtils.typeWithFileName(mFile.getName()).equals("jpg")
+                || PaperFileUtils.typeWithFileName(mFile.getName()).equals("png")
+                || PaperFileUtils.typeWithFileName(mFile.getName()).toLowerCase().equals("pdf")){
             url=myonlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName());
         }
         else if(PaperFileUtils.typeWithFileName(mFile.getName()).equals("doc") ||
@@ -567,6 +573,41 @@ public class FileDetailActivity extends BaseActivity {
             url=onlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName());
         }
         return url;
+    }
+
+    /**
+     * 获取可点击的SpannableString
+     * @return
+     */
+    private SpannableString getClickableSpan() {
+        SpannableString spannableString = new SpannableString("该文件支持在线预览。");
+        //设置下划线文字
+        spannableString.setSpan(new UnderlineSpan(), 5, 9, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //设置文字的单击事件
+        spannableString.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                //pdf单独使用框架显示
+                if(PaperFileUtils.typeWithFileName(mFile.getName()).equals("pdf")){
+                    Intent intent=new Intent(FileDetailActivity.this,PdfViewActivity.class);
+                    intent.putExtra("url", getOnlineViewUrl());
+                    intent.putExtra("title",PaperFileUtils.nameWithPath(mFile.getName()));
+                    startActivity(intent);
+                }
+                //其他office文件使用微软在线预览服务打开
+                else{
+                    Intent intent=new Intent(FileDetailActivity.this,WebViewActivity.class);
+                    intent.putExtra("url", getOnlineViewUrl());
+                    intent.putExtra("info","onlineview");
+                    intent.putExtra("title",PaperFileUtils.nameWithPath(mFile.getName()));
+                    startActivity(intent);
+                }
+            }
+        }, 5, 9, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //设置文字的前景色
+        spannableString.setSpan(new ForegroundColorSpan(Color.BLUE), 5, 9, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return spannableString;
     }
 
     @Override
