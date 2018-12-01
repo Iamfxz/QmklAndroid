@@ -16,8 +16,8 @@ android {
         applicationId "com.example.robin.papers"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 50000//为设备识别app版本，用于app升级所使用，值为int类型，主要用于判断app是否需要等级，第一次是1，以后每次递增。
-        versionName "5.0.0"//指的是app的版本号，就是平常所说的app的版本，主要是显示给用户看的app版本号。
+        versionCode 51000//为设备识别app版本，用于app升级所使用，值为int类型，主要用于判断app是否需要等级，第一次是1，以后每次递增。
+        versionName "5.1.0"//指的是app的版本号，就是平常所说的app的版本，主要是显示给用户看的app版本号。
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -61,6 +61,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.haibin:calendarview:3.4.8'
     //圆形化头像
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     //下拉刷新
