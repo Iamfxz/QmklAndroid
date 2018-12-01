@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -180,8 +181,19 @@ public class MainActivity extends BaseActivity
             }
         });
 
+
         //自动检查是否需要更新
-        UpdateSetting(false);
+        if(Build.VERSION.SDK_INT >= 26){
+            //有无更新权限
+            boolean haveInstallPermission = getPackageManager().canRequestPackageInstalls();
+            if(haveInstallPermission){
+                UpdateSetting(false);
+            }else {
+                Toast.makeText(UMapplication.getContext(),"安装应用需要打开未知来源权限，请去设置中开启权限",Toast.LENGTH_LONG).show();
+            }
+        }else {
+            UpdateSetting(false);
+        }
     }
 
 
@@ -234,6 +246,10 @@ public class MainActivity extends BaseActivity
                 Log.e("ezy.update hasUpdate", String.valueOf(info.hasUpdate));
                 Log.e("ezy.update versionCode", String.valueOf(info.versionCode));
                 Log.e("ezy.update AutoInstall", String.valueOf(info.isAutoInstall));
+                Log.e("ezy.update md5", String.valueOf(info.md5));
+                Log.e("ezy.update isForce", String.valueOf(info.isForce));
+                Log.e("ezy.update isIgnorable", String.valueOf(info.isIgnorable));
+                Log.e("ezy.update url", String.valueOf(info.url));
                 return info;
             }
         }).check();
@@ -378,7 +394,17 @@ public class MainActivity extends BaseActivity
                 }else {
                     item.setChecked(true);
                     if(!isFastDoubleClick()){
-                        UpdateSetting(true);//手动检查更新
+                        if(Build.VERSION.SDK_INT >= 26){
+                            //有无更新权限
+                            boolean haveInstallPermission = getPackageManager().canRequestPackageInstalls();
+                            if(haveInstallPermission){
+                                UpdateSetting(true);
+                            }else {
+                                Toast.makeText(UMapplication.getContext(),"安装应用需要打开未知来源权限，请去设置中开启权限",Toast.LENGTH_LONG).show();
+                            }
+                        }else {
+                            UpdateSetting(true);
+                        }
                     }
                 }
                 break;

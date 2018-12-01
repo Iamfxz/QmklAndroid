@@ -2,11 +2,8 @@ package com.example.robin.papers.ui;
 
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -27,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -65,17 +61,13 @@ import com.example.robin.papers.util.ToastUtils;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.gjiazhe.wavesidebar.WaveSideBar;
-import com.jaren.lib.view.LikeView;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.umeng.analytics.MobclickAgent;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
