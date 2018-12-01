@@ -69,7 +69,7 @@ public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = "MainActivity";
-    private MaterialSearchView searchView;
+
     //底部的tab控件
     private FragmentTabHost mTabHost;
     private LayoutInflater mLayoutInflater;

@@ -3,6 +3,7 @@ package com.example.robin.papers.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.robin.papers.ui.ResourceFragment;
 import com.github.promeg.pinyinhelper.Pinyin;
 
 import java.util.Collections;
@@ -28,7 +29,7 @@ public class FileRes implements Parcelable{
 
     //默认使用ascii码排序，后期可再更改成将中文转为拼音在按字母排序
     public void sort(){
-        List<Map.Entry<String,String>> list = null;
+        List<Map.Entry<String,String>> list;
         try {
             //先转成LinkedList集合
             Set<Map.Entry<String,String>> entries =  data.entrySet();

@@ -3,6 +3,9 @@ package com.example.robin.papers.util;
 import android.content.Context;
 import android.widget.Toast;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by 凌子文 on 15/7/22.
  * Content Toast相关工具
@@ -63,29 +66,21 @@ public class ToastUtils {
         if (isShow)
             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
-    /**
-     * 自定义显示Toast时间
-     *
-     * @param context 上下文，可当成所在页面
-     * @param message 显示的信息
-     * @param duration 持续的时间
-     */
-    public static void show(Context context, CharSequence message, int duration)
-    {
-        if (isShow)
-            Toast.makeText(context, message, duration).show();
-    }
 
-    /**
-     * 自定义显示Toast时间
-     *
-     * @param context 上下文，可当成所在页面
-     * @param message 显示的信息
-     * @param duration 持续的时间
-     */
-    public static void show(Context context, int message, int duration)
-    {
-        if (isShow)
-            Toast.makeText(context, message, duration).show();
+    public static void showMyToast(final Toast toast, final int cnt) {
+        final Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                toast.show();
+            }
+        }, 0, 3000);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                toast.cancel();
+                timer.cancel();
+            }
+        }, cnt );
     }
 }

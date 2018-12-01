@@ -1,10 +1,12 @@
 package com.example.robin.papers.ui;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -59,16 +61,21 @@ import com.example.robin.papers.util.CircleDrawable;
 import com.example.robin.papers.util.ConstantUtils;
 import com.example.robin.papers.util.PaperFileUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
+import com.example.robin.papers.util.ToastUtils;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.gjiazhe.wavesidebar.WaveSideBar;
+import com.jaren.lib.view.LikeView;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.umeng.analytics.MobclickAgent;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
@@ -155,6 +162,8 @@ public class ResourceFragment extends Fragment
     int lastPosition = 0;
     //成功记录用户上次在主界面的位置
     boolean recordSuccess = false;
+    //收藏文件的数目
+    int countStore = 0;
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
      */
@@ -168,7 +177,6 @@ public class ResourceFragment extends Fragment
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
-
 
     }
 
@@ -237,7 +245,7 @@ public class ResourceFragment extends Fragment
             public void onSelectIndexItem(String index) {
                 int section;
                 int position = 0;
-                Log.d("WaveSideBar", index);
+//                Log.d("WaveSideBar", index);
                 if (index.charAt(0) >= 'A' && index.charAt(0) <= 'Z') {
                     section = index.charAt(0) - 'A';
                     position = mAdapter.getPositionForSection(section);
@@ -463,7 +471,6 @@ public class ResourceFragment extends Fragment
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //TODO
 //                searchView.setSuggestions(mData.getData().keySet().toArray(new String[mData.getData().keySet().size()]));
                 if (mAdapter != null) {
                     Filter filter = mAdapter.getFilter();
@@ -658,23 +665,6 @@ public class ResourceFragment extends Fragment
 
     }
 
-    /**
-     * 单个item的视图绑定
-     */
-    static class ViewHolder {
-        @BindView(R.id.tv_folder_name)
-        TextView tvFolderName;
-        @BindView(R.id.img_folder_icon)
-        ImageView imgFolderIcon;
-        @BindView(R.id.tv_folder_size)
-        TextView tvFolderSize;
-        @BindView(R.id.img_folder_arrow)
-        ImageView imgFolderArrow;
-
-        ViewHolder(View view) {
-            ButterKnife.bind(this, view);
-        }
-    }
 
     /**
      * 判断query是否在当前目录中
@@ -988,9 +978,9 @@ public class ResourceFragment extends Fragment
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
-            mItemViewHolder holder;
+            final mItemViewHolder holder;
             //通过下面的条件判断语句，来循环利用。如果convertView = null ，表示屏幕上没有可以被重复利用的对象。
             if (convertView == null) {
                 convertView = View.inflate(getActivity(), R.layout.lv_item_folder, null);
@@ -998,6 +988,59 @@ public class ResourceFragment extends Fragment
                 convertView.setTag(holder);
             } else {
                 holder = (mItemViewHolder) convertView.getTag();
+            }
+
+            //监听点击收藏按钮
+            if(BasePath.equals("/")){
+                if(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), collegeName+getItem(position).toString()) != null){
+                    //设置为收藏
+                    holder.imgSticked.setVisibility(View.VISIBLE);
+                    holder.imgUnsticked.setVisibility(View.GONE);
+                }else {
+                    //设置为未收藏
+                    holder.imgSticked.setVisibility(View.GONE);
+                    holder.imgUnsticked.setVisibility(View.VISIBLE);
+                }
+                //取消收藏
+                holder.imgSticked.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(holder.imgSticked.getVisibility() == View.VISIBLE){
+                            holder.imgSticked.setVisibility(View.GONE);
+                            holder.imgUnsticked.setVisibility(View.VISIBLE);
+                            //取消收藏设置
+                            SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(), collegeName+getItem(position).toString(),null);
+                            //自定义显示时间
+                            @SuppressLint("ShowToast") Toast myToast = Toast.makeText(UMapplication.getContext(),"取消收藏"+getItem(position).toString(),Toast.LENGTH_LONG);
+                            ToastUtils.showMyToast(myToast,1500);
+                            handler.sendEmptyMessage(1);//更新界面
+                        }
+                    }
+                });
+
+                //添加收藏
+                holder.imgUnsticked.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(holder.imgUnsticked.getVisibility() == View.VISIBLE){
+                            holder.imgSticked.setVisibility(View.VISIBLE);
+                            holder.imgUnsticked.setVisibility(View.GONE);
+                            //存储收藏信息，存储数据结构为键值对例如<"福州大学安全管理","1">
+                            SharedPreferencesUtils.setStoredMessage(UMapplication.getContext(),collegeName+getItem(position).toString(),"1");
+                            //自定义显示时间
+                            @SuppressLint("ShowToast") Toast myToast = Toast.makeText(UMapplication.getContext(),"收藏"+getItem(position).toString(),Toast.LENGTH_LONG);
+                            ToastUtils.showMyToast(myToast,1500);
+                            //收藏项置顶
+                            String item = list.get(position);
+                            list.remove(position);
+                            list.add(0,item);
+                            handler.sendEmptyMessage(1);//更新界面
+                        }
+                    }
+                });
+            }else{
+                holder.imgSticked.setVisibility(View.GONE);
+                holder.imgUnsticked.setVisibility(View.GONE);
             }
 
             //从Data中取出数据填充到ListView列表项中
@@ -1013,17 +1056,28 @@ public class ResourceFragment extends Fragment
                 holder.imgFolderArrow.setVisibility(View.VISIBLE);
             }
 
-            if (position == 0 && getPositionForSection(getSectionForPosition(position)) == -1) {
+            //设置26个字母头和#
+            if(position == 0 && countStore != 0){
+                holder.tvFolderHead.setVisibility(View.VISIBLE);
+                holder.tvFolderHead.setText("★我的收藏");
+                sideBar.setIndexItems("★", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
+                        "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
+            } else if (position == countStore && getPositionForSection(getSectionForPosition(position)) == -1){
                 holder.tvFolderHead.setVisibility(View.VISIBLE);
                 holder.tvFolderHead.setText("#");
+                if(position == 0){
+                    sideBar.setIndexItems("#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
+                            "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
+                }
             } else if (position == getPositionForSection(getSectionForPosition(position))) {
                 holder.tvFolderHead.setVisibility(View.VISIBLE);
+
                 //把section index转化为大写字母
                 char c = (char) (getSectionForPosition(position) + 65);
                 if (c >= 'A' && c <= 'Z') {
                     holder.tvFolderHead.setText(String.valueOf(c));
                 }
-            } else {
+            }else {
                 holder.tvFolderHead.setVisibility(View.GONE);
             }
             return convertView;
@@ -1042,12 +1096,16 @@ public class ResourceFragment extends Fragment
             return null;
         }
 
+        //关键方法，通过section index获取在ListView中的位置
         @Override
-        public int getPositionForSection(int arg0) {              //关键方法，通过section index获取在ListView中的位置
+        public int getPositionForSection(int arg0) {
             //根据参数arg0，加上65后得到对应的大写字母
             char c = (char) (arg0 + 65);
             //循环遍历ListView中的数据，遇到第一个首字母为上面的就是要找的位置
             for (int i = 0; i < getCount(); i++) {
+                if(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),collegeName+list.get(i)) != null){
+                    continue;
+                }
                 if (Pinyin.toPinyin(list.get(i), "").toUpperCase().charAt(0) == c) {
                     return i;
                 }
@@ -1055,9 +1113,10 @@ public class ResourceFragment extends Fragment
             return -1;//找不到返回-1
         }
 
+        //关键方法，通过在ListView中的位置获取Section index
         @Override
-        public int getSectionForPosition(int arg0) {              //关键方法，通过在ListView中的位置获取Section index
-            //获取该位置的城市名首字母
+        public int getSectionForPosition(int arg0) {
+            //获取该位置的名首字母
             try {
                 char c = Pinyin.toPinyin(list.get(arg0), "").toUpperCase().charAt(0);
                 //如果该字母在A和Z之间，则返回A到Z的索引，从0到25
@@ -1159,6 +1218,11 @@ public class ResourceFragment extends Fragment
         ImageView imgFolderArrow;
         @BindView(R.id.tv_folder_head)
         TextView tvFolderHead;
+        @BindView(R.id.sticked)
+        ImageView imgSticked;
+        @BindView(R.id.unsticked)
+        ImageView imgUnsticked;
+
 
         mItemViewHolder(View view) {
             ButterKnife.bind(this, view);
@@ -1196,6 +1260,7 @@ public class ResourceFragment extends Fragment
                         mData.sort();
                     }
                     list = new ArrayList<>(mData.getData().keySet());
+                    list = setStoreItem(list);
                     //如果加载数据完成自动返回上次位置（仅限主列表）
                     if(recordSuccess){
                         System.out.println("recordSuccess:"+recordSuccess);
@@ -1236,6 +1301,20 @@ public class ResourceFragment extends Fragment
             return result;
         }
     });
+
+    private List<String> setStoreItem(List<String> list) {
+        countStore = 0;
+        for(int i = 0; i<list.size();i++){
+            if(SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),collegeName+list.get(i)) != null){
+                countStore++;
+                String temp = list.get(i);
+                list.remove(i);
+                list.add(0,temp);
+            }
+        }
+
+        return list;
+    }
 
     @Override
     public void onResume() {

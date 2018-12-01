@@ -1348,15 +1348,18 @@ public class RetrofitUtils {
                 if (response.body() != null) {
                     int responseCode = Objects.requireNonNull(response.body()).getCode();
                     if (responseCode == SUCCESS_CODE) {
+                        //请求成功后取消底部加载动画
                         MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
                         if(response.body().getData().length==0){
                             Toast.makeText(UMapplication.getContext(),"到底啦，我也是有底线的~",Toast.LENGTH_SHORT).show();
                         }
                         else {
+                            //将请求回的数据加入到data数据集中
                             for(PostInfo postinfo:response.body().getData()){
                                 Mixinfo mixinfo= new Mixinfo(postinfo);
                                 data.add(mixinfo);
                             }
+                            //更新adapterData
                             adapterData.notifyDataSetChanged();
                         }
                     } else {

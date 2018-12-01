@@ -83,6 +83,7 @@ public class MixListAdapter extends BaseAdapter {
         Mixinfo info = data.get(position);
         ViewHolder holder = null;
         if (convertView == null) {
+            //初始化holder以及其中控件
             holder = new ViewHolder();
             convertView = View.inflate(context, R.layout.mix_view, null);
             holder.list_img = (CircleImageView) convertView.findViewById(R.id.listuserimg);
@@ -101,26 +102,26 @@ public class MixListAdapter extends BaseAdapter {
             }
             convertView.setTag(holder);
 
-
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
-        ImageLoaders.setsendimg(ConstantUtils.postUrl+info.postInfo.getUserId(), holder.list_img);
-        holder.username.setText(info.postInfo.getNickName());
+        //留言者信息
+        ImageLoaders.setsendimg(ConstantUtils.postUrl+info.postInfo.getUserId(), holder.list_img);//头像
+        holder.username.setText(info.postInfo.getNickName());//昵称
         i++;
-//        holder.username.setText(String.valueOf(i));
-        holder.usercontent.setText(info.postInfo.getContent());
-//        holder.usercontent.setText("啊哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈啊哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈啊哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈");
+        holder.usercontent.setText(info.postInfo.getContent());//评论内容
+        //没有图片，设置为GONE
         holder.showimage.setVisibility(View.GONE);
         holder.gridview.setVisibility(View.GONE);
-        holder.like_count.setText(info.postInfo.getLikeNum() == 0 ? "" : info.postInfo.getLikeNum()+"");
-        holder.like.setImageResource(R.drawable.like1);
 
+        holder.like_count.setText(info.postInfo.getLikeNum() == 0 ? "" : info.postInfo.getLikeNum()+"");//点赞数
+        holder.like.setImageResource(R.drawable.like1);//点赞图片
+
+        //请求该评论app使用者是否点赞
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,info.postInfo.getId()+"");
         RetrofitUtils.postIsLike(context,postIsLikeRequest,holder.like,position);
-
+        //添加点赞监听
         holder.like.setOnClickListener(new LikeOnclick(holder.like_count,holder.like,position,postIsLikeRequest));
 
 //        if (info.data.size() == 1) {

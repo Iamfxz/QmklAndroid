@@ -153,7 +153,8 @@
             android:layout_marginTop="50dp"
             android:gravity="center_vertical|center_horizontal"
             android:textColor="@color/gray"
-            android:text="该文件支持在线预览" />
+            android:paddingLeft="8dp"
+            android:text="该文件支持在线预览。" />
 
 
 

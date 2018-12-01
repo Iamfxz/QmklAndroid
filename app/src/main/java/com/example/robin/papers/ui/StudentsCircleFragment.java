@@ -66,20 +66,20 @@ public class StudentsCircleFragment extends Fragment {
         initOnCreateView();
         setGlideImageLoader(view);
         onLongClick();
-        Button next=view.findViewById(R.id.next);
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(view.getContext(),"进入朋友圈",Toast.LENGTH_SHORT).show();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent=new Intent(getActivity(), MixShowActivity.class);
-                        startActivity(intent);
-                    }
-                }).start();
-            }
-        });
+//        Button next=view.findViewById(R.id.next);
+//        next.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(view.getContext(),"进入朋友圈",Toast.LENGTH_SHORT).show();
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Intent intent=new Intent(getActivity(), MixShowActivity.class);
+//                        startActivity(intent);
+//                    }
+//                }).start();
+//            }
+//        });
 
         return view;
     }
