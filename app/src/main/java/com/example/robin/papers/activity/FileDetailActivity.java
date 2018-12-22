@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -596,11 +597,15 @@ public class FileDetailActivity extends BaseActivity {
                 }
                 //其他office文件使用微软在线预览服务打开
                 else{
-                    Intent intent=new Intent(FileDetailActivity.this,WebViewActivity.class);
+                    Log.d("在线预览", getOnlineViewUrl());
+                    Uri uri = Uri.parse(getOnlineViewUrl());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                    /*Intent intent=new Intent(FileDetailActivity.this,WebViewActivity.class);
                     intent.putExtra("url", getOnlineViewUrl());
                     intent.putExtra("info","onlineview");
                     intent.putExtra("title",PaperFileUtils.nameWithPath(mFile.getName()));
-                    startActivity(intent);
+                    startActivity(intent);*/
                 }
             }
         }, 5, 9, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

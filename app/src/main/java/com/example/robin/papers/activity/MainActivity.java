@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -35,6 +37,7 @@ import com.example.robin.papers.ui.StudentsCircleFragment;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.ActivityManager;
 import com.example.robin.papers.util.CircleDrawable;
+import com.example.robin.papers.util.LogUtils;
 import com.example.robin.papers.util.SDCardUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 import com.example.robin.papers.util.ConstantUtils;
@@ -70,7 +73,7 @@ public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = "MainActivity";
-
+    private int INSTALL_PERMISS_CODE=1;
     //底部的tab控件
     private FragmentTabHost mTabHost;
     private LayoutInflater mLayoutInflater;
@@ -188,8 +191,6 @@ public class MainActivity extends BaseActivity
             boolean haveInstallPermission = getPackageManager().canRequestPackageInstalls();
             if(haveInstallPermission){
                 UpdateSetting(false);
-            }else {
-                Toast.makeText(UMapplication.getContext(),"安装应用需要打开未知来源权限，请去设置中开启权限",Toast.LENGTH_LONG).show();
             }
         }else {
             UpdateSetting(false);
@@ -397,10 +398,14 @@ public class MainActivity extends BaseActivity
                         if(Build.VERSION.SDK_INT >= 26){
                             //有无更新权限
                             boolean haveInstallPermission = getPackageManager().canRequestPackageInstalls();
+                            LogUtils.d("update haveInstallPermission",String.valueOf(haveInstallPermission));
                             if(haveInstallPermission){
                                 UpdateSetting(true);
                             }else {
                                 Toast.makeText(UMapplication.getContext(),"安装应用需要打开未知来源权限，请去设置中开启权限",Toast.LENGTH_LONG).show();
+                                Uri packageURI = Uri.parse("package:"+this.getPackageName());
+                                Intent i = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,packageURI);
+                                startActivityForResult(i, INSTALL_PERMISS_CODE);
                             }
                         }else {
                             UpdateSetting(true);
@@ -449,5 +454,14 @@ public class MainActivity extends BaseActivity
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == INSTALL_PERMISS_CODE) {
+            Toast.makeText(this,"安装应用",Toast.LENGTH_SHORT).show();
+            UpdateSetting(true);
+        }
     }
 }

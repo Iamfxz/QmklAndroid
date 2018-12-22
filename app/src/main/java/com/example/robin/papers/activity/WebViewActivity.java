@@ -5,7 +5,9 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,8 +15,10 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -90,14 +94,24 @@ public class WebViewActivity extends BaseActivity {
             }
         });
 
-        Intent intent  = getIntent();
 
-        webView.loadUrl(urls);
+
+        //webView.loadUrl(urls);
+        webView.loadUrl("http://www.baidu.com");
         webView.setWebViewClient(new WebViewClient() {
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                Log.d("在线预览", "WebResourceRequest: ");
+                String url = request.getUrl().toString();
+                return true;
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                webView.loadUrl(url);
+                Log.d("在线预览", "String: ");
                 return true;
+                //return super.shouldOverrideUrlLoading(view, url);
             }
 
         });
@@ -145,6 +159,7 @@ public class WebViewActivity extends BaseActivity {
                         FILECHOOSER_RESULTCODE);
                 return true;
             }
+
         });
 
 
@@ -181,6 +196,8 @@ public class WebViewActivity extends BaseActivity {
             }
         }
     }
+
+
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void onActivityResultAboveL(int requestCode, int resultCode, Intent data) {

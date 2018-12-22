@@ -43,6 +43,7 @@ public class PermissionUtils {
     public static final int CODE_ACCESS_COARSE_LOCATION = 6;
     public static final int CODE_READ_EXTERNAL_STORAGE = 7;
     public static final int CODE_WRITE_EXTERNAL_STORAGE = 8;
+    public static final int CODE_REQUEST_INSTALL_PACKAGES = 9;
     public static final int CODE_MULTI_PERMISSION = 100;
 
     public static final String PERMISSION_RECORD_AUDIO = Manifest.permission.RECORD_AUDIO;
@@ -54,6 +55,8 @@ public class PermissionUtils {
     public static final String PERMISSION_ACCESS_COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     public static final String PERMISSION_READ_EXTERNAL_STORAGE = Manifest.permission.READ_EXTERNAL_STORAGE;
     public static final String PERMISSION_WRITE_EXTERNAL_STORAGE = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+    //软件安装权限
+    public static final String PERMISSION_REQUEST_INSTALL_PACKAGES = Manifest.permission.REQUEST_INSTALL_PACKAGES;
 
     private static final String packageName="com.example.robin.papers";
     private static final String[] requestPermissions = {
@@ -65,7 +68,9 @@ public class PermissionUtils {
             PERMISSION_ACCESS_FINE_LOCATION,
             PERMISSION_ACCESS_COARSE_LOCATION,
             PERMISSION_READ_EXTERNAL_STORAGE,
-            PERMISSION_WRITE_EXTERNAL_STORAGE
+            PERMISSION_WRITE_EXTERNAL_STORAGE,
+            PERMISSION_REQUEST_INSTALL_PACKAGES
+
     };
 
     interface PermissionGrant {
