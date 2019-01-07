@@ -96,20 +96,21 @@ public class WebViewActivity extends BaseActivity {
 
 
 
-        //webView.loadUrl(urls);
-        webView.loadUrl("http://www.baidu.com");
+        webView.loadUrl(urls);
         webView.setWebViewClient(new WebViewClient() {
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Log.d("在线预览", "WebResourceRequest: ");
                 String url = request.getUrl().toString();
+                view.loadUrl(url);
                 return true;
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 Log.d("在线预览", "String: ");
+                view.loadUrl(url);
                 return true;
                 //return super.shouldOverrideUrlLoading(view, url);
             }

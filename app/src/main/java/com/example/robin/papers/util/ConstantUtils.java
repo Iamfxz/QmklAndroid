@@ -60,4 +60,20 @@ public class ConstantUtils {
     public static final String SAVE_PICTURE = "保存至手机";
     public static final String SAVE_PICTURE_FAILED ="保存失败";
     public static final String SAVE_PICTURE_SUCCESS = "图片成功保存至%s目录";
+
+
+    //微软在线预览URL前缀
+    /*
+    http://us7-view-wopi.wopi.live.net:808/oh/wopi/files/@/wFileId?wFileId
+    一次编码
+    http%3A%2F%2Fus7-view-wopi%2Ewopi%2Elive%2Enet%3A808%2Foh%2Fwopi%2Ffiles%2F%40%2FwFileId%3FwFileId
+     */
+    //doc或docx
+    public static final String DOC_OFFICE_URL="https://us7-word-view.officeapps.live.com/wv/wordviewerframe.aspx?ui=zh-CN&rs=zh-CN&WOPISrc=http%3A%2F%2Fus7-view-wopi%2Ewopi%2Elive%2Enet%3A808%2Foh%2Fwopi%2Ffiles%2F%40%2FwFileId%3FwFileId%3D";
+    //ppt或pptx
+    public static final String PPT_OFFICE_URL="https://us7-powerpoint.officeapps.live.com/p/PowerPointFrame.aspx?PowerPointView=ReadingView&ui=zh%2DCN&rs=zh%2DCN&WOPISrc=http%3A%2F%2Fus7-view-wopi%2Ewopi%2Elive%2Enet%3A808%2Foh%2Fwopi%2Ffiles%2F%40%2FwFileId%3FwFileId%3D";
+    //xls或xlsx
+    public static final String XLS_OFFICE_URL="https://us7-excel.officeapps.live.com/x/_layouts/xlviewerinternal.aspx?ui=zh%2DCN&rs=zh%2DCN&WOPISrc=http%3A%2F%2Fus7%2Dview%2Dwopi%2Ewopi%2Elive%2Enet%3A808%2Foh%2Fwopi%2Ffiles%2F%40%2FwFileId%3FwFileId%3D";
+    //后缀
+    public static final String SUFFIX_OFFICE_URL="&access_token_ttl=0";
 }

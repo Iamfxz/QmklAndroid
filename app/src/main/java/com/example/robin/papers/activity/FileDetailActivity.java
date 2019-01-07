@@ -47,6 +47,9 @@ import com.jaren.lib.view.LikeView;
 import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -58,6 +61,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.example.robin.papers.util.ConstantUtils.DOC_OFFICE_URL;
+import static com.example.robin.papers.util.ConstantUtils.PPT_OFFICE_URL;
+import static com.example.robin.papers.util.ConstantUtils.SUFFIX_OFFICE_URL;
+import static com.example.robin.papers.util.ConstantUtils.XLS_OFFICE_URL;
 import static com.example.robin.papers.util.ConstantUtils.agreementUrl;
 import static com.example.robin.papers.util.ConstantUtils.myonlineViewUrl;
 import static com.example.robin.papers.util.ConstantUtils.onlineViewUrl;
@@ -565,16 +572,42 @@ public class FileDetailActivity extends BaseActivity {
                 || PaperFileUtils.typeWithFileName(mFile.getName()).toLowerCase().equals("pdf")){
             url=myonlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName());
         }
+//        else if(PaperFileUtils.typeWithFileName(mFile.getName()).equals("doc") ||
+//                PaperFileUtils.typeWithFileName(mFile.getName()).equals("xls") ||
+//                PaperFileUtils.typeWithFileName(mFile.getName()).equals("docx") ||
+//                PaperFileUtils.typeWithFileName(mFile.getName()).equals("pptx") ||
+//                PaperFileUtils.typeWithFileName(mFile.getName()).equals("xlsx") ||
+//                PaperFileUtils.typeWithFileName(mFile.getName()).equals("ppt")){
+//            url=onlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName());
+//        }
         else if(PaperFileUtils.typeWithFileName(mFile.getName()).equals("doc") ||
-                PaperFileUtils.typeWithFileName(mFile.getName()).equals("xls") ||
-                PaperFileUtils.typeWithFileName(mFile.getName()).equals("docx") ||
-                PaperFileUtils.typeWithFileName(mFile.getName()).equals("pptx") ||
-                PaperFileUtils.typeWithFileName(mFile.getName()).equals("xlsx") ||
-                PaperFileUtils.typeWithFileName(mFile.getName()).equals("ppt")){
-            url=onlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName());
+                PaperFileUtils.typeWithFileName(mFile.getName()).equals("docx")){
+            String twoURL=twoURLEncoder(myonlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName()));
+            url=DOC_OFFICE_URL+twoURL+SUFFIX_OFFICE_URL;
+        }
+        else if(PaperFileUtils.typeWithFileName(mFile.getName()).equals("xls") ||
+                PaperFileUtils.typeWithFileName(mFile.getName()).equals("xlsx")){
+            String twoURL=twoURLEncoder(myonlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName()));
+            url=XLS_OFFICE_URL+twoURL+SUFFIX_OFFICE_URL;
+        }
+        else if(PaperFileUtils.typeWithFileName(mFile.getName()).equals("ppt") ||
+                PaperFileUtils.typeWithFileName(mFile.getName()).equals("pptx")){
+            String twoURL=twoURLEncoder(myonlineViewUrl+mFile.getMd5()+"/"+mFile.getId()+"/"+PaperFileUtils.nameWithPath(mFile.getName()));
+            url=PPT_OFFICE_URL+twoURL+SUFFIX_OFFICE_URL;
         }
         return url;
     }
+
+    public String twoURLEncoder(String url) {
+        String twoURL= null;
+        try {
+            twoURL = URLEncoder.encode(URLEncoder.encode(url,"utf-8"),"utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return twoURL;
+    }
+
 
     /**
      * 获取可点击的SpannableString
@@ -596,16 +629,17 @@ public class FileDetailActivity extends BaseActivity {
                     startActivity(intent);
                 }
                 //其他office文件使用微软在线预览服务打开
+
                 else{
                     Log.d("在线预览", getOnlineViewUrl());
-                    Uri uri = Uri.parse(getOnlineViewUrl());
+                    /*Uri uri = Uri.parse(getOnlineViewUrl());
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
-                    /*Intent intent=new Intent(FileDetailActivity.this,WebViewActivity.class);
+                    startActivity(intent);*/
+                    Intent intent=new Intent(FileDetailActivity.this,WebViewActivity.class);
                     intent.putExtra("url", getOnlineViewUrl());
                     intent.putExtra("info","onlineview");
                     intent.putExtra("title",PaperFileUtils.nameWithPath(mFile.getName()));
-                    startActivity(intent);*/
+                    startActivity(intent);
                 }
             }
         }, 5, 9, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
