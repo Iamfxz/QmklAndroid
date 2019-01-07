@@ -156,6 +156,9 @@ public class ResourceFragment extends Fragment
     boolean recordSuccess = false;
     //收藏文件的数目
     int countStore = 0;
+
+    //请求失败次数
+    int requestFailedNum = 0;
     /**
      * Butter Knife 用法详见  http://jakewharton.github.io/butterknife/
      */
@@ -1264,29 +1267,42 @@ public class ResourceFragment extends Fragment
                     }
                     mAdapter.notifyDataSetChanged();//UI界面就刷新
                     result = true;
+                    requestFailedNum=0;
                     break;
                 case 2:
                     //请求失败回调
-                    nextActivity(LoginActivity.class);
-                    Toast.makeText(getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                    requestFailedNum++;
+                    if(requestFailedNum == 1){
+                        Toast.makeText(getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                        nextActivity(LoginActivity.class);
+                    }
                     break;
                 case 3:
                     //登陆失效
-                    nextActivity(LoginActivity.class);
-                    Toast.makeText(getContext(), ConstantUtils.LOGIN_INVALID, Toast.LENGTH_SHORT).show();
+                    requestFailedNum++;
+                    if(requestFailedNum == 1){
+                        Toast.makeText(getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                        nextActivity(LoginActivity.class);
+                    }
                     break;
                 case 4:
                     //服务器获取结果为404
-                    nextActivity(LoginActivity.class);
-                    Toast.makeText(getContext(), ConstantUtils.SERVER_FILE_ERROR, Toast.LENGTH_SHORT).show();
+                    requestFailedNum++;
+                    if(requestFailedNum == 1){
+                        Toast.makeText(getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                        nextActivity(LoginActivity.class);
+                    }
                     break;
                 case 5:
                     //202常规异常 TODO 未测试
                     Toast.makeText(getContext(), msg.obj.toString(), Toast.LENGTH_SHORT).show();
                 case 6:
                     //未知异常
-                    nextActivity(LoginActivity.class);
-                    Toast.makeText(getContext(), ConstantUtils.UNKNOWN_ERROR, Toast.LENGTH_SHORT).show();
+                    requestFailedNum++;
+                    if(requestFailedNum == 1){
+                        Toast.makeText(getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                        nextActivity(LoginActivity.class);
+                    }
                 default:
                     break;
             }

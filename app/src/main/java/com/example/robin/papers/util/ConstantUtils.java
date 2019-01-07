@@ -41,7 +41,7 @@ public class ConstantUtils {
 
     //提示信息
     public static final String CACHE_AD_ERROR = "缓存广告失败";
-    public static final String SERVER_REQUEST_FAILURE = "网络连接失败";
+    public static final String SERVER_REQUEST_FAILURE = "网络信号不太好，连接服务器失败";
     public static final String UPLOAD_IMG_FAILURE = "上传头像失败";
     public static final String UPLOAD_FILE_BIG = "上传文件过大，请重新选择文件上传";
     public static final String UPLOAD_FILE_FAILURE = "上传文件失败";
