@@ -40,6 +40,7 @@ public class CollectionListView extends ListView implements
     private void init(Context context) {
         //初始化底部加载动画
         mFooterView = View.inflate(context, R.layout.view_footer, null);
+        super.setOnScrollListener(this);
     }
     @Override
     public void onScroll(AbsListView paramAbsListView, int firstVisibleItem,

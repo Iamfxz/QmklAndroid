@@ -1,18 +1,16 @@
 package com.example.robin.papers.studentCircle.studentCircleActivity;
 
 import android.os.Bundle;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import com.example.robin.papers.R;
-import com.example.robin.papers.model.CollectionListData;
+import com.example.robin.papers.model.CommentListData;
 import com.example.robin.papers.requestModel.PostRequest;
-import com.example.robin.papers.studentCircle.adapter.CollectionListAdapter;
-import com.example.robin.papers.studentCircle.model.CollectionInfo;
-import com.example.robin.papers.studentCircle.model.Mixinfo;
-import com.example.robin.papers.studentCircle.view.CollectionListView;
+import com.example.robin.papers.studentCircle.adapter.CommentListAdapter;
+import com.example.robin.papers.studentCircle.view.CommentListView;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
@@ -24,21 +22,20 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-
-public class MyCollectionActivity extends BaseActivity {
+public class MyCommentActivity extends BaseActivity {
 
     @BindView(R.id.iv_back)
     ImageView backBtn;
+
+    public static CommentListView commentList;
     public static int page=1;
-    public static CollectionListView collectionList;
-    public static ArrayList<Mixinfo> data;
-    public static CollectionListAdapter adapterData;
+    public static ArrayList<CommentListData> data;
+    public static CommentListAdapter adapterData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mycollection);
+        setContentView(R.layout.activity_mycomment);
         ButterKnife.bind(this);
-
         InData();
         //返回按钮监听
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -52,11 +49,12 @@ public class MyCollectionActivity extends BaseActivity {
 
     }
 
-    public void InData() {
-        collectionList=findViewById(R.id.collection_list);
-        data = new ArrayList<Mixinfo>();
-        adapterData = new CollectionListAdapter(this, data);
-        collectionList.setAdapter(adapterData);
+    private void InData() {
+        commentList=findViewById(R.id.comment_list);
+        data=new ArrayList<CommentListData>();
+        adapterData=new CommentListAdapter(this,MyCommentActivity.class);
+        commentList.setAdapter(adapterData);
+
         String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
         PostRequest postRequest=new PostRequest(token,String.valueOf(page));
         ZLoadingDialog dialog = new ZLoadingDialog(this);
@@ -65,9 +63,8 @@ public class MyCollectionActivity extends BaseActivity {
                 .setHintText("Loading")
                 .setCanceledOnTouchOutside(false)
                 .show();
-        RetrofitUtils.postGetCollection(this,postRequest,data,dialog);
+        RetrofitUtils.postGetMyComment(this,postRequest,data,dialog);
     }
-
     /**
      * 监听返回按键的事件处理
      *

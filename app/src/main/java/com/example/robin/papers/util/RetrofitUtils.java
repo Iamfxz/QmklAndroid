@@ -36,6 +36,7 @@ import com.example.robin.papers.impl.PostGetCode;
 import com.example.robin.papers.impl.PostGetCollectionList;
 import com.example.robin.papers.impl.PostGetCommentList;
 import com.example.robin.papers.impl.PostGetDynamicList;
+import com.example.robin.papers.impl.PostGetMyCommentList;
 import com.example.robin.papers.impl.PostLogin;
 import com.example.robin.papers.impl.PostPerfectInfo;
 import com.example.robin.papers.impl.PostPostAdd;
@@ -79,8 +80,11 @@ import com.example.robin.papers.studentCircle.studentCircleActivity.DetailsActiv
 import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyCollectionActivity;
+import com.example.robin.papers.studentCircle.studentCircleActivity.MyCommentActivity;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyDynamicActivity;
 import com.example.robin.papers.studentCircle.view.CollectionListView;
+import com.example.robin.papers.studentCircle.view.CommentListView;
+import com.example.robin.papers.studentCircle.view.DynamicListView;
 import com.example.robin.papers.studentCircle.view.PullToZoomListView;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.zyao89.view.zloading.ZLoadingDialog;
@@ -88,6 +92,7 @@ import com.zyao89.view.zloading.Z_TYPE;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1806,7 +1811,7 @@ public class RetrofitUtils {
      * @param data 我的动态数据源
      * @param dialog 等待图标
      */
-    //查询我收藏的帖子
+    //查询我发出的帖子
     public static void postGetMyDynamic(final Context context, PostRequest postRequest, final ArrayList<Mixinfo> data, final ZLoadingDialog dialog) {
         PostGetDynamicList request = retrofit.create(PostGetDynamicList.class);
         Call<ResponseInfo<PostInfo[]>> call = request.getCall(postRequest);
@@ -1818,7 +1823,7 @@ public class RetrofitUtils {
                     int responseCode = Objects.requireNonNull(response.body()).getCode();
                     if (responseCode == SUCCESS_CODE) {
                         //请求成功后取消底部加载动画
-                        MyDynamicActivity.dynamicList.removeFooterView(CollectionListView.mFooterView);
+                        MyDynamicActivity.dynamicList.removeFooterView(DynamicListView.mFooterView);
                         if(response.body().getData().length==0){
                             Toast.makeText(UMapplication.getContext(),"到底啦，我也是有底线的~",Toast.LENGTH_SHORT).show();
                         }
@@ -1831,11 +1836,11 @@ public class RetrofitUtils {
 
                         }
                     } else {
-                        MyDynamicActivity.dynamicList.removeFooterView(CollectionListView.mFooterView);
+                        MyDynamicActivity.dynamicList.removeFooterView(DynamicListView.mFooterView);
                         Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    MyDynamicActivity.dynamicList.removeFooterView(CollectionListView.mFooterView);
+                    MyDynamicActivity.dynamicList.removeFooterView(DynamicListView.mFooterView);
                     Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                 }
             }
@@ -1843,7 +1848,55 @@ public class RetrofitUtils {
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<PostInfo[]>> call, @NonNull Throwable t) {
                 if(dialog!=null) dialog.dismiss();
-                MyDynamicActivity.dynamicList.removeFooterView(CollectionListView.mFooterView);
+                MyDynamicActivity.dynamicList.removeFooterView(DynamicListView.mFooterView);
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    /**
+     * @param context 上下文
+     * @param postRequest
+     * @param data 我的评论数据源
+     * @param dialog 等待图标
+     */
+    //查询我的评论
+    public static void postGetMyComment(final Context context, PostRequest postRequest, final ArrayList<CommentListData> data, final ZLoadingDialog dialog) {
+        PostGetMyCommentList request = retrofit.create(PostGetMyCommentList.class);
+        Call<ResponseInfo<CommentListData[]>> call = request.getCall(postRequest);
+        call.enqueue(new Callback<ResponseInfo<CommentListData[]>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Response<ResponseInfo<CommentListData[]>> response) {
+                if(dialog!=null) dialog.dismiss();
+                if (response.body() != null) {
+                    int responseCode = Objects.requireNonNull(response.body()).getCode();
+                    if (responseCode == SUCCESS_CODE) {
+                        //请求成功后取消底部加载动画
+                        MyCommentActivity.commentList.removeFooterView( CommentListView.mFooterView);
+                        if(response.body().getData().length==0){
+                            Toast.makeText(UMapplication.getContext(),"到底啦，我也是有底线的~",Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            //将请求回的数据加入到data数据集中
+                            data.addAll(Arrays.asList(response.body().getData()));
+                            MyCommentActivity.adapterData.notifyDataSetChanged();
+
+                        }
+                    } else {
+                        MyCommentActivity.commentList.removeFooterView(CommentListView.mFooterView);
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    MyCommentActivity.commentList.removeFooterView(CommentListView.mFooterView);
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Throwable t) {
+                if(dialog!=null) dialog.dismiss();
+                MyCommentActivity.commentList.removeFooterView(CommentListView.mFooterView);
                 Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
             }

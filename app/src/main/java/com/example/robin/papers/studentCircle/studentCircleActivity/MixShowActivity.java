@@ -92,6 +92,8 @@ public class MixShowActivity extends BaseActivity  {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                page=1;
+                adapterData=null;
                 finish();
             }
         });

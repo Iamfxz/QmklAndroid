@@ -1,6 +1,7 @@
 package com.example.robin.papers.studentCircle.studentCircleActivity;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -36,12 +37,16 @@ public class MyDynamicActivity extends BaseActivity {
         setContentView(R.layout.activity_mydynamic);
         ButterKnife.bind(this);
         InData();
+        //返回按钮监听
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                page=1;
+                adapterData=null;
                 finish();
             }
         });
+
     }
 
     public void InData() {
@@ -58,5 +63,24 @@ public class MyDynamicActivity extends BaseActivity {
                 .setCanceledOnTouchOutside(false)
                 .show();
         RetrofitUtils.postGetMyDynamic(this,postRequest,data,dialog);
+    }
+
+    /**
+     * 监听返回按键的事件处理
+     *
+     * @param keyCode 点击事件的代码
+     * @param event   事件
+     * @return 有无处理
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            page=1;
+            adapterData=null;
+            this.finish();
+        }
+
+        return true;
     }
 }

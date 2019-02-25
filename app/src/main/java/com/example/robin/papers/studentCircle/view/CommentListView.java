@@ -2,6 +2,7 @@ package com.example.robin.papers.studentCircle.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
@@ -9,29 +10,29 @@ import android.widget.ListView;
 import com.example.robin.papers.R;
 import com.example.robin.papers.requestModel.PostRequest;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyCollectionActivity;
-import com.example.robin.papers.studentCircle.studentCircleActivity.MyDynamicActivity;
+import com.example.robin.papers.studentCircle.studentCircleActivity.MyCommentActivity;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 
-public class DynamicListView extends ListView implements
+public class CommentListView extends ListView implements
         AbsListView.OnScrollListener{
     public  Context context;
     public static View mFooterView;
 
-    public DynamicListView(Context context) {
+    public CommentListView(Context context) {
         super(context);
         this.context=context;
         init(context);
     }
 
-    public DynamicListView(Context context, AttributeSet attrs) {
+    public CommentListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context=context;
         init(context);
     }
 
-    public DynamicListView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CommentListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context=context;
         init(context);
@@ -54,10 +55,10 @@ public class DynamicListView extends ListView implements
                 // 判断滚动到底部
                 if (paramAbsListView.getLastVisiblePosition() == (paramAbsListView.getCount() - 1)) {
                     if(getFooterViewsCount()==0){
-                        MyDynamicActivity.dynamicList.addFooterView(mFooterView);
+                        MyCommentActivity.commentList.addFooterView(mFooterView);
                         String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
-                        PostRequest postRequest=new PostRequest(token,String.valueOf(++MyDynamicActivity.page));
-                        RetrofitUtils.postGetMyDynamic(context,postRequest,MyDynamicActivity.data,null);
+                        PostRequest postRequest=new PostRequest(token,String.valueOf(++MyCommentActivity.page));
+                        RetrofitUtils.postGetMyComment(context,postRequest,MyCommentActivity.data,null);
                     }
                 }
                 break;

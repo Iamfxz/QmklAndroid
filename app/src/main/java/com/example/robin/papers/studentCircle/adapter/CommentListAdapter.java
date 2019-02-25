@@ -13,6 +13,7 @@ import com.example.robin.papers.model.CommentListData;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyCollectionActivity;
+import com.example.robin.papers.studentCircle.studentCircleActivity.MyCommentActivity;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyDynamicActivity;
 import com.example.robin.papers.studentCircle.tools.ImageLoaders;
 import com.example.robin.papers.util.ConstantUtils;
@@ -41,6 +42,11 @@ public class CommentListAdapter extends BaseAdapter {
         }
         this.mixPosition = mixPosition;
     }
+    public CommentListAdapter(Context context,Class sourceClass){
+        this.context = context;
+        this.sourceClass=sourceClass;
+        this.commentListData= MyCommentActivity.data;
+    }
 
     @Override
     public int getCount() {
@@ -52,6 +58,9 @@ public class CommentListAdapter extends BaseAdapter {
         }
         else if(sourceClass == DynamicListAdapter.class){
             this.commentListData= MyDynamicActivity.data.get(mixPosition).commentListData;
+        }
+        else if(sourceClass == MyCommentActivity.class){
+            this.commentListData= MyCommentActivity.data;
         }
         return commentListData.size();
     }

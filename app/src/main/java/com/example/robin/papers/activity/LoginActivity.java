@@ -199,6 +199,7 @@ public class LoginActivity extends BaseActivity {
                 .setCanceledOnTouchOutside(false)
                 .show();
 
+        Log.d(TAG, "doLogin: "+SHApassword);
         RetrofitUtils.postLogin(LoginActivity.this,this, req,dialog);//发送登录请求验证
     }
 
