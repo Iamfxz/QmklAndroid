@@ -2,12 +2,20 @@ package com.example.robin.papers.model;
 
 import java.io.Serializable;
 
-public class PostInfo implements Serializable {
+//存储当前留言的评论信息
+public class CommentListData implements Serializable {
 
-    int id,userId;
-    String content,createTime;
-    int likeNum,commentNum;
-    String nickName;
+    private int id,userId,postId;
+    private String content,createTime,nickName;
+
+    public CommentListData(int id, int userId, int postId, String content, String createTime, String nickName) {
+        this.id = id;
+        this.userId = userId;
+        this.postId = postId;
+        this.content = content;
+        this.createTime = createTime;
+        this.nickName = nickName;
+    }
 
     public int getId() {
         return id;
@@ -25,6 +33,14 @@ public class PostInfo implements Serializable {
         this.userId = userId;
     }
 
+    public int getPostId() {
+        return postId;
+    }
+
+    public void setPostId(int postId) {
+        this.postId = postId;
+    }
+
     public String getContent() {
         return content;
     }
@@ -39,22 +55,6 @@ public class PostInfo implements Serializable {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
-    }
-
-    public int getLikeNum() {
-        return likeNum;
-    }
-
-    public void setLikeNum(int likeNum) {
-        this.likeNum = likeNum;
-    }
-
-    public int getCommentNum() {
-        return commentNum;
-    }
-
-    public void setCommentNum(int commentNum) {
-        this.commentNum = commentNum;
     }
 
     public String getNickName() {

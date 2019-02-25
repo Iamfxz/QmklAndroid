@@ -1,4 +1,4 @@
-package com.example.robin.papers.studentCircle.dwcorephoto;
+package com.example.robin.papers.studentCircle.studentCircleActivity;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;

@@ -3,10 +3,8 @@ package com.example.robin.papers.ui;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,14 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.robin.papers.R;
-import com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity;
+import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
-import com.example.robin.papers.util.ConstantUtils;
 import com.example.robin.papers.util.GlideImageLoader;
 import com.example.robin.papers.util.SDCardUtils;
 import com.umeng.analytics.MobclickAgent;
 import com.youth.banner.Banner;
-import com.zyao89.view.zloading.ZLoadingDialog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,7 +38,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.robin.papers.util.ConstantUtils.*;
-import static com.zyao89.view.zloading.Z_TYPE.CIRCLE;
 
 public class StudentsCircleFragment extends Fragment {
 
@@ -66,20 +61,20 @@ public class StudentsCircleFragment extends Fragment {
         initOnCreateView();
         setGlideImageLoader(view);
         onLongClick();
-//        Button next=view.findViewById(R.id.next);
-//        next.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(view.getContext(),"进入朋友圈",Toast.LENGTH_SHORT).show();
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Intent intent=new Intent(getActivity(), MixShowActivity.class);
-//                        startActivity(intent);
-//                    }
-//                }).start();
-//            }
-//        });
+        Button next=view.findViewById(R.id.next);
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(view.getContext(),"进入朋友圈",Toast.LENGTH_SHORT).show();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent=new Intent(getActivity(), MixShowActivity.class);
+                        startActivity(intent);
+                    }
+                }).start();
+            }
+        });
 
         return view;
     }

@@ -1,13 +1,13 @@
 package com.example.robin.papers.requestModel;
 
-/**
- * 是否点赞以及收藏，添加点赞、收藏或取消
- */
-public class PostIsLikeRequest {
-    String token,postId;
+//用户对帖子发表评论
+public class CommentAddRequest {
 
-    public PostIsLikeRequest(String token, String postId) {
+    String token,content,postId;
+
+    public CommentAddRequest(String token, String content, String postId) {
         this.token = token;
+        this.content = content;
         this.postId = postId;
     }
 
@@ -17,6 +17,14 @@ public class PostIsLikeRequest {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getPostId() {

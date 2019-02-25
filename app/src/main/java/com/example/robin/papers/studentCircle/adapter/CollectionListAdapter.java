@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.PopupMenu;
 import android.text.Layout;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.example.robin.papers.R;
 import com.example.robin.papers.model.CollectionListData;
 import com.example.robin.papers.requestModel.PostIsLikeRequest;
+import com.example.robin.papers.studentCircle.model.CollectionInfo;
 import com.example.robin.papers.studentCircle.studentCircleActivity.DetailsActivity;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
 import com.example.robin.papers.studentCircle.studentCircleActivity.PreviewImage;
@@ -36,22 +38,17 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-
-public class MixListAdapter extends BaseAdapter {
+public class CollectionListAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<Mixinfo> data;
-    private ImageBDInfo bdInfo;
-    private MixShowActivity activity;
-//    private CommentListAdapter commentListAdapter;
+    private ArrayList<CollectionInfo> data;
 
-    private int ImagaId[] = {R.id.img_0, R.id.img_1, R.id.img_2, R.id.img_3, R.id.img_4, R.id.img_5, R.id.img_6, R.id.img_7, R.id.img_8};
     int i=1;
-    public MixListAdapter(Context context, ArrayList<Mixinfo> data) {
+
+    public CollectionListAdapter(Context context, ArrayList<CollectionInfo> data) {
         this.context = context;
-        this.data = data;
-        bdInfo = new ImageBDInfo();
-        activity = (MixShowActivity) context;
+        this.data=data;
+
     }
 
     @Override
@@ -73,7 +70,8 @@ public class MixListAdapter extends BaseAdapter {
     }
     @Override
     public View getView(final int position, View convertView, ViewGroup arg2) {
-        Mixinfo info = data.get(position);
+
+        CollectionInfo info = data.get(position);
         ViewHolder holder = null;
         if (convertView == null) {
             //初始化holder以及其中控件
@@ -96,37 +94,35 @@ public class MixListAdapter extends BaseAdapter {
             holder.comment_text= convertView.findViewById(R.id.comment_text);
             holder.evaluationLayout = (LinearLayout) convertView.findViewById(R.id.evaluationLayout);
             holder.popupmenu =convertView.findViewById(R.id.popupmenu);
-//            holder.commentList = (NoScrollListView) convertView.findViewById(R.id.commentList);
-            for (int i = 0; i < 9; i++) {
-                holder.imgview[i] = (ImageView) convertView.findViewById(ImagaId[i]);
-            }
+
+
             convertView.setTag(holder);
 
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         //留言者信息
-        ImageLoaders.setsendimg(ConstantUtils.postUrl+info.postInfo.getUserId(), holder.list_img);//头像
-        holder.username.setText(info.postInfo.getNickName());//昵称
-        holder.dateTtime.setText(info.postInfo.getCreateTime());//留言时间
+        ImageLoaders.setsendimg(ConstantUtils.postUrl+info.collectionListData.getPostResult().getUserId(), holder.list_img);//头像
+        holder.username.setText(info.collectionListData.getPostResult().getNickName());//昵称
+        holder.dateTtime.setText(info.collectionListData.getPostResult().getCreateTime());//留言时间
         i++;
-        holder.usercontent.setText(info.postInfo.getContent());//评论内容
+        holder.usercontent.setText(info.collectionListData.getPostResult().getContent());//评论内容
         //没有图片，设置为GONE
         holder.showimage.setVisibility(View.GONE);
         holder.gridview.setVisibility(View.GONE);
 
-        holder.like_count.setText(info.postInfo.getLikeNum()+"");//点赞数
+        holder.like_count.setText(info.collectionListData.getPostResult().getLikeNum()+"");//点赞数
         holder.like.setImageResource(R.drawable.like1);//点赞图片
 
         //请求该评论app使用者是否点赞
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
-        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,info.postInfo.getId()+"");
-        RetrofitUtils.postIsLike(context,postIsLikeRequest,holder.like,position,MixListAdapter.class);
+        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,info.collectionListData.getPostResult().getId()+"");
+        RetrofitUtils.postIsLike(context,postIsLikeRequest,holder.like,position,CollectionListAdapter.class);
 
         //请求该评论app使用者是否收藏
-        RetrofitUtils.postIsCollect(context,postIsLikeRequest,position,MixListAdapter.class);
+        RetrofitUtils.postIsCollect(context,postIsLikeRequest,position,CollectionListAdapter.class);
 
-        holder.comment_count.setText(info.postInfo.getCommentNum()+"");//评论数
+        holder.comment_count.setText(info.collectionListData.getPostResult().getCommentNum()+"");//评论数
 
 
         //添加点赞监听
@@ -165,7 +161,6 @@ public class MixListAdapter extends BaseAdapter {
         TextView usercontent, fullText;
         GridLayout gridview;
         ImageView showimage;
-        ImageView imgview[] = new ImageView[9];
         LinearLayout evaluationLayout, allLayout;
         ImageView like,comment;
         TextView like_text,comment_text;
@@ -230,53 +225,11 @@ public class MixListAdapter extends BaseAdapter {
      */
     private void collectPost(int position){
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
-        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).postInfo.getId()+"");
-        RetrofitUtils.postCollectPost(context,postIsLikeRequest,data.get(position),position);
-    }
-    public class GridOnclick implements View.OnClickListener {
-
-        private int index;
-        private int row;
-        private ImageView imageView;
-        private GridLayout gridLayout;
-        private LinearLayout allLayout;
-
-        public GridOnclick(int index, ImageView imageView, int row, GridLayout gridLayout, LinearLayout allLayout) {
-            this.index = index;
-            this.imageView = imageView;
-            this.gridLayout = gridLayout;
-            this.row = row;
-            this.allLayout = allLayout;
-        }
-
-        @Override
-        public void onClick(View v) {
-            View c = activity.mixlist.getChildAt(0);
-            int top = c.getTop();
-            int firstVisiblePosition = activity.mixlist.getFirstVisiblePosition();
-            float height = 0.0f;
-            for (int i = 0; i < ((index + 1) - firstVisiblePosition); i++) {
-                View view = activity.mixlist.getChildAt(i);
-                height += view.getHeight();
-            }
-            bdInfo.x = imageView.getLeft() + gridLayout.getLeft() + allLayout.getLeft();
-            bdInfo.y = allLayout.getTop() + gridLayout.getTop() + imageView.getTop() + height + top + activity.mixlist.getTop();
-            bdInfo.width = imageView.getLayoutParams().width;
-            bdInfo.height = imageView.getLayoutParams().height;
-            Intent intent = new Intent(context, PreviewImage.class);
-            ArrayList<ImageInfo> info = data.get(index).data;
-            intent.putExtra("data", (Serializable) info);
-            intent.putExtra("bdinfo", bdInfo);
-            intent.putExtra("index", row);
-            intent.putExtra("type", 3);
-            context.startActivity(intent);
-        }
+        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).collectionListData.getPostResult().getId()+"");
+//        RetrofitUtils.postCollectPost(context,postIsLikeRequest,data.get(position),position);
     }
 
-    public int dip2px(float dpValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
-    }
+
 
     public class fullTextOnclick implements View.OnClickListener {
 
@@ -292,7 +245,7 @@ public class MixListAdapter extends BaseAdapter {
 
         @Override
         public void onClick(View v) {
-            Mixinfo info = data.get(index);
+            CollectionInfo info = data.get(index);
             if (info.is_select) {
                 usercontent.setMaxLines(3);
                 fullText.setText("全文");
@@ -324,13 +277,13 @@ public class MixListAdapter extends BaseAdapter {
 
         @Override
         public void onClick(View v) {
-            Mixinfo info = data.get(index);
+            CollectionInfo info = data.get(index);
             RetrofitUtils.postLike(context,postIsLikeRequest,like,null,like_count,info.is_like);
             if(info.is_like){
-                info.postInfo.setLikeNum(info.postInfo.getLikeNum()-1);
+                info.collectionListData.getPostResult().setLikeNum(info.collectionListData.getPostResult().getLikeNum()-1);
             }
             else {
-                info.postInfo.setLikeNum(info.postInfo.getLikeNum()+1);
+                info.collectionListData.getPostResult().setLikeNum(info.collectionListData.getPostResult().getLikeNum()+1);
             }
             info.is_like=!info.is_like;
             data.set(index,info);
@@ -350,7 +303,7 @@ public class MixListAdapter extends BaseAdapter {
             Intent intent=new Intent(context, DetailsActivity.class);
             intent.putExtra("index", index);
             intent.putExtra("isComment",true);
-            intent.putExtra("sourceClass",MixListAdapter.class);
+            intent.putExtra("sourceClass",CollectionListAdapter.class);
             context.startActivity(intent);
 
         }
@@ -367,7 +320,7 @@ public class MixListAdapter extends BaseAdapter {
             Intent intent=new Intent(context, DetailsActivity.class);
             intent.putExtra("index", index);
             intent.putExtra("isComment",false);
-            intent.putExtra("sourceClass",MixListAdapter.class);
+            intent.putExtra("sourceClass",CollectionListAdapter.class);
             context.startActivity(intent);
         }
     }
@@ -400,19 +353,6 @@ public class MixListAdapter extends BaseAdapter {
         });
     }
 
-    class NameOnclick implements View.OnClickListener {
-
-        private String name;
-
-        NameOnclick(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public void onClick(View v) {
-            activity.showToast(name);
-        }
-    }
 
 
 

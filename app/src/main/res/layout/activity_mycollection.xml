@@ -30,7 +30,7 @@
             android:singleLine="true"
             android:layout_centerInParent="true"
             android:layout_gravity="center"
-            android:text="趣聊"
+            android:text="我的收藏"
             android:textAlignment="center"
             android:textColor="@color/white_content"
             android:textSize="20sp" />
@@ -50,8 +50,8 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <com.example.robin.papers.studentCircle.view.PullToZoomListView
-        android:id="@+id/mixlist"
+    <com.example.robin.papers.studentCircle.view.CollectionListView
+        android:id="@+id/collection_list"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:divider="#eaeaea"

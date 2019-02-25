@@ -1,91 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:id="@+id/mix_view">
 
-    <!--<ImageView-->
-        <!--android:id="@+id/listuserimg"-->
-        <!--android:layout_width="50dp"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:scaleType="centerCrop" />-->
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/listuserimg"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="centerCrop" />
 
-    <TextView
-        android:id="@+id/username"
-        android:layout_width="wrap_content"
+
+    <RelativeLayout
+        android:id="@+id/rightLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/listuserimg"
-        android:text="DavidWang"
-        android:textColor="@android:color/black"
-        android:textSize="16dp" />
+        android:layout_toEndOf="@+id/listuserimg">
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="DavidWang"
+            android:textColor="@android:color/black"
+            android:textSize="16dp" />
 
-    <TextView
-        android:id="@+id/usercontent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/username"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/listuserimg"
-        android:text="这是一个单张的演示"
-        android:maxLines="3"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="14dp" />
+        <TextView
+            android:id="@+id/date_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/username"
+            android:text="2019-2-6 20:55:00" />
 
-    <TextView
-        android:id="@+id/fullText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="全文"
-        android:layout_toEndOf="@+id/listuserimg"
-        android:textColor="@color/material_blue_500"
-        android:layout_below="@+id/usercontent"
-        android:layout_marginStart="5dp"
-        android:padding="5dp"
-        />
+        <TextView
+            android:id="@+id/usercontent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/date_time"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="这是一个单张的演示"
+            android:textIsSelectable="true"
+            android:maxLines="3"
+            android:textColor="@android:color/primary_text_light"
+            android:textSize="14dp" />
 
-    <ImageView
-        android:id="@+id/like"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignBottom="@+id/fullText"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="70dp"
-        android:layout_below="@+id/allLayout"
-        android:src="@drawable/like1" />
+        <TextView
+            android:id="@+id/fullText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="全文"
+            android:textColor="@color/material_blue_500"
+            android:layout_below="@+id/usercontent"
+            android:layout_marginStart="5dp"
+            android:padding="5dp"
+            />
 
-    <TextView
-        android:id="@+id/like_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="20"
-        android:layout_below="@+id/allLayout"
-        android:layout_alignBottom="@+id/fullText"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="50dp"
-        />
+        <ImageView
+            android:id="@+id/like"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_below="@+id/fullText"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/like1" />
 
-    <ImageView
-        android:id="@+id/comment"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignBottom="@+id/fullText"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp"
-        android:layout_below="@+id/allLayout"
-        android:src="@drawable/comment" />
+        <TextView
+            android:id="@+id/like_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20"
+            android:layout_below="@+id/fullText"
+            android:layout_marginStart="35dp"
+            />
 
+        <TextView
+            android:id="@+id/like_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fullText"
+            android:layout_toEndOf="@+id/like_count"
+            android:text="个人觉得赞" />
+
+        <ImageView
+            android:id="@+id/comment"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_below="@+id/like"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/comment" />
+
+        <TextView
+            android:id="@+id/comment_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20"
+            android:layout_below="@+id/like"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="35dp"
+            />
+        <TextView
+            android:id="@+id/comment_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/like"
+            android:layout_toEndOf="@+id/comment_count"
+            android:layout_marginTop="5dp"
+            android:text="个评论" />
+
+        <ImageView
+            android:id="@+id/popupmenu"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            app:srcCompat="@drawable/popupmenu" />
+
+
+
+    </RelativeLayout>
     <LinearLayout
         android:id="@+id/allLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fullText"
+        android:layout_below="@+id/rightLayout"
         android:layout_toEndOf="@+id/listuserimg"
         android:orientation="vertical">
 
