@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.example.robin.papers.R;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyCollectionActivity;
+import com.example.robin.papers.studentCircle.studentCircleActivity.MyDynamicActivity;
 import com.example.robin.papers.ui.DownloadedFragment;
 import com.example.robin.papers.ui.ResourceFragment;
 import com.example.robin.papers.ui.StudentsCircleFragment;
@@ -366,8 +367,8 @@ public class MainActivity extends BaseActivity
                 }else {
                     item.setChecked(true);
                     if(!isFastDoubleClick()){
-                        Toast.makeText(MainActivity.this,"趣聊板块正在紧张刺激的开发当中，敬请期待~",Toast.LENGTH_SHORT).show();
-                    }
+                        intent = new Intent(MainActivity.this, MyDynamicActivity.class);
+                        startActivity(intent);                    }
                 }
                 break;
             case R.id.my_collection:

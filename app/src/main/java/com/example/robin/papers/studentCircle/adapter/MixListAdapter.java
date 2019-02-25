@@ -231,7 +231,7 @@ public class MixListAdapter extends BaseAdapter {
     private void collectPost(int position){
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).postInfo.getId()+"");
-        RetrofitUtils.postCollectPost(null,postIsLikeRequest,data.get(position),position,MixListAdapter.class);
+        RetrofitUtils.postCollectPost(null,false,postIsLikeRequest,data.get(position),position,MixListAdapter.class);
     }
     public class GridOnclick implements View.OnClickListener {
 

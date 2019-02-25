@@ -102,6 +102,7 @@ public class MixShowActivity extends BaseActivity  {
             public void onClick(View v) {
                 Intent intent=new Intent(MixShowActivity.this,PostAddActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
     }

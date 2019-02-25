@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.PopupMenu;
 import android.text.Layout;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,34 +17,27 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.robin.papers.R;
-import com.example.robin.papers.model.CollectionListData;
 import com.example.robin.papers.requestModel.PostIsLikeRequest;
-import com.example.robin.papers.studentCircle.model.CollectionInfo;
-import com.example.robin.papers.studentCircle.studentCircleActivity.DetailsActivity;
-import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
-import com.example.robin.papers.studentCircle.studentCircleActivity.PreviewImage;
-import com.example.robin.papers.studentCircle.model.ImageBDInfo;
-import com.example.robin.papers.studentCircle.model.ImageInfo;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
+import com.example.robin.papers.studentCircle.studentCircleActivity.DetailsActivity;
 import com.example.robin.papers.studentCircle.tools.ImageLoaders;
 import com.example.robin.papers.util.ConstantUtils;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CollectionListAdapter extends BaseAdapter {
+public class DynamicListAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<Mixinfo> data;
 
     int i=1;
 
-    public CollectionListAdapter(Context context, ArrayList<Mixinfo> data) {
+    public DynamicListAdapter(Context context, ArrayList<Mixinfo> data) {
         this.context = context;
         this.data=data;
 
@@ -116,10 +108,10 @@ public class CollectionListAdapter extends BaseAdapter {
         //请求该评论app使用者是否点赞
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,info.postInfo.getId()+"");
-        RetrofitUtils.postIsLike(context,postIsLikeRequest,holder.like,position,CollectionListAdapter.class);
+        RetrofitUtils.postIsLike(context,postIsLikeRequest,holder.like,position,DynamicListAdapter.class);
 
         //请求该评论app使用者是否收藏
-        RetrofitUtils.postIsCollect(context,postIsLikeRequest,position,CollectionListAdapter.class);
+        RetrofitUtils.postIsCollect(context,postIsLikeRequest,position,DynamicListAdapter.class);
 
         holder.comment_count.setText(info.postInfo.getCommentNum()+"");//评论数
 
@@ -225,7 +217,7 @@ public class CollectionListAdapter extends BaseAdapter {
     private void collectPost(int position){
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).postInfo.getId()+"");
-        RetrofitUtils.postCollectPost(null,false,postIsLikeRequest,data.get(position),position,CollectionListAdapter.class);
+        RetrofitUtils.postCollectPost(null,false,postIsLikeRequest,data.get(position),position,DynamicListAdapter.class);
     }
 
 
@@ -302,7 +294,7 @@ public class CollectionListAdapter extends BaseAdapter {
             Intent intent=new Intent(context, DetailsActivity.class);
             intent.putExtra("index", index);
             intent.putExtra("isComment",true);
-            intent.putExtra("sourceClass",CollectionListAdapter.class);
+            intent.putExtra("sourceClass",DynamicListAdapter.class);
             context.startActivity(intent);
 
         }
@@ -319,7 +311,7 @@ public class CollectionListAdapter extends BaseAdapter {
             Intent intent=new Intent(context, DetailsActivity.class);
             intent.putExtra("index", index);
             intent.putExtra("isComment",false);
-            intent.putExtra("sourceClass",CollectionListAdapter.class);
+            intent.putExtra("sourceClass",DynamicListAdapter.class);
             context.startActivity(intent);
         }
     }

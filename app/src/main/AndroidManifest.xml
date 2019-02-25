@@ -59,6 +59,7 @@
         <activity android:name="com.example.robin.papers.studentCircle.studentCircleActivity.DetailsActivity"/>
         <activity android:name="com.example.robin.papers.studentCircle.studentCircleActivity.PostAddActivity"/>
         <activity android:name=".studentCircle.studentCircleActivity.MyCollectionActivity"/>
+        <activity android:name=".studentCircle.studentCircleActivity.MyDynamicActivity"/>
         <activity android:name="com.example.robin.papers.activity.PdfViewActivity" />
 
 

@@ -1,6 +1,7 @@
 package com.example.robin.papers.studentCircle.studentCircleActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -57,6 +58,8 @@ public class PostAddActivity extends BaseActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog,
                                                     int which) {
+
+                                    startActivity(new Intent(PostAddActivity.this,MixShowActivity.class));
                                     finish();
                                 }
                             }).setNegativeButton("取消", new DialogInterface.OnClickListener() {// 消极
@@ -69,6 +72,7 @@ public class PostAddActivity extends BaseActivity {
                     builder.create().show();
                 }
                 else {
+                    startActivity(new Intent(PostAddActivity.this,MixShowActivity.class));
                     finish();
                 }
                 break;
@@ -131,6 +135,7 @@ public class PostAddActivity extends BaseActivity {
                             @Override
                             public void onClick(DialogInterface dialog,
                                                 int which) {
+                                startActivity(new Intent(PostAddActivity.this,MixShowActivity.class));
                                 finish();
                             }
                         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {// 消极
@@ -143,6 +148,7 @@ public class PostAddActivity extends BaseActivity {
                 builder.create().show();
             }
             else {
+                startActivity(new Intent(PostAddActivity.this,MixShowActivity.class));
                 finish();
             }
         }

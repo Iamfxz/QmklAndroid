@@ -23,10 +23,12 @@ import com.example.robin.papers.requestModel.GetCommentListRequest;
 import com.example.robin.papers.requestModel.PostIsLikeRequest;
 import com.example.robin.papers.studentCircle.adapter.CollectionListAdapter;
 import com.example.robin.papers.studentCircle.adapter.CommentListAdapter;
+import com.example.robin.papers.studentCircle.adapter.DynamicListAdapter;
 import com.example.robin.papers.studentCircle.adapter.MixListAdapter;
 import com.example.robin.papers.studentCircle.model.CollectionInfo;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
 import com.example.robin.papers.studentCircle.tools.ImageLoaders;
+import com.example.robin.papers.studentCircle.view.NoScrollListView;
 import com.example.robin.papers.util.ConstantUtils;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
@@ -72,7 +74,7 @@ public class DetailsActivity extends BaseActivity {
     @BindView(R.id.comment_text)
     TextView commentText;
     @BindView(R.id.comment)
-    ListView commentList;
+    NoScrollListView commentList;
     @BindView(R.id.like_icon2)
     ImageView likeIcon2;
     @BindView(R.id.comment_icon2)
@@ -108,6 +110,12 @@ public class DetailsActivity extends BaseActivity {
             mixinfo= MyCollectionActivity.data.get(index);
             InData(mixinfo.postInfo,mixinfo.is_like);
             AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum(),MyCollectionActivity.data);
+            AddListener(mixinfo.postInfo.getId()+"");
+        }
+        else if(sourceClass == DynamicListAdapter.class){
+            mixinfo= MyDynamicActivity.data.get(index);
+            InData(mixinfo.postInfo,mixinfo.is_like);
+            AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum(),MyDynamicActivity.data);
             AddListener(mixinfo.postInfo.getId()+"");
         }
 
@@ -217,6 +225,9 @@ public class DetailsActivity extends BaseActivity {
         else if(sourceClass == CollectionListAdapter.class){
             isCollect=MyCollectionActivity.data.get(index).is_collect;
         }
+        else if(sourceClass == DynamicListAdapter.class){
+            isCollect=MyDynamicActivity.data.get(index).is_collect;
+        }
         if(isCollect){
             popupMenu.getMenu().findItem(R.id.collect).setVisible(false);
         }
@@ -263,13 +274,8 @@ public class DetailsActivity extends BaseActivity {
     private void collectPost(){
         String token= SharedPreferencesUtils.getStoredMessage(this,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,mixinfo.postInfo.getId()+"");
-        if(sourceClass == MixListAdapter.class){
-            RetrofitUtils.postCollectPost(null,postIsLikeRequest,mixinfo,index,DetailsActivity.class);
-        }
-        else if(sourceClass == CollectionListAdapter.class){
-            RetrofitUtils.postCollectPost(DetailsActivity.this,postIsLikeRequest,mixinfo,index,DetailsActivity.class);
+        RetrofitUtils.postCollectPost(DetailsActivity.this,true,postIsLikeRequest,mixinfo,index,sourceClass);
 
-        }
     }
     public class LikeOnclick implements View.OnClickListener {
         private TextView like_count;
@@ -283,6 +289,9 @@ public class DetailsActivity extends BaseActivity {
             }
             else if(sourceClass== CollectionListAdapter.class){
                 mixinfo=MyCollectionActivity.data.get(index);
+            }
+            else if(sourceClass==DynamicListAdapter.class){
+                mixinfo=MyDynamicActivity.data.get(index);
             }
             this.like_count = like_count;
             this.like = like;
@@ -309,6 +318,10 @@ public class DetailsActivity extends BaseActivity {
                 MyCollectionActivity.data.set(index,mixinfo);
                 MyCollectionActivity.adapterData.notifyDataSetChanged();
             }
+            else if(sourceClass == DynamicListAdapter.class){
+                MyDynamicActivity.data.set(index,mixinfo);
+                MyDynamicActivity.adapterData.notifyDataSetChanged();
+            }
         }
     }
 
@@ -334,7 +347,7 @@ public class DetailsActivity extends BaseActivity {
             if(editText.getText().toString()!=null && editText.getText().toString().trim()!=""){
                 String token= SharedPreferencesUtils.getStoredMessage(DetailsActivity.this,"token");
                 CommentAddRequest commentAddRequest=new CommentAddRequest(token,editText.getText().toString().trim(),mixinfo.postInfo.getId()+"");
-                RetrofitUtils.postAddComment(DetailsActivity.this,commentAddRequest,index,mixinfo,commentCount);
+                RetrofitUtils.postAddComment(DetailsActivity.this,commentAddRequest,index,mixinfo,commentCount,sourceClass);
                 hideEdit();
             }
             else {
@@ -342,6 +355,8 @@ public class DetailsActivity extends BaseActivity {
             }
         }
     }
+
+
     public void showSoftInputFromWindow(EditText editText){
         editText.setFocusable(true);
         editText.setFocusableInTouchMode(true);
