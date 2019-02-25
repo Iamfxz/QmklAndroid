@@ -231,7 +231,7 @@ public class MixListAdapter extends BaseAdapter {
     private void collectPost(int position){
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).postInfo.getId()+"");
-        RetrofitUtils.postCollectPost(context,postIsLikeRequest,data.get(position),position);
+        RetrofitUtils.postCollectPost(null,postIsLikeRequest,data.get(position),position,MixListAdapter.class);
     }
     public class GridOnclick implements View.OnClickListener {
 
@@ -400,19 +400,7 @@ public class MixListAdapter extends BaseAdapter {
         });
     }
 
-    class NameOnclick implements View.OnClickListener {
 
-        private String name;
-
-        NameOnclick(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public void onClick(View v) {
-            activity.showToast(name);
-        }
-    }
 
 
 

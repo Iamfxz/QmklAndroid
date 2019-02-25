@@ -19,4 +19,8 @@ public class Mixinfo implements Serializable {
         this.postInfo = postInfo;
     }
 
+
+    public Mixinfo(CollectionInfo collectionInfo) {
+        this.postInfo = collectionInfo.collectionListData.getPostResult();
+    }
 }

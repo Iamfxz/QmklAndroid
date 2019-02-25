@@ -9,7 +9,6 @@ import android.widget.ListView;
 
 import com.example.robin.papers.R;
 import com.example.robin.papers.requestModel.PostRequest;
-import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyCollectionActivity;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.RetrofitUtils;

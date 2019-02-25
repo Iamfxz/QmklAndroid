@@ -87,7 +87,6 @@ public class DetailsActivity extends BaseActivity {
     ImageView backBtn;
 
     private Mixinfo mixinfo;
-    private CollectionInfo collectionInfo;
     private int index;
     public Class sourceClass;
     public static CommentListAdapter commentListAdapter;
@@ -103,13 +102,13 @@ public class DetailsActivity extends BaseActivity {
             mixinfo= MixShowActivity.data.get(index);
             InData(mixinfo.postInfo,mixinfo.is_like);
             AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum(),MixShowActivity.data);
-            AddListener(mixinfo.postInfo.getId()+"",mixinfo.is_collect);
+            AddListener(mixinfo.postInfo.getId()+"");
         }
         else if(sourceClass == CollectionListAdapter.class){
-            collectionInfo= MyCollectionActivity.data.get(index);
-            InData(collectionInfo.collectionListData.getPostResult(),collectionInfo.is_like);
-            AddComment(String.valueOf(collectionInfo.collectionListData.getPostResult().getId()),collectionInfo.collectionListData.getPostResult().getCommentNum(),MyCollectionActivity.data);
-            AddListener(collectionInfo.collectionListData.getPostResult().getId()+"",collectionInfo.is_collect);
+            mixinfo= MyCollectionActivity.data.get(index);
+            InData(mixinfo.postInfo,mixinfo.is_like);
+            AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum(),MyCollectionActivity.data);
+            AddListener(mixinfo.postInfo.getId()+"");
         }
 
         AddToolbar();
@@ -157,15 +156,14 @@ public class DetailsActivity extends BaseActivity {
         if(commentNum!=0){
             String token=SharedPreferencesUtils.getStoredMessage(this,"token");
             GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,postId,"1",String.valueOf(commentNum));
-            RetrofitUtils.postGetCommentList(this,getCommentListRequest,data,index,sourceClass);
+            RetrofitUtils.postGetCommentList(this,getCommentListRequest,data,index);
         }
     }
 
     /**
      * @param postId 帖子ID
-     * @param isCollect app使用者是否收藏
      */
-    public void AddListener(String postId, final boolean isCollect){
+    public void AddListener(String postId){
         String token= SharedPreferencesUtils.getStoredMessage(this,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,postId);
         //添加点赞监听
@@ -195,7 +193,7 @@ public class DetailsActivity extends BaseActivity {
         popupmenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPopupMenu(v,isCollect);
+                showPopupMenu(v);
             }
         });
 
@@ -206,12 +204,19 @@ public class DetailsActivity extends BaseActivity {
      * @param view popupMenu需要依附的view
      *             弹出菜单
      */
-    private void showPopupMenu(View view,boolean isCollect) {
+    private void showPopupMenu(View view) {
         // 这里的view代表popupMenu需要依附的view
         PopupMenu popupMenu = new PopupMenu(DetailsActivity.this, view);
         // 获取布局文件
         popupMenu.getMenuInflater().inflate(R.menu.popupemu, popupMenu.getMenu());
         //根据是否收藏显示不同菜单
+        boolean isCollect=false;
+        if(sourceClass == MixListAdapter.class){
+            isCollect=MixShowActivity.data.get(index).is_collect;
+        }
+        else if(sourceClass == CollectionListAdapter.class){
+            isCollect=MyCollectionActivity.data.get(index).is_collect;
+        }
         if(isCollect){
             popupMenu.getMenu().findItem(R.id.collect).setVisible(false);
         }
@@ -258,7 +263,13 @@ public class DetailsActivity extends BaseActivity {
     private void collectPost(){
         String token= SharedPreferencesUtils.getStoredMessage(this,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,mixinfo.postInfo.getId()+"");
-        RetrofitUtils.postCollectPost(DetailsActivity.this,postIsLikeRequest,mixinfo,index);
+        if(sourceClass == MixListAdapter.class){
+            RetrofitUtils.postCollectPost(null,postIsLikeRequest,mixinfo,index,DetailsActivity.class);
+        }
+        else if(sourceClass == CollectionListAdapter.class){
+            RetrofitUtils.postCollectPost(DetailsActivity.this,postIsLikeRequest,mixinfo,index,DetailsActivity.class);
+
+        }
     }
     public class LikeOnclick implements View.OnClickListener {
         private TextView like_count;
@@ -266,13 +277,12 @@ public class DetailsActivity extends BaseActivity {
         private int index;
         private PostIsLikeRequest postIsLikeRequest;
         private Mixinfo mixinfo;
-        private CollectionInfo collectionInfo;
         LikeOnclick(TextView like_count, ImageView like, ImageView like2,int index,PostIsLikeRequest postIsLikeRequest) {
             if(sourceClass==MixListAdapter.class){
                 mixinfo=MixShowActivity.data.get(index);
             }
             else if(sourceClass== CollectionListAdapter.class){
-                collectionInfo=MyCollectionActivity.data.get(index);
+                mixinfo=MyCollectionActivity.data.get(index);
             }
             this.like_count = like_count;
             this.like = like;
@@ -283,28 +293,20 @@ public class DetailsActivity extends BaseActivity {
 
         @Override
         public void onClick(View v) {
+            RetrofitUtils.postLike(DetailsActivity.this,postIsLikeRequest,like,like2,like_count,mixinfo.is_like);
+            if(mixinfo.is_like){
+                mixinfo.postInfo.setLikeNum(mixinfo.postInfo.getLikeNum()-1);
+            }
+            else {
+                mixinfo.postInfo.setLikeNum(mixinfo.postInfo.getLikeNum()+1);
+            }
+            mixinfo.is_like=!mixinfo.is_like;
             if(sourceClass==MixListAdapter.class){
-                RetrofitUtils.postLike(DetailsActivity.this,postIsLikeRequest,like,like2,like_count,mixinfo.is_like);
-                if(mixinfo.is_like){
-                    mixinfo.postInfo.setLikeNum(mixinfo.postInfo.getLikeNum()-1);
-                }
-                else {
-                    mixinfo.postInfo.setLikeNum(mixinfo.postInfo.getLikeNum()+1);
-                }
-                mixinfo.is_like=!mixinfo.is_like;
                 MixShowActivity.data.set(index,mixinfo);
                 MixShowActivity.adapterData.notifyDataSetChanged();
             }
             else if(sourceClass== CollectionListAdapter.class){
-                RetrofitUtils.postLike(DetailsActivity.this,postIsLikeRequest,like,like2,like_count,collectionInfo.is_like);
-                if(collectionInfo.is_like){
-                    collectionInfo.collectionListData.getPostResult().setLikeNum(collectionInfo.collectionListData.getPostResult().getLikeNum()-1);
-                }
-                else {
-                    collectionInfo.collectionListData.getPostResult().setLikeNum(collectionInfo.collectionListData.getPostResult().getLikeNum()+1);
-                }
-                collectionInfo.is_like=!collectionInfo.is_like;
-                MyCollectionActivity.data.set(index,collectionInfo);
+                MyCollectionActivity.data.set(index,mixinfo);
                 MyCollectionActivity.adapterData.notifyDataSetChanged();
             }
         }
@@ -332,7 +334,7 @@ public class DetailsActivity extends BaseActivity {
             if(editText.getText().toString()!=null && editText.getText().toString().trim()!=""){
                 String token= SharedPreferencesUtils.getStoredMessage(DetailsActivity.this,"token");
                 CommentAddRequest commentAddRequest=new CommentAddRequest(token,editText.getText().toString().trim(),mixinfo.postInfo.getId()+"");
-                RetrofitUtils.postAddComment(DetailsActivity.this,commentAddRequest,index,mixinfo,commentCount,sourceClass);
+                RetrofitUtils.postAddComment(DetailsActivity.this,commentAddRequest,index,mixinfo,commentCount);
                 hideEdit();
             }
             else {
@@ -387,7 +389,6 @@ public class DetailsActivity extends BaseActivity {
             View v = getCurrentFocus();
             if (isShouldHideInput(v, ev)) {
                 hideEdit();
-
             }
             return super.dispatchTouchEvent(ev);
         }

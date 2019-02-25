@@ -1400,7 +1400,7 @@ public class RetrofitUtils {
     }
 
     //判断是否点赞
-    public static void postIsLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final int position,final Class className) {
+    public static void postIsLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final int position,final Class sourceClass) {
         PostPostIsLike request = retrofit.create(PostPostIsLike.class);
         Call<ResponseInfo<Boolean>> call = request.getCall(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo<Boolean>>() {
@@ -1414,10 +1414,12 @@ public class RetrofitUtils {
                                 like.setImageResource(R.drawable.like2);
                             }
                         });
-                        if(className == MixListAdapter.class) MixShowActivity.data.get(position).is_like=true;
+                        if(sourceClass == MixListAdapter.class) MixShowActivity.data.get(position).is_like=true;
+                        else if(sourceClass == CollectionListAdapter.class) MyCollectionActivity.data.get(position).is_like=true;
                     }
                     else {
-                        if(className == MixListAdapter.class) MixShowActivity.data.get(position).is_like=false;
+                        if(sourceClass == MixListAdapter.class) MixShowActivity.data.get(position).is_like=false;
+                        else if(sourceClass == CollectionListAdapter.class) MyCollectionActivity.data.get(position).is_like=false;
                     }
                 }
                 else {
@@ -1512,70 +1514,37 @@ public class RetrofitUtils {
      * @param getCommentListRequest 请求参数
      * @param data 数据源
      * @param dataPosition 点击帖子在列表中的位置
-     * @param sourceClass 来源类，可能为 MixListAdapter.class或CollectionListAdapter.class等
      */
-    public static void postGetCommentList(final Context context, GetCommentListRequest getCommentListRequest, final ArrayList data, final int dataPosition,Class sourceClass) {
-        if(sourceClass== MixListAdapter.class){
-            final Mixinfo newInfo=(Mixinfo)data.get(dataPosition);
-            if(newInfo.commentListData.size()!=newInfo.postInfo.getCommentNum()){
-                PostGetCommentList request = retrofit.create(PostGetCommentList.class);
-                Call<ResponseInfo<CommentListData[]>> call = request.getCall(getCommentListRequest);
-                call.enqueue(new Callback<ResponseInfo<CommentListData[]>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull final Response<ResponseInfo<CommentListData[]>> response) {
-                        if(response.body()!=null){
-                            newInfo.commentListData.clear();
-                            if(Objects.requireNonNull(response.body()).getData()!=null){
-                                for(int i=0;i<Objects.requireNonNull(response.body()).getData().length;i++){
-                                    newInfo.commentListData.add((response.body().getData())[i]);
-                                }
-                                data.set(dataPosition,newInfo);
-                                DetailsActivity.commentListAdapter.notifyDataSetChanged();
+    public static void postGetCommentList(final Context context, GetCommentListRequest getCommentListRequest, final ArrayList data, final int dataPosition) {
+        final Mixinfo newInfo=(Mixinfo)data.get(dataPosition);
+        if(newInfo.commentListData.size()!=newInfo.postInfo.getCommentNum()){
+            PostGetCommentList request = retrofit.create(PostGetCommentList.class);
+            Call<ResponseInfo<CommentListData[]>> call = request.getCall(getCommentListRequest);
+            call.enqueue(new Callback<ResponseInfo<CommentListData[]>>() {
+                @Override
+                public void onResponse(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull final Response<ResponseInfo<CommentListData[]>> response) {
+                    if(response.body()!=null){
+                        newInfo.commentListData.clear();
+                        if(Objects.requireNonNull(response.body()).getData()!=null){
+                            for(int i=0;i<Objects.requireNonNull(response.body()).getData().length;i++){
+                                newInfo.commentListData.add((response.body().getData())[i]);
                             }
-                        }
-                        else {
-                            Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                            data.set(dataPosition,newInfo);
+                            DetailsActivity.commentListAdapter.notifyDataSetChanged();
                         }
                     }
-                    @Override
-                    public void onFailure(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Throwable t) {
-                        Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "请求失败");
+                    else {
+                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
                     }
-                });
-            }
+                }
+                @Override
+                public void onFailure(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Throwable t) {
+                    Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "请求失败");
+                }
+            });
         }
-        else if(sourceClass== CollectionListAdapter.class){
-            final CollectionInfo newInfo=(CollectionInfo)data.get(dataPosition);
-            if(newInfo.commentListData.size()!=newInfo.collectionListData.getPostResult().getCommentNum()){
-                PostGetCommentList request = retrofit.create(PostGetCommentList.class);
-                Call<ResponseInfo<CommentListData[]>> call = request.getCall(getCommentListRequest);
-                call.enqueue(new Callback<ResponseInfo<CommentListData[]>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull final Response<ResponseInfo<CommentListData[]>> response) {
-                        if(response.body()!=null){
-                            newInfo.commentListData.clear();
-                            if(Objects.requireNonNull(response.body()).getData()!=null){
-                                for(int i=0;i<Objects.requireNonNull(response.body()).getData().length;i++){
-                                    newInfo.commentListData.add((response.body().getData())[i]);
-                                }
-                                data.set(dataPosition,newInfo);
-                                DetailsActivity.commentListAdapter.notifyDataSetChanged();
-                            }
-                        }
-                        else {
-                            Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Throwable t) {
-                        Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "请求失败");
-                    }
-                });
-            }
-        }
     }
 
 
@@ -1587,7 +1556,7 @@ public class RetrofitUtils {
      * @param mixinfo 帖子信息
      * @param commentCount 评论数
      */
-    public static void postAddComment(final Context context, CommentAddRequest commentAddRequest, final int index, final Mixinfo mixinfo, final TextView commentCount, final Class sourceClass) {
+    public static void postAddComment(final Context context, CommentAddRequest commentAddRequest, final int index, final Mixinfo mixinfo, final TextView commentCount) {
         PostCommentAdd request = retrofit.create(PostCommentAdd.class);
         Call<ResponseInfo> call = request.getCall(commentAddRequest);
         call.enqueue(new Callback<ResponseInfo>() {
@@ -1601,7 +1570,7 @@ public class RetrofitUtils {
                         MixShowActivity.adapterData.notifyDataSetChanged();
                         String token=SharedPreferencesUtils.getStoredMessage(context,"token");
                         GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,String.valueOf(mixinfo.postInfo.getId()),"1",String.valueOf(mixinfo1.postInfo.getCommentNum()));
-                        RetrofitUtils.postGetCommentList(context,getCommentListRequest,MixShowActivity.data,index,sourceClass);
+                        RetrofitUtils.postGetCommentList(context,getCommentListRequest,MixShowActivity.data,index);
                         commentCount.post(new Runnable() {
                             @Override
                             public void run() {
@@ -1692,7 +1661,7 @@ public class RetrofitUtils {
     }
 
     //用户收藏或取消收藏
-    public static void postCollectPost(final Context context, PostIsLikeRequest postIsLikeRequest, final Mixinfo mixinfo, final int position) {
+    public static void postCollectPost(final Activity activity, PostIsLikeRequest postIsLikeRequest, final Mixinfo mixinfo, final int position,final Class sourceClass) {
         PostCollectPost request = retrofit.create(PostCollectPost.class);
         Call<ResponseInfo> call = request.getCall(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo>() {
@@ -1700,11 +1669,35 @@ public class RetrofitUtils {
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
                 if(response.body()!=null){
                     if(mixinfo.is_collect){
-                        MixShowActivity.data.get(position).is_collect=false;
+                        if(sourceClass == MixListAdapter.class) {
+                            MixShowActivity.data.get(position).is_collect=false;
+                        }
+                        else if(sourceClass == CollectionListAdapter.class) {
+                            MyCollectionActivity.data.remove(position);
+                            MyCollectionActivity.adapterData.notifyDataSetChanged();
+                        }
+                        else if(sourceClass == DetailsActivity.class && activity==null){
+                            MixShowActivity.data.get(position).is_collect=false;
+                        }
+                        else if(sourceClass == DetailsActivity.class && activity!=null){
+                            MyCollectionActivity.data.remove(position);
+                            MyCollectionActivity.adapterData.notifyDataSetChanged();
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    activity.finish();
+                                }
+                            });
+                        }
                         Toast.makeText(UMapplication.getContext(), "已取消收藏！", Toast.LENGTH_SHORT).show();
                     }
                     else {
-                        MixShowActivity.data.get(position).is_collect=true;
+                        if(sourceClass == MixListAdapter.class) {
+                            MixShowActivity.data.get(position).is_collect=true;
+                        }
+                        else if(sourceClass == DetailsActivity.class && activity==null){
+                            MixShowActivity.data.get(position).is_collect=true;
+                        }
                         Toast.makeText(UMapplication.getContext(), "收藏成功，您可以在 我的收藏 中找到该贴！", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -1729,7 +1722,7 @@ public class RetrofitUtils {
      * @param dialog 等待图标
      */
     //查询我收藏的帖子
-    public static void postGetCollection(final Context context, PostRequest postRequest, final ArrayList<CollectionInfo> data, final ZLoadingDialog dialog) {
+    public static void postGetCollection(final Context context, PostRequest postRequest, final ArrayList<Mixinfo> data, final ZLoadingDialog dialog) {
         PostGetCollectionList request = retrofit.create(PostGetCollectionList.class);
         Call<ResponseInfo<CollectionListData[]>> call = request.getCall(postRequest);
         call.enqueue(new Callback<ResponseInfo<CollectionListData[]>>() {
@@ -1747,7 +1740,7 @@ public class RetrofitUtils {
                         else {
                             //将请求回的数据加入到data数据集中
                             for(CollectionListData collectionListData:response.body().getData()){
-                                data.add(new CollectionInfo(collectionListData));
+                                data.add(new Mixinfo(new CollectionInfo(collectionListData)));
                             }
                             MyCollectionActivity.adapterData.notifyDataSetChanged();
 

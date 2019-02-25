@@ -66,9 +66,7 @@ public class MixShowActivity extends BaseActivity  {
         postAddBtn=findViewById(R.id.id_toolbar).findViewById(R.id.add_post);
     }
 
-    @Override
     public void InData() {
-        super.InData();
         data = new ArrayList<Mixinfo>();
         String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
         adapterData = new MixListAdapter(this, data);
@@ -108,22 +106,6 @@ public class MixShowActivity extends BaseActivity  {
         });
     }
 
-//    public void SendContent(final int index, final int hight) {
-//        this.index = index;
-//        bottomView.setVisibility(View.VISIBLE);
-//        editText.setFocusable(true);
-//        editText.requestFocus();
-//        new Handler().postDelayed(new Runnable() {
-//            public void run() {
-//                View v = mixlist.getChildAt(0);
-//                int top = (v == null) ? 0 : v.getTop();
-//                if (height_top == 0) {
-//                    height_top = hight + top - dip2px(50);
-//                }
-//                mixlist.setSelectionFromTop((index + 1), height_top - hight);
-//            }
-//        }, 100);
-//    }
 
 
     private class LayoutChangeListener implements View.OnLayoutChangeListener {

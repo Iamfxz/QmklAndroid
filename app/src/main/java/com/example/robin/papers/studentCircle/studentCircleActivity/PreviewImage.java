@@ -69,17 +69,13 @@ public class PreviewImage extends BaseActivity implements OnPageChangeListener {
         addrelative = (RelativeLayout) findViewById(R.id.addrelative);
     }
 
-    @Override
     public void Listener() {
         // TODO Auto-generated method stub
-        super.Listener();
         viewpager.setOnPageChangeListener(this);
     }
 
-    @Override
     public void InData() {
         // TODO Auto-generated method stub
-        super.InData();
         index = getIntent().getIntExtra("index", 0);
         type = getIntent().getIntExtra("type", 0);
         ImgList = (ArrayList<ImageInfo>) getIntent().getSerializableExtra("data");

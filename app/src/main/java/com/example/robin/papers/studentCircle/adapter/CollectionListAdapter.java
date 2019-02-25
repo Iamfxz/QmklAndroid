@@ -41,11 +41,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CollectionListAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<CollectionInfo> data;
+    private ArrayList<Mixinfo> data;
 
     int i=1;
 
-    public CollectionListAdapter(Context context, ArrayList<CollectionInfo> data) {
+    public CollectionListAdapter(Context context, ArrayList<Mixinfo> data) {
         this.context = context;
         this.data=data;
 
@@ -70,8 +70,7 @@ public class CollectionListAdapter extends BaseAdapter {
     }
     @Override
     public View getView(final int position, View convertView, ViewGroup arg2) {
-
-        CollectionInfo info = data.get(position);
+        Mixinfo info = data.get(position);
         ViewHolder holder = null;
         if (convertView == null) {
             //初始化holder以及其中控件
@@ -102,27 +101,27 @@ public class CollectionListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         //留言者信息
-        ImageLoaders.setsendimg(ConstantUtils.postUrl+info.collectionListData.getPostResult().getUserId(), holder.list_img);//头像
-        holder.username.setText(info.collectionListData.getPostResult().getNickName());//昵称
-        holder.dateTtime.setText(info.collectionListData.getPostResult().getCreateTime());//留言时间
+        ImageLoaders.setsendimg(ConstantUtils.postUrl+info.postInfo.getUserId(), holder.list_img);//头像
+        holder.username.setText(info.postInfo.getNickName());//昵称
+        holder.dateTtime.setText(info.postInfo.getCreateTime());//留言时间
         i++;
-        holder.usercontent.setText(info.collectionListData.getPostResult().getContent());//评论内容
+        holder.usercontent.setText(info.postInfo.getContent());//评论内容
         //没有图片，设置为GONE
         holder.showimage.setVisibility(View.GONE);
         holder.gridview.setVisibility(View.GONE);
 
-        holder.like_count.setText(info.collectionListData.getPostResult().getLikeNum()+"");//点赞数
+        holder.like_count.setText(info.postInfo.getLikeNum()+"");//点赞数
         holder.like.setImageResource(R.drawable.like1);//点赞图片
 
         //请求该评论app使用者是否点赞
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
-        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,info.collectionListData.getPostResult().getId()+"");
+        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,info.postInfo.getId()+"");
         RetrofitUtils.postIsLike(context,postIsLikeRequest,holder.like,position,CollectionListAdapter.class);
 
         //请求该评论app使用者是否收藏
         RetrofitUtils.postIsCollect(context,postIsLikeRequest,position,CollectionListAdapter.class);
 
-        holder.comment_count.setText(info.collectionListData.getPostResult().getCommentNum()+"");//评论数
+        holder.comment_count.setText(info.postInfo.getCommentNum()+"");//评论数
 
 
         //添加点赞监听
@@ -225,8 +224,8 @@ public class CollectionListAdapter extends BaseAdapter {
      */
     private void collectPost(int position){
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
-        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).collectionListData.getPostResult().getId()+"");
-//        RetrofitUtils.postCollectPost(context,postIsLikeRequest,data.get(position),position);
+        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).postInfo.getId()+"");
+        RetrofitUtils.postCollectPost(null,postIsLikeRequest,data.get(position),position,CollectionListAdapter.class);
     }
 
 
@@ -245,7 +244,7 @@ public class CollectionListAdapter extends BaseAdapter {
 
         @Override
         public void onClick(View v) {
-            CollectionInfo info = data.get(index);
+            Mixinfo info = data.get(index);
             if (info.is_select) {
                 usercontent.setMaxLines(3);
                 fullText.setText("全文");
@@ -277,13 +276,13 @@ public class CollectionListAdapter extends BaseAdapter {
 
         @Override
         public void onClick(View v) {
-            CollectionInfo info = data.get(index);
+            Mixinfo info = data.get(index);
             RetrofitUtils.postLike(context,postIsLikeRequest,like,null,like_count,info.is_like);
             if(info.is_like){
-                info.collectionListData.getPostResult().setLikeNum(info.collectionListData.getPostResult().getLikeNum()-1);
+                info.postInfo.setLikeNum(info.postInfo.getLikeNum()-1);
             }
             else {
-                info.collectionListData.getPostResult().setLikeNum(info.collectionListData.getPostResult().getLikeNum()+1);
+                info.postInfo.setLikeNum(info.postInfo.getLikeNum()+1);
             }
             info.is_like=!info.is_like;
             data.set(index,info);

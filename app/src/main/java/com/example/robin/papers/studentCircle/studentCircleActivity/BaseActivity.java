@@ -8,6 +8,9 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -33,7 +36,7 @@ import com.nineoldandroids.animation.ObjectAnimator;
 /**
  * Created by DavidWang on 15/8/31.
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity  {
 
     private Toast mToast;
     // 屏幕宽度
@@ -69,7 +72,6 @@ public class BaseActivity extends AppCompatActivity {
     private int statusBarHeight;
     private int titleBarHeight;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,9 +85,8 @@ public class BaseActivity extends AppCompatActivity {
         int contentTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
         //statusBarHeight是上面所求的状态栏的高度
         titleBarHeight = contentTop - statusBarHeight;
+
     }
-
-
 
     /**
      * 设置状态栏为蓝色
@@ -105,45 +106,15 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-
-//    protected void setToolbar(int color) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            setTranslucentStatus(true);
-//        }
-//        SystemBarTintManager tintManager = new SystemBarTintManager(this);
-//        // enable status bar tint
-//        tintManager.setStatusBarTintEnabled(true);
-//        // enable navigation bar tint
-//        tintManager.setNavigationBarTintEnabled(true);
-////        int color = Color.argb(255, Color.red(255), Color.green(255), Color.blue(255));
-//        tintManager.setTintColor(color);
-//    }
-
-//    @TargetApi(19)
-//    private void setTranslucentStatus(boolean on) {
-//        Window win = getWindow();
-//        WindowManager.LayoutParams winParams = win.getAttributes();
-//        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-//        if (on) {
-//            winParams.flags |= bits;
-//        } else {
-//            winParams.flags &= ~bits;
-//        }
-//        win.setAttributes(winParams);
-//    }
-
     /**
      * 添加头部
      */
     protected void AddToolbar() {
         toolbar = (Toolbar) findViewById(R.id.id_toolbar);
-//        toolbar.setLogo(R.mipmap.ic_launcher);
-//        toolbar.setTitle("趣聊");
+
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
-        //左边的小箭头（注意需要在setSupportActionBar(toolbar)之后才有效果）
-//        toolbar.setNavigationIcon(R.mipmap.back_white);
     }
 
 
@@ -154,48 +125,8 @@ public class BaseActivity extends AppCompatActivity {
         MainView = (RelativeLayout) findViewById(R.id.MainView);
     }
 
-    /**
-     * 监听
-     */
-    protected void Listener() {
-    }
 
-    /**
-     * 对传递数据处
-     */
-    protected void initIntent() {
 
-    }
-
-    /**
-     * 初始
-     */
-    public void InData() {
-    }
-
-    /**
-     * 显示提示信息
-     *
-     * @param text 提示文本
-     */
-    public void showToast(String text) {
-        if (mToast == null) {
-            mToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
-        } else {
-            mToast.setText(text);
-            mToast.setDuration(Toast.LENGTH_SHORT);
-        }
-        mToast.show();
-    }
-
-    /**
-     * 清空Toast
-     */
-    public void cancelToast() {
-        if (mToast != null) {
-            mToast.cancel();
-        }
-    }
 
     protected void getValue() {
         showimg = new ImageView(this);
@@ -248,6 +179,7 @@ public class BaseActivity extends AppCompatActivity {
         }, 300);
 
     }
+
 
     private class ExampleSpringListener implements SpringListener {
 
@@ -352,32 +284,7 @@ public class BaseActivity extends AppCompatActivity {
         ImageLoaders.setsendimg(imageInfo.hdurl,showimg);
         showimg.setScaleType(ImageView.ScaleType.FIT_XY);
         mSpring.setEndValue(1);
-//        ImageLoaders.sethdimg(imageInfo.hdurl, showimg, new ImageLoadingListener() {
-//            @Override
-//            public void onLoadingStarted(String imageUri, View view) {
-//                //这里加载过度动画
-//                Barview.setVisibility(View.VISIBLE);
-//            }
-//
-//            @Override
-//            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-//                //加载失败
-//                showToast("加载失败.");
-//            }
-//
-//            @Override
-//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-//                //加载成功
-//                Barview.setVisibility(View.GONE);
-//                showimg.setScaleType(ImageView.ScaleType.FIT_XY);
-//                mSpring.setEndValue(1);
-//            }
-//
-//            @Override
-//            public void onLoadingCancelled(String imageUri, View view) {
-//                //取消加载
-//            }
-//        });
+
     }
 
     private void MoveBackView() {
