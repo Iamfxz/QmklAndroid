@@ -3,8 +3,10 @@ package com.example.robin.papers.studentCircle.studentCircleActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.robin.papers.R;
 import com.example.robin.papers.model.CommentListData;
@@ -37,6 +39,11 @@ public class MyCommentActivity extends BaseActivity {
         setContentView(R.layout.activity_mycomment);
         ButterKnife.bind(this);
         InData();
+        AddListener();
+
+    }
+
+    private void AddListener() {
         //返回按钮监听
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +53,13 @@ public class MyCommentActivity extends BaseActivity {
                 finish();
             }
         });
-
+        commentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
+                RetrofitUtils.postQueryAPost(MyCommentActivity.this,data.get(position).getPostId()+"",token,MyCommentActivity.this);
+            }
+        });
     }
 
     private void InData() {

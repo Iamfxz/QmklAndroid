@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.robin.papers.R;
 import com.example.robin.papers.model.CommentListData;
+import com.example.robin.papers.studentCircle.studentCircleActivity.DetailsFromCommentActivity;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyCollectionActivity;
@@ -45,7 +46,12 @@ public class CommentListAdapter extends BaseAdapter {
     public CommentListAdapter(Context context,Class sourceClass){
         this.context = context;
         this.sourceClass=sourceClass;
-        this.commentListData= MyCommentActivity.data;
+        if(sourceClass==MyCommentActivity.class){
+            this.commentListData= MyCommentActivity.data;
+        }
+        else if(sourceClass== DetailsFromCommentActivity.class){
+            this.commentListData= DetailsFromCommentActivity.mixinfo.commentListData;
+        }
     }
 
     @Override
@@ -61,6 +67,9 @@ public class CommentListAdapter extends BaseAdapter {
         }
         else if(sourceClass == MyCommentActivity.class){
             this.commentListData= MyCommentActivity.data;
+        }
+        else if(sourceClass== DetailsFromCommentActivity.class){
+            this.commentListData= DetailsFromCommentActivity.mixinfo.commentListData;
         }
         return commentListData.size();
     }
@@ -92,7 +101,6 @@ public class CommentListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         Log.d("commentListAdapter", commentListData.size()+"");
-
             holder.commentUser.setText(commentListData.get(position).getNickName());
             holder.commentText.setText(commentListData.get(position).getContent());
             holder.commentTime.setText(commentListData.get(position).getCreateTime());

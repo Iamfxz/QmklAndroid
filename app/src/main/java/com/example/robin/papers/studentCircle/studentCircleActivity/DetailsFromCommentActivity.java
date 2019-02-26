@@ -11,7 +11,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +24,6 @@ import com.example.robin.papers.studentCircle.adapter.CollectionListAdapter;
 import com.example.robin.papers.studentCircle.adapter.CommentListAdapter;
 import com.example.robin.papers.studentCircle.adapter.DynamicListAdapter;
 import com.example.robin.papers.studentCircle.adapter.MixListAdapter;
-import com.example.robin.papers.studentCircle.model.CollectionInfo;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
 import com.example.robin.papers.studentCircle.tools.ImageLoaders;
 import com.example.robin.papers.studentCircle.view.NoScrollListView;
@@ -40,10 +38,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-/**
- *
- */
-public class DetailsActivity extends BaseActivity {
+public class DetailsFromCommentActivity extends BaseActivity {
 
     @BindView(R.id.rootLayout)
     RelativeLayout rootLayout;
@@ -88,46 +83,33 @@ public class DetailsActivity extends BaseActivity {
     @BindView(R.id.iv_back)
     ImageView backBtn;
 
-    private Mixinfo mixinfo;
-    private int index;
-    public Class sourceClass;
+    public static Mixinfo mixinfo;
     public static CommentListAdapter commentListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment_details);
         ButterKnife.bind(this);
+        mixinfo=(Mixinfo)getIntent().getSerializableExtra("mixinfo");
 
-        index= (int) getIntent().getSerializableExtra("index");
-        sourceClass=(Class) getIntent().getSerializableExtra("sourceClass");
-        if(sourceClass == MixListAdapter.class) {
-            mixinfo= MixShowActivity.data.get(index);
-            InData(mixinfo.postInfo,mixinfo.is_like);
-            AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum(),MixShowActivity.data);
-            AddListener(mixinfo.postInfo.getId()+"");
-        }
-        else if(sourceClass == CollectionListAdapter.class){
-            mixinfo= MyCollectionActivity.data.get(index);
-            InData(mixinfo.postInfo,mixinfo.is_like);
-            AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum(),MyCollectionActivity.data);
-            AddListener(mixinfo.postInfo.getId()+"");
-        }
-        else if(sourceClass == DynamicListAdapter.class){
-            mixinfo= MyDynamicActivity.data.get(index);
-            InData(mixinfo.postInfo,mixinfo.is_like);
-            AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum(),MyDynamicActivity.data);
-            AddListener(mixinfo.postInfo.getId()+"");
-        }
-        else if(sourceClass== MyCommentActivity.class){
-            mixinfo=(Mixinfo) getIntent().getSerializableExtra("mixi");
-        }
+        //请求该评论app使用者是否点赞
+        String token= SharedPreferencesUtils.getStoredMessage(this,"token");
+        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,mixinfo.postInfo.getId()+"");
+        RetrofitUtils.postIsLike(this,postIsLikeRequest,likeIcon,likeIcon2);
+
+        //请求该评论app使用者是否收藏
+        RetrofitUtils.postIsCollect(this,postIsLikeRequest);
+
+        InData(mixinfo.postInfo,mixinfo.is_like);
+        AddListener(mixinfo.postInfo.getId()+"");
+        AddComment(mixinfo.postInfo.getId()+"",mixinfo.postInfo.getCommentNum());
         AddToolbar();
     }
 
     /**
      * 载入用户信息
      */
-    public void InData(PostInfo postInfo,boolean isLike) {
+    public void InData(PostInfo postInfo, boolean isLike) {
 
         ImageLoaders.setsendimg(ConstantUtils.postUrl+postInfo.getUserId(),headerImg);//头像
         username.setText(postInfo.getNickName());
@@ -143,33 +125,8 @@ public class DetailsActivity extends BaseActivity {
             likeIcon.setImageResource(R.drawable.like1);
             likeIcon2.setImageResource(R.drawable.like1);
         }
-
-        //是否显示软键盘以及下方评论区
-        if((boolean)getIntent().getSerializableExtra("isComment")){
-            bottomView.setVisibility(View.VISIBLE);
-            showSoftInputFromWindow(editText);
-        }
-        else{
-            bottomView.setVisibility(View.GONE);
-        }
-
-
+        bottomView.setVisibility(View.GONE);
     }
-
-
-    /**
-     * 载入评论
-     */
-    public void AddComment(String postId,int commentNum, ArrayList data){
-        commentListAdapter=new CommentListAdapter(this,index,sourceClass);
-        commentList.setAdapter(commentListAdapter);
-        if(commentNum!=0){
-            String token=SharedPreferencesUtils.getStoredMessage(this,"token");
-            GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,postId,"1",String.valueOf(commentNum));
-            RetrofitUtils.postGetCommentList(this,getCommentListRequest,data,index);
-        }
-    }
-
     /**
      * @param postId 帖子ID
      */
@@ -177,19 +134,19 @@ public class DetailsActivity extends BaseActivity {
         String token= SharedPreferencesUtils.getStoredMessage(this,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,postId);
         //添加点赞监听
-        likeIcon.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
-        likeIcon2.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
-        likeCount.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
-        likeText.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
+        likeIcon.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,postIsLikeRequest));
+        likeIcon2.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,postIsLikeRequest));
+        likeCount.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,postIsLikeRequest));
+        likeText.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,postIsLikeRequest));
 
         //发表留言监听，弹出下方输入框
-        commentIcon.setOnClickListener(new CommentOnclick(index));
-        commentIcon2.setOnClickListener(new CommentOnclick(index));
-        commentCount.setOnClickListener(new CommentOnclick(index));
-        commentText.setOnClickListener(new CommentOnclick(index));
+        commentIcon.setOnClickListener(new CommentOnclick());
+        commentIcon2.setOnClickListener(new CommentOnclick());
+        commentCount.setOnClickListener(new CommentOnclick());
+        commentText.setOnClickListener(new CommentOnclick());
 
         //发送留言监听
-        sendBtn.setOnClickListener(new SendCommentOnclick(index));
+        sendBtn.setOnClickListener(new SendCommentOnclick());
 
         //返回按钮监听
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -209,6 +166,18 @@ public class DetailsActivity extends BaseActivity {
 
     }
 
+    /**
+     * 载入评论
+     */
+    public void AddComment(String postId,int commentNum){
+        commentListAdapter=new CommentListAdapter(this,DetailsFromCommentActivity.class);
+        commentList.setAdapter(commentListAdapter);
+        if(commentNum!=0){
+            String token=SharedPreferencesUtils.getStoredMessage(this,"token");
+            GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,postId,"1",String.valueOf(commentNum));
+            RetrofitUtils.postGetCommentList(this,getCommentListRequest);
+        }
+    }
 
     /**
      * @param view popupMenu需要依附的view
@@ -216,20 +185,11 @@ public class DetailsActivity extends BaseActivity {
      */
     private void showPopupMenu(View view) {
         // 这里的view代表popupMenu需要依附的view
-        PopupMenu popupMenu = new PopupMenu(DetailsActivity.this, view);
+        PopupMenu popupMenu = new PopupMenu(DetailsFromCommentActivity.this, view);
         // 获取布局文件
         popupMenu.getMenuInflater().inflate(R.menu.popupemu, popupMenu.getMenu());
         //根据是否收藏显示不同菜单
-        boolean isCollect=false;
-        if(sourceClass == MixListAdapter.class){
-            isCollect=MixShowActivity.data.get(index).is_collect;
-        }
-        else if(sourceClass == CollectionListAdapter.class){
-            isCollect=MyCollectionActivity.data.get(index).is_collect;
-        }
-        else if(sourceClass == DynamicListAdapter.class){
-            isCollect=MyDynamicActivity.data.get(index).is_collect;
-        }
+        boolean isCollect=mixinfo.is_collect;
         if(isCollect){
             popupMenu.getMenu().findItem(R.id.collect).setVisible(false);
         }
@@ -276,35 +236,23 @@ public class DetailsActivity extends BaseActivity {
     private void collectPost(){
         String token= SharedPreferencesUtils.getStoredMessage(this,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,mixinfo.postInfo.getId()+"");
-        RetrofitUtils.postCollectPost(DetailsActivity.this,true,postIsLikeRequest,mixinfo,index,sourceClass);
+        RetrofitUtils.postCollectPost(postIsLikeRequest,mixinfo.is_collect);
 
     }
     public class LikeOnclick implements View.OnClickListener {
         private TextView like_count;
         private ImageView like,like2;
-        private int index;
         private PostIsLikeRequest postIsLikeRequest;
-        private Mixinfo mixinfo;
-        LikeOnclick(TextView like_count, ImageView like, ImageView like2,int index,PostIsLikeRequest postIsLikeRequest) {
-            if(sourceClass==MixListAdapter.class){
-                mixinfo=MixShowActivity.data.get(index);
-            }
-            else if(sourceClass== CollectionListAdapter.class){
-                mixinfo=MyCollectionActivity.data.get(index);
-            }
-            else if(sourceClass==DynamicListAdapter.class){
-                mixinfo=MyDynamicActivity.data.get(index);
-            }
+        LikeOnclick(TextView like_count, ImageView like, ImageView like2,PostIsLikeRequest postIsLikeRequest) {
             this.like_count = like_count;
             this.like = like;
             this.like2 = like2;
-            this.index = index;
             this.postIsLikeRequest=postIsLikeRequest;
         }
 
         @Override
         public void onClick(View v) {
-            RetrofitUtils.postLike(DetailsActivity.this,postIsLikeRequest,like,like2,like_count,mixinfo.is_like);
+            RetrofitUtils.postLike(DetailsFromCommentActivity.this,postIsLikeRequest,like,like2,like_count,mixinfo.is_like);
             if(mixinfo.is_like){
                 mixinfo.postInfo.setLikeNum(mixinfo.postInfo.getLikeNum()-1);
             }
@@ -312,25 +260,11 @@ public class DetailsActivity extends BaseActivity {
                 mixinfo.postInfo.setLikeNum(mixinfo.postInfo.getLikeNum()+1);
             }
             mixinfo.is_like=!mixinfo.is_like;
-            if(sourceClass==MixListAdapter.class){
-                MixShowActivity.data.set(index,mixinfo);
-                MixShowActivity.adapterData.notifyDataSetChanged();
-            }
-            else if(sourceClass== CollectionListAdapter.class){
-                MyCollectionActivity.data.set(index,mixinfo);
-                MyCollectionActivity.adapterData.notifyDataSetChanged();
-            }
-            else if(sourceClass == DynamicListAdapter.class){
-                MyDynamicActivity.data.set(index,mixinfo);
-                MyDynamicActivity.adapterData.notifyDataSetChanged();
-            }
         }
     }
 
     public class CommentOnclick implements View.OnClickListener {
-        private int index;
-        CommentOnclick(int index) {
-            this.index = index;
+        CommentOnclick() {
         }
         @Override
         public void onClick(View v) {
@@ -340,20 +274,20 @@ public class DetailsActivity extends BaseActivity {
     }
 
     public class SendCommentOnclick implements View.OnClickListener {
-        private int index;
-        SendCommentOnclick(int index) {
-            this.index = index;
+
+        SendCommentOnclick() {
+
         }
         @Override
         public void onClick(View v) {
             if(editText.getText().toString()!=null && editText.getText().toString().trim()!=""){
-                String token= SharedPreferencesUtils.getStoredMessage(DetailsActivity.this,"token");
+                String token= SharedPreferencesUtils.getStoredMessage(DetailsFromCommentActivity.this,"token");
                 CommentAddRequest commentAddRequest=new CommentAddRequest(token,editText.getText().toString().trim(),mixinfo.postInfo.getId()+"");
-                RetrofitUtils.postAddComment(DetailsActivity.this,commentAddRequest,index,mixinfo,commentCount,sourceClass);
+                RetrofitUtils.postAddComment(DetailsFromCommentActivity.this,commentAddRequest,commentCount);
                 hideEdit();
             }
             else {
-                Toast.makeText(DetailsActivity.this,"评论内容不能为空！",Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailsFromCommentActivity.this,"评论内容不能为空！",Toast.LENGTH_SHORT).show();
             }
         }
     }
