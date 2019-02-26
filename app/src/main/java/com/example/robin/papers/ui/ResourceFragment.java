@@ -236,6 +236,7 @@ public class ResourceFragment extends Fragment
         sideBar = Objects.requireNonNull(getActivity()).findViewById(R.id.side_bar);
         sideBar.setIndexItems("#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
                 "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
+        sideBar.setLazyRespond(false);
         sideBar.setOnSelectIndexItemListener(new WaveSideBar.OnSelectIndexItemListener() {
             @Override
             public void onSelectIndexItem(String index) {
