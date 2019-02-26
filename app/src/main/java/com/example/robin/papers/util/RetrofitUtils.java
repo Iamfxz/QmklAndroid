@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,11 +29,18 @@ import com.example.robin.papers.impl.PostAllColleges;
 import com.example.robin.papers.impl.PostAllPost;
 import com.example.robin.papers.impl.PostAuthLogin;
 import com.example.robin.papers.impl.PostAuthPerInfo;
+import com.example.robin.papers.impl.PostCollectPost;
+import com.example.robin.papers.impl.PostCommentAdd;
 import com.example.robin.papers.impl.PostExitLogin;
 import com.example.robin.papers.impl.PostGetCode;
-import com.example.robin.papers.impl.PostLike;
+import com.example.robin.papers.impl.PostGetCollectionList;
+import com.example.robin.papers.impl.PostGetCommentList;
+import com.example.robin.papers.impl.PostGetDynamicList;
+import com.example.robin.papers.impl.PostGetMyCommentList;
 import com.example.robin.papers.impl.PostLogin;
 import com.example.robin.papers.impl.PostPerfectInfo;
+import com.example.robin.papers.impl.PostPostAdd;
+import com.example.robin.papers.impl.PostPostIsCollect;
 import com.example.robin.papers.impl.PostPostIsLike;
 import com.example.robin.papers.impl.PostPostLike;
 import com.example.robin.papers.impl.PostRegister;
@@ -45,14 +51,19 @@ import com.example.robin.papers.impl.PostUserAvatar;
 import com.example.robin.papers.impl.PostUserInfo;
 import com.example.robin.papers.model.AcademiesOrCollegesRes;
 import com.example.robin.papers.model.AdData;
+import com.example.robin.papers.model.CollectionListData;
+import com.example.robin.papers.model.CommentListData;
 import com.example.robin.papers.model.PostInfo;
 import com.example.robin.papers.model.ResponseInfo;
 import com.example.robin.papers.model.UserInfoRes;
 import com.example.robin.papers.requestModel.AuthPerInfoRequest;
+import com.example.robin.papers.requestModel.CommentAddRequest;
 import com.example.robin.papers.requestModel.ExitLoginRequest;
 import com.example.robin.papers.requestModel.GetCodeRequest;
+import com.example.robin.papers.requestModel.GetCommentListRequest;
 import com.example.robin.papers.requestModel.LoginRequest;
 import com.example.robin.papers.requestModel.PerfectInfoRequest;
+import com.example.robin.papers.requestModel.PostAddRequest;
 import com.example.robin.papers.requestModel.PostIsLikeRequest;
 import com.example.robin.papers.requestModel.PostRequest;
 import com.example.robin.papers.requestModel.QueryAcademiesRequest;
@@ -61,9 +72,19 @@ import com.example.robin.papers.requestModel.SetNewPswRequest;
 import com.example.robin.papers.requestModel.TokenRequest;
 import com.example.robin.papers.requestModel.UMengLoginRequest;
 import com.example.robin.papers.requestModel.UpdateUserRequest;
+import com.example.robin.papers.studentCircle.adapter.CollectionListAdapter;
+import com.example.robin.papers.studentCircle.adapter.DynamicListAdapter;
 import com.example.robin.papers.studentCircle.adapter.MixListAdapter;
-import com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity;
+import com.example.robin.papers.studentCircle.model.CollectionInfo;
+import com.example.robin.papers.studentCircle.studentCircleActivity.DetailsActivity;
+import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
+import com.example.robin.papers.studentCircle.studentCircleActivity.MyCollectionActivity;
+import com.example.robin.papers.studentCircle.studentCircleActivity.MyCommentActivity;
+import com.example.robin.papers.studentCircle.studentCircleActivity.MyDynamicActivity;
+import com.example.robin.papers.studentCircle.view.CollectionListView;
+import com.example.robin.papers.studentCircle.view.CommentListView;
+import com.example.robin.papers.studentCircle.view.DynamicListView;
 import com.example.robin.papers.studentCircle.view.PullToZoomListView;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.zyao89.view.zloading.ZLoadingDialog;
@@ -71,6 +92,7 @@ import com.zyao89.view.zloading.Z_TYPE;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,7 +107,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity.adapterData;
 import static com.example.robin.papers.util.ConstantUtils.*;
 
 
@@ -102,6 +123,9 @@ import static com.example.robin.papers.util.ConstantUtils.*;
  * */
 
 
+/**
+ *
+ */
 public class RetrofitUtils {
 
     //实例化Retrofit对象
@@ -1317,7 +1341,7 @@ public class RetrofitUtils {
                                 Mixinfo mixinfo= new Mixinfo(postinfo);
                                 data.add(mixinfo);
                             }
-                            adapterData.notifyDataSetChanged();
+                            MixShowActivity.adapterData.notifyDataSetChanged();
                         }
                     } else {
                         MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
@@ -1360,7 +1384,8 @@ public class RetrofitUtils {
                                 data.add(mixinfo);
                             }
                             //更新adapterData
-                            adapterData.notifyDataSetChanged();
+                            MixShowActivity.adapterData.notifyDataSetChanged();
+
                         }
                     } else {
                         MixShowActivity.mixlist.removeFooterView(PullToZoomListView.mFooterView);
@@ -1383,7 +1408,7 @@ public class RetrofitUtils {
     }
 
     //判断是否点赞
-    public static void postIsLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final int position) {
+    public static void postIsLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final int position,final Class sourceClass) {
         PostPostIsLike request = retrofit.create(PostPostIsLike.class);
         Call<ResponseInfo<Boolean>> call = request.getCall(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo<Boolean>>() {
@@ -1397,10 +1422,14 @@ public class RetrofitUtils {
                                 like.setImageResource(R.drawable.like2);
                             }
                         });
-                        MixShowActivity.data.get(position).is_like=true;
+                        if(sourceClass == MixListAdapter.class) MixShowActivity.data.get(position).is_like=true;
+                        else if(sourceClass == CollectionListAdapter.class) MyCollectionActivity.data.get(position).is_like=true;
+                        else if(sourceClass == DynamicListAdapter.class) MyDynamicActivity.data.get(position).is_like=true;
                     }
                     else {
-                        MixShowActivity.data.get(position).is_like=false;
+                        if(sourceClass == MixListAdapter.class) MixShowActivity.data.get(position).is_like=false;
+                        else if(sourceClass == CollectionListAdapter.class) MyCollectionActivity.data.get(position).is_like=false;
+                        else if(sourceClass == DynamicListAdapter.class) MyDynamicActivity.data.get(position).is_like=false;
                     }
                 }
                 else {
@@ -1417,7 +1446,15 @@ public class RetrofitUtils {
     }
 
     //帖子点赞
-    public static void postLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final TextView like_count, final boolean islike) {
+    /**
+     * @param context 上下文
+     * @param postIsLikeRequest
+     * @param like 评论列表的点赞图标以及详情页的点赞图标
+     * @param like2 详情页右下角点赞图标，空值则为外部评论列表请求
+     * @param like_count 点赞数
+     * @param islike 本人是否点赞
+     */
+    public static void postLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final ImageView like2, final TextView like_count, final boolean islike) {
         PostPostLike request = retrofit.create(PostPostLike.class);
         Call<ResponseInfo> call = request.getCall(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo>() {
@@ -1436,11 +1473,25 @@ public class RetrofitUtils {
                                 }
                             }
                         });
+                        if(like2!=null){
+                            like2.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(islike){
+                                        like2.setImageResource(R.drawable.like1);
+                                    }
+                                    else{
+                                        like2.setImageResource(R.drawable.like2);
+                                    }
+                                }
+                            });
+                        }
+
                         like_count.post(new Runnable() {
                             @Override
                             public void run() {
                                 if(islike){
-                                    like_count.setText(Integer.parseInt(like_count.getText().toString())-1==0?"":(Integer.parseInt(like_count.getText().toString())-1)+"");
+                                    like_count.setText(Integer.parseInt(like_count.getText().toString())-1==0?"0":(Integer.parseInt(like_count.getText().toString())-1)+"");
                                 }
                                 else{
                                     like_count.setText(like_count.getText().toString().equals("")?"1":(String.valueOf(Integer.parseInt(like_count.getText().toString())+1)));
@@ -1467,6 +1518,390 @@ public class RetrofitUtils {
     }
 
 
+    //获取所有评论列表
+    /**
+     * @param context 上下文
+     * @param getCommentListRequest 请求参数
+     * @param data 数据源
+     * @param dataPosition 点击帖子在列表中的位置
+     */
+    public static void postGetCommentList(final Context context, GetCommentListRequest getCommentListRequest, final ArrayList data, final int dataPosition) {
+        final Mixinfo newInfo=(Mixinfo)data.get(dataPosition);
+        if(newInfo.commentListData.size()!=newInfo.postInfo.getCommentNum()){
+            PostGetCommentList request = retrofit.create(PostGetCommentList.class);
+            Call<ResponseInfo<CommentListData[]>> call = request.getCall(getCommentListRequest);
+            call.enqueue(new Callback<ResponseInfo<CommentListData[]>>() {
+                @Override
+                public void onResponse(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull final Response<ResponseInfo<CommentListData[]>> response) {
+                    if(response.body()!=null){
+                        newInfo.commentListData.clear();
+                        if(Objects.requireNonNull(response.body()).getData()!=null){
+                            for(int i=0;i<Objects.requireNonNull(response.body()).getData().length;i++){
+                                newInfo.commentListData.add((response.body().getData())[i]);
+                            }
+                            data.set(dataPosition,newInfo);
+                            DetailsActivity.commentListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    else {
+                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                    }
+                }
+                @Override
+                public void onFailure(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Throwable t) {
+                    Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "请求失败");
+                }
+            });
+        }
+
+    }
+
+
+    //添加评论
+    /**
+     * @param context 上下文
+     * @param commentAddRequest
+     * @param index 帖子在listview中的位置
+     * @param mixinfo 帖子信息
+     * @param commentCount 评论数
+     */
+    public static void postAddComment(final Context context, CommentAddRequest commentAddRequest, final int index, final Mixinfo mixinfo, final TextView commentCount,final Class sourceClass) {
+        PostCommentAdd request = retrofit.create(PostCommentAdd.class);
+        Call<ResponseInfo> call = request.getCall(commentAddRequest);
+        call.enqueue(new Callback<ResponseInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+                if(response.body()!=null){
+                    if(Objects.requireNonNull(response.body()).getCode()==ConstantUtils.SUCCESS_CODE){
+                        String token=SharedPreferencesUtils.getStoredMessage(context,"token");
+                        Mixinfo mixinfo1=null;
+                        if(sourceClass == MixListAdapter.class){
+                            mixinfo1=MixShowActivity.data.get(index);
+                            mixinfo1.postInfo.setCommentNum(MixShowActivity.data.get(index).postInfo.getCommentNum()+1);
+                            MixShowActivity.data.set(index,mixinfo1);
+                            MixShowActivity.adapterData.notifyDataSetChanged();
+                            GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,String.valueOf(mixinfo.postInfo.getId()),"1",String.valueOf(mixinfo1.postInfo.getCommentNum()));
+                            RetrofitUtils.postGetCommentList(context,getCommentListRequest,MixShowActivity.data,index);
+                        }
+                        else if(sourceClass == CollectionListAdapter.class){
+                            mixinfo1=MyCollectionActivity.data.get(index);
+                            mixinfo1.postInfo.setCommentNum(MyCollectionActivity.data.get(index).postInfo.getCommentNum()+1);
+                            MyCollectionActivity.data.set(index,mixinfo1);
+                            MyCollectionActivity.adapterData.notifyDataSetChanged();
+                            GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,String.valueOf(mixinfo.postInfo.getId()),"1",String.valueOf(mixinfo1.postInfo.getCommentNum()));
+                            RetrofitUtils.postGetCommentList(context,getCommentListRequest,MyCollectionActivity.data,index);
+                        }
+                        else if(sourceClass == DynamicListAdapter.class){
+                            mixinfo1=MyDynamicActivity.data.get(index);
+                            mixinfo1.postInfo.setCommentNum(MyDynamicActivity.data.get(index).postInfo.getCommentNum()+1);
+                            MyDynamicActivity.data.set(index,mixinfo1);
+                            MyDynamicActivity.adapterData.notifyDataSetChanged();
+                            GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,String.valueOf(mixinfo.postInfo.getId()),"1",String.valueOf(mixinfo1.postInfo.getCommentNum()));
+                            RetrofitUtils.postGetCommentList(context,getCommentListRequest,MyDynamicActivity.data,index);
+                        }
+                        final Mixinfo finalMixinfo = mixinfo1;
+                        commentCount.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                commentCount.setText(finalMixinfo.postInfo.getCommentNum()+"");
+                            }
+                        });
+                        Toast.makeText(context,"评论成功！",Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    //用户发表新帖子
+    /**
+     * @param context 上下文
+     * @param postAddRequest
+     * @param startAct 启动活动
+     */
+    public static void postAddPost(final Context context, PostAddRequest postAddRequest, final Activity startAct) {
+        PostPostAdd request = retrofit.create(PostPostAdd.class);
+        Call<ResponseInfo> call = request.getCall(postAddRequest);
+        call.enqueue(new Callback<ResponseInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+                if(response.body()!=null){
+                    nextActivity(startAct,MixShowActivity.class);
+                    Toast.makeText(UMapplication.getContext(), "发表成功！", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    //判断是否收藏
+    public static void postIsCollect(Context context, PostIsLikeRequest postIsLikeRequest, final int position, final Class sourceClass) {
+        PostPostIsCollect request = retrofit.create(PostPostIsCollect.class);
+        Call<ResponseInfo<Boolean>> call = request.getCall(postIsLikeRequest);
+        call.enqueue(new Callback<ResponseInfo<Boolean>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<Boolean>> call, @NonNull final Response<ResponseInfo<Boolean>> response) {
+                if(response.body()!=null){
+                    if(response.body().getData()){
+                        if(sourceClass== MixListAdapter.class) {
+                            MixShowActivity.data.get(position).is_collect=true;
+                        }
+                        else if(sourceClass== CollectionListAdapter.class){
+                            MyCollectionActivity.data.get(position).is_collect=true;
+                        }
+                        else if (sourceClass == DynamicListAdapter.class){
+                            MyDynamicActivity.data.get(position).is_collect=true;
+                        }
+                    }
+                    else {
+                        if(sourceClass== MixListAdapter.class) {
+                            MixShowActivity.data.get(position).is_collect=false;
+                        }
+                        else if(sourceClass== CollectionListAdapter.class){
+                            MyCollectionActivity.data.get(position).is_collect=false;
+                        }
+                        else if (sourceClass == DynamicListAdapter.class){
+                            MyDynamicActivity.data.get(position).is_collect=false;
+                        }
+                    }
+                }
+                else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<Boolean>> call, @NonNull Throwable t) {
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    //用户收藏或取消收藏
+    public static void postCollectPost(final Activity activity, final boolean isDetailActivity, PostIsLikeRequest postIsLikeRequest, final Mixinfo mixinfo, final int position, final Class sourceClass) {
+        PostCollectPost request = retrofit.create(PostCollectPost.class);
+        Call<ResponseInfo> call = request.getCall(postIsLikeRequest);
+        call.enqueue(new Callback<ResponseInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+                if(response.body()!=null){
+                    if(mixinfo.is_collect){
+                        //趣聊主页列表和详情页点击取消收藏
+                        if(sourceClass == MixListAdapter.class) {
+                            MixShowActivity.data.get(position).is_collect=false;
+                        }
+                        //我的收藏页面列表点击取消收藏
+                        else if(!isDetailActivity && sourceClass == CollectionListAdapter.class) {
+                            MyCollectionActivity.data.remove(position);
+                            MyCollectionActivity.adapterData.notifyDataSetChanged();
+                        }
+
+                        //我的收藏页面的详情页点击取消收藏
+                        else if(isDetailActivity && sourceClass == CollectionListAdapter.class){
+                            MyCollectionActivity.data.remove(position);
+                            MyCollectionActivity.adapterData.notifyDataSetChanged();
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    activity.finish();
+                                }
+                            });
+                        }
+                        //我的动态页面和详情页点击取消收藏
+                        else if(sourceClass == DynamicListAdapter.class){
+                            MyDynamicActivity.data.get(position).is_collect=false;
+                        }
+                        Toast.makeText(UMapplication.getContext(), "已取消收藏！", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        //趣聊主页列表和详情页点击收藏
+                        if(sourceClass == MixListAdapter.class) {
+                            MixShowActivity.data.get(position).is_collect=true;
+                        }
+                        else if(sourceClass == DynamicListAdapter.class){
+                            MyDynamicActivity.data.get(position).is_collect=true;
+                        }
+                        Toast.makeText(UMapplication.getContext(), "收藏成功，您可以在 我的收藏 中找到该贴！", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+
+    /**
+     * @param context 上下文
+     * @param postRequest
+     * @param data 收藏帖子数据源
+     * @param dialog 等待图标
+     */
+    //查询我收藏的帖子
+    public static void postGetCollection(final Context context, PostRequest postRequest, final ArrayList<Mixinfo> data, final ZLoadingDialog dialog) {
+        PostGetCollectionList request = retrofit.create(PostGetCollectionList.class);
+        Call<ResponseInfo<CollectionListData[]>> call = request.getCall(postRequest);
+        call.enqueue(new Callback<ResponseInfo<CollectionListData[]>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<CollectionListData[]>> call, @NonNull Response<ResponseInfo<CollectionListData[]>> response) {
+                if(dialog!=null) dialog.dismiss();
+                if (response.body() != null) {
+                    int responseCode = Objects.requireNonNull(response.body()).getCode();
+                    if (responseCode == SUCCESS_CODE) {
+                        //请求成功后取消底部加载动画
+                        MyCollectionActivity.collectionList.removeFooterView(CollectionListView.mFooterView);
+                        if(response.body().getData().length==0){
+                            Toast.makeText(UMapplication.getContext(),"到底啦，我也是有底线的~",Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            //将请求回的数据加入到data数据集中
+                            for(CollectionListData collectionListData:response.body().getData()){
+                                data.add(new Mixinfo(new CollectionInfo(collectionListData)));
+                            }
+                            MyCollectionActivity.adapterData.notifyDataSetChanged();
+                        }
+                    } else {
+                        MyCollectionActivity.collectionList.removeFooterView(CollectionListView.mFooterView);
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    MyCollectionActivity.collectionList.removeFooterView(CollectionListView.mFooterView);
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<CollectionListData[]>> call, @NonNull Throwable t) {
+                if(dialog!=null) dialog.dismiss();
+                MyCollectionActivity.collectionList.removeFooterView(CollectionListView.mFooterView);
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+    /**
+     * @param context 上下文
+     * @param postRequest
+     * @param data 我的动态数据源
+     * @param dialog 等待图标
+     */
+    //查询我发出的帖子
+    public static void postGetMyDynamic(final Context context, PostRequest postRequest, final ArrayList<Mixinfo> data, final ZLoadingDialog dialog) {
+        PostGetDynamicList request = retrofit.create(PostGetDynamicList.class);
+        Call<ResponseInfo<PostInfo[]>> call = request.getCall(postRequest);
+        call.enqueue(new Callback<ResponseInfo<PostInfo[]>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<PostInfo[]>> call, @NonNull Response<ResponseInfo<PostInfo[]>> response) {
+                if(dialog!=null) dialog.dismiss();
+                if (response.body() != null) {
+                    int responseCode = Objects.requireNonNull(response.body()).getCode();
+                    if (responseCode == SUCCESS_CODE) {
+                        //请求成功后取消底部加载动画
+                        MyDynamicActivity.dynamicList.removeFooterView(DynamicListView.mFooterView);
+                        if(response.body().getData().length==0){
+                            Toast.makeText(UMapplication.getContext(),"到底啦，我也是有底线的~",Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            //将请求回的数据加入到data数据集中
+                            for(PostInfo postInfo:response.body().getData()){
+                                data.add(new Mixinfo(postInfo));
+                            }
+                            MyDynamicActivity.adapterData.notifyDataSetChanged();
+
+                        }
+                    } else {
+                        MyDynamicActivity.dynamicList.removeFooterView(DynamicListView.mFooterView);
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    MyDynamicActivity.dynamicList.removeFooterView(DynamicListView.mFooterView);
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<PostInfo[]>> call, @NonNull Throwable t) {
+                if(dialog!=null) dialog.dismiss();
+                MyDynamicActivity.dynamicList.removeFooterView(DynamicListView.mFooterView);
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    /**
+     * @param context 上下文
+     * @param postRequest
+     * @param data 我的评论数据源
+     * @param dialog 等待图标
+     */
+    //查询我的评论
+    public static void postGetMyComment(final Context context, PostRequest postRequest, final ArrayList<CommentListData> data, final ZLoadingDialog dialog) {
+        PostGetMyCommentList request = retrofit.create(PostGetMyCommentList.class);
+        Call<ResponseInfo<CommentListData[]>> call = request.getCall(postRequest);
+        call.enqueue(new Callback<ResponseInfo<CommentListData[]>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Response<ResponseInfo<CommentListData[]>> response) {
+                if(dialog!=null) dialog.dismiss();
+                if (response.body() != null) {
+                    int responseCode = Objects.requireNonNull(response.body()).getCode();
+                    if (responseCode == SUCCESS_CODE) {
+                        //请求成功后取消底部加载动画
+                        MyCommentActivity.commentList.removeFooterView( CommentListView.mFooterView);
+                        if(response.body().getData().length==0){
+                            Toast.makeText(UMapplication.getContext(),"到底啦，我也是有底线的~",Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            //将请求回的数据加入到data数据集中
+                            data.addAll(Arrays.asList(response.body().getData()));
+                            MyCommentActivity.adapterData.notifyDataSetChanged();
+
+                        }
+                    } else {
+                        MyCommentActivity.commentList.removeFooterView(CommentListView.mFooterView);
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    MyCommentActivity.commentList.removeFooterView(CommentListView.mFooterView);
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Throwable t) {
+                if(dialog!=null) dialog.dismiss();
+                MyCommentActivity.commentList.removeFooterView(CommentListView.mFooterView);
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
     //获取远程信息失败或者广告版本为最新时, 检查本地广告图片是否存在
     private static boolean checkLocalADImage() {
 

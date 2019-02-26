@@ -1,13 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:clipToPadding="false"
     android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context="com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity">
-
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/id_toolbar"
@@ -30,35 +29,37 @@
             android:singleLine="true"
             android:layout_centerInParent="true"
             android:layout_gravity="center"
-            android:text="趣聊"
+            android:text="详情"
             android:textAlignment="center"
             android:textColor="@color/white_content"
             android:textSize="20sp" />
-
-        <TextView
+        <Button
             android:id="@+id/add_post"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="写说说"
+            android:text="发表"
             android:layout_centerVertical="true"
             android:layout_marginEnd="10dp"
             android:layout_gravity="end"
-            android:textColor="@color/white_content"
+            android:background="@drawable/button_post_empty"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="3dp"
+            android:textColor="@color/black"
             android:textSize="20sp" />
-
-
 
     </android.support.v7.widget.Toolbar>
 
-    <com.example.robin.papers.studentCircle.view.PullToZoomListView
-        android:id="@+id/mixlist"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:divider="#eaeaea"
-        android:dividerHeight="1dp"
-        android:fadingEdge="none"
-        android:fastScrollEnabled="false"
-        android:listSelector="@android:color/transparent"
+    <EditText
         android:layout_below="@+id/id_toolbar"
-        />
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minLines="10" />
+
+
+
+
+
 </RelativeLayout>

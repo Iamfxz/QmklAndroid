@@ -263,6 +263,7 @@ public class ResourceFragment extends Fragment
 
         //文件列表设置
         mAdapter = new FileAdapter();
+
         lvFolder.setAdapter(mAdapter);
         lvFolder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -535,8 +536,9 @@ public class ResourceFragment extends Fragment
      *                    区分BasePath和path：
      *                    前者是当前的地址，后者是改变后的地址
      */
-    private void loadPaperData(String folder, final int requestCode, String collegeName) {
-
+    private void loadPaperData(String folder, final int requestCode,final String collegeName) {
+        final String return_BasePath=BasePath;
+        final StringBuffer return_path=path;
         switch (requestCode) {
             case loadFolder:
                 //加载文件夹folder，需要改变BasePath的地址
@@ -546,9 +548,9 @@ public class ResourceFragment extends Fragment
                 BasePath += folder;
                 BasePath += "/";
                 path = new StringBuffer(BasePath);
-                chooseSchool.setVisibility(View.GONE);
                 break;
             case loadPreviousFolder:
+
                 //回退前
                 if (!path.toString().equals("/"))
                     BasePath = path.substring(0, PaperFileUtils.last2IndexOf(path.toString()) + 1);
@@ -562,12 +564,14 @@ public class ResourceFragment extends Fragment
                     recordSuccess = false;
                 }
                 else{//回到主界面
-                    chooseSchool.setVisibility(View.VISIBLE);
+
                     recordSuccess = true;
                 }
                 break;
             case loadRefresh:
                 //刷新
+                list=null;
+                mAdapter.notifyDataSetChanged();
                 path = new StringBuffer(BasePath);
                 break;
             case loadFile:
@@ -576,7 +580,8 @@ public class ResourceFragment extends Fragment
                 break;
             case loadMainFolder:
                 //加载主界面
-                chooseSchool.setVisibility(View.VISIBLE);
+                list=null;
+                mAdapter.notifyDataSetChanged();
                 path = new StringBuffer(BasePath);
                 break;
             default:
@@ -584,15 +589,6 @@ public class ResourceFragment extends Fragment
                 break;
         }
         System.out.println("当前路径：" + path);
-
-        //设置页面标题
-        if (path.toString().equals("/")) {
-            title.setText(collegeName);
-//            searchItem.setVisible(true);
-        } else if (requestCode == loadFolder || requestCode == loadPreviousFolder) {
-            title.setText(folder);
-//            searchItem.setVisible(false);
-        }
 
 
         if (folder == null || PaperFileUtils.typeWithFileName(folder).equals("folder")) {
@@ -619,6 +615,7 @@ public class ResourceFragment extends Fragment
                 Call<FileRes> call = request.getCall(fileRequest);
 
                 //发送网络请求(异步)
+                final String finalFolder = folder;
                 call.enqueue(new Callback<FileRes>() {
                     //请求成功时回调
                     @Override
@@ -628,18 +625,41 @@ public class ResourceFragment extends Fragment
                         if (resultCode == tokenInvalidCode) {
                             //登陆信息失效
                             handler.sendEmptyMessage(3);
-
+                            BasePath=return_BasePath;
+                            path=return_path;
                         } else if (resultCode == successCode) {
+                            if(requestCode==loadFolder){
+                                chooseSchool.setVisibility(View.GONE);
+                            }
+                            else if(requestCode==loadPreviousFolder && path.toString().equals("/")){
+                                chooseSchool.setVisibility(View.VISIBLE);
+                            }
+                            else if(requestCode==loadMainFolder){
+                                chooseSchool.setVisibility(View.VISIBLE);
+                            }
+                            //设置页面标题
+                            if (path.toString().equals("/")) {
+                                title.setText(collegeName);
+                            } else if (requestCode == loadFolder || requestCode == loadPreviousFolder) {
+                                title.setText(finalFolder);
+                            }
                             //请求数据成功
                             handler.sendEmptyMessage(1);
                         } else if (resultCode == errorCode) {
+                            BasePath=return_BasePath;
+                            path=return_path;
                             handler.sendEmptyMessage(4);
                         } else if (resultCode == normalErrorCode) {
+                            BasePath=return_BasePath;
+                            path=return_path;
                             Message message = Message.obtain();
                             message.obj = Objects.requireNonNull(response.body()).getMsg();
                             message.what = 5;
+
                             handler.sendMessage(message);
                         } else {
+                            BasePath=return_BasePath;
+                            path=return_path;
                             handler.sendEmptyMessage(6);
                         }
                     }
@@ -647,10 +667,14 @@ public class ResourceFragment extends Fragment
                     //请求失败时回调
                     @Override
                     public void onFailure(@NonNull Call<FileRes> call, @NonNull Throwable t) {
+                        BasePath=return_BasePath;
+                        path=return_path;
                         handler.sendEmptyMessage(2);
                     }
                 });
             } else {
+                BasePath=return_BasePath;
+                path=return_path;
                 //token为空，登陆失效
                 handler.sendEmptyMessage(3);
             }
@@ -1257,6 +1281,7 @@ public class ResourceFragment extends Fragment
                     }
                     list = new ArrayList<>(mData.getData().keySet());
                     list = setStoreItem(list);
+                    mAdapter.notifyDataSetChanged();
                     //如果加载数据完成自动返回上次位置（仅限主列表）
                     if(recordSuccess){
                         System.out.println("recordSuccess:"+recordSuccess);
@@ -1275,14 +1300,14 @@ public class ResourceFragment extends Fragment
                     requestFailedNum++;
                     if(requestFailedNum == 1){
                         Toast.makeText(getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
-                        nextActivity(LoginActivity.class);
+                        //nextActivity(LoginActivity.class);
                     }
                     break;
                 case 3:
                     //登陆失效
                     requestFailedNum++;
                     if(requestFailedNum == 1){
-                        Toast.makeText(getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), ConstantUtils.LOGIN_INVALID, Toast.LENGTH_SHORT).show();
                         nextActivity(LoginActivity.class);
                     }
                     break;
@@ -1291,7 +1316,7 @@ public class ResourceFragment extends Fragment
                     requestFailedNum++;
                     if(requestFailedNum == 1){
                         Toast.makeText(getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
-                        nextActivity(LoginActivity.class);
+                        //nextActivity(LoginActivity.class);
                     }
                     break;
                 case 5:
@@ -1302,7 +1327,7 @@ public class ResourceFragment extends Fragment
                     requestFailedNum++;
                     if(requestFailedNum == 1){
                         Toast.makeText(getContext(), ConstantUtils.SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
-                        nextActivity(LoginActivity.class);
+                        //nextActivity(LoginActivity.class);
                     }
                 default:
                     break;

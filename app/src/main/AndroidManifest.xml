@@ -6,7 +6,6 @@
     <!-- 检测网络状态 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- 允许应用程序联网，以便向我们的服务器端发送数据 -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -54,9 +53,14 @@
         <activity android:name="com.example.robin.papers.activity.AuthPerUserInfo"/>
         <activity android:name="com.example.robin.papers.activity.BaseActivity"/>
         <activity android:name="com.example.robin.papers.activity.UpLoadActivity"/>
-        <activity android:name="com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity"/>
-        <activity android:name="com.example.robin.papers.studentCircle.dwcorephoto.BaseActivity"/>
-        <activity android:name="com.example.robin.papers.studentCircle.dwcorephoto.PreviewImage"/>
+        <activity android:name="com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity"/>
+        <activity android:name="com.example.robin.papers.studentCircle.studentCircleActivity.BaseActivity"/>
+        <activity android:name="com.example.robin.papers.studentCircle.studentCircleActivity.PreviewImage"/>
+        <activity android:name="com.example.robin.papers.studentCircle.studentCircleActivity.DetailsActivity"/>
+        <activity android:name="com.example.robin.papers.studentCircle.studentCircleActivity.PostAddActivity"/>
+        <activity android:name=".studentCircle.studentCircleActivity.MyCollectionActivity"/>
+        <activity android:name=".studentCircle.studentCircleActivity.MyDynamicActivity"/>
+        <activity android:name=".studentCircle.studentCircleActivity.MyCommentActivity"/>
         <activity android:name="com.example.robin.papers.activity.PdfViewActivity" />
 
 

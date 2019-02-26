@@ -19,15 +19,14 @@ import android.widget.TextView;
 
 import com.example.robin.papers.R;
 import com.example.robin.papers.requestModel.PostRequest;
-import com.example.robin.papers.studentCircle.dwcorephoto.MixShowActivity;
-import com.example.robin.papers.studentCircle.tools.ImageLoaders;
+import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SDCardUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 
 /**
- * Created by DavidWang on 15/10/8.
+ * 趣聊初始界面的列表，包括头部头像以及下方帖子列表
  */
 public class PullToZoomListView extends ListView implements
 		AbsListView.OnScrollListener {
@@ -177,75 +176,15 @@ public class PullToZoomListView extends ListView implements
                     if(getFooterViewsCount()==0){
                         MixShowActivity.mixlist.addFooterView(mFooterView);
                         String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
-                        PostRequest postRequest=new PostRequest(token,String.valueOf(MixShowActivity.page++));
+                        PostRequest postRequest=new PostRequest(token,String.valueOf(++MixShowActivity.page));
                         RetrofitUtils.postAllPost(context,postRequest,MixShowActivity.data);
+						Log.d(TAG, "请求");
                     }
                 }
                 break;
         }
 	}
 
-	public boolean onTouchEvent(MotionEvent paramMotionEvent) {
-		event.OnTouchEvent();
-		switch (0xFF & paramMotionEvent.getAction()) {
-			case 4:
-			case 0:
-				if (!this.mScalingRunnalable.mIsFinished) {
-					this.mScalingRunnalable.abortAnimation();
-				}
-				this.mLastMotionY = paramMotionEvent.getY();
-				this.mActivePointerId = paramMotionEvent.getPointerId(0);
-				this.mMaxScale = (this.mScreenHeight / this.mHeaderHeight);
-				this.mLastScale = (this.mHeaderContainer.getBottom() / this.mHeaderHeight);
-				break;
-			case 2:
-				int j = paramMotionEvent.findPointerIndex(this.mActivePointerId);
-				if (j == -1) {
-				} else {
-					if (this.mLastMotionY == -1.0F)
-						this.mLastMotionY = paramMotionEvent.getY(j);
-					if (this.mHeaderContainer.getBottom() >= this.mHeaderHeight) {
-						ViewGroup.LayoutParams localLayoutParams = this.mHeaderContainer
-								.getLayoutParams();
-						float f = ((paramMotionEvent.getY(j) - this.mLastMotionY + this.mHeaderContainer
-								.getBottom()) / this.mHeaderHeight - this.mLastScale)
-								/ 2.0F + this.mLastScale;
-						if ((this.mLastScale <= 1.0D) && (f < this.mLastScale)) {
-							localLayoutParams.height = this.mHeaderHeight;
-							this.mHeaderContainer
-									.setLayoutParams(localLayoutParams);
-							return super.onTouchEvent(paramMotionEvent);
-						}
-						this.mLastScale = Math.min(Math.max(f, 1.0F),
-								this.mMaxScale);
-						localLayoutParams.height = ((int) (this.mHeaderHeight * this.mLastScale));
-						if (localLayoutParams.height < this.mScreenHeight)
-							this.mHeaderContainer
-									.setLayoutParams(localLayoutParams);
-						this.mLastMotionY = paramMotionEvent.getY(j);
-						return true;
-					}
-					this.mLastMotionY = paramMotionEvent.getY(j);
-				}
-				break;
-			case 1:
-				reset();
-				endScraling();
-				break;
-			case 3:
-				int i = paramMotionEvent.getActionIndex();
-				this.mLastMotionY = paramMotionEvent.getY(i);
-				this.mActivePointerId = paramMotionEvent.getPointerId(i);
-				break;
-			case 5:
-				onSecondaryPointerUp(paramMotionEvent);
-				this.mLastMotionY = paramMotionEvent.getY(paramMotionEvent
-						.findPointerIndex(this.mActivePointerId));
-				break;
-			case 6:
-		}
-		return super.onTouchEvent(paramMotionEvent);
-	}
 
 	public void setHeaderViewSize(int paramInt1, int paramInt2) {
 		Object localObject = this.mHeaderContainer.getLayoutParams();
@@ -263,9 +202,6 @@ public class PullToZoomListView extends ListView implements
 		this.mOnScrollListener = paramOnScrollListener;
 	}
 
-//	public void setShadow(int paramInt) {
-//		this.mShadow.setBackgroundResource(paramInt);
-//	}
 
 	class ScalingRunnalable implements Runnable {
 		long mDuration;

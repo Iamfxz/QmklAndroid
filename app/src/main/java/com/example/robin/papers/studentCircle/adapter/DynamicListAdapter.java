@@ -17,41 +17,30 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.robin.papers.R;
-import com.example.robin.papers.model.CollectionListData;
 import com.example.robin.papers.requestModel.PostIsLikeRequest;
-import com.example.robin.papers.studentCircle.studentCircleActivity.DetailsActivity;
-import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
-import com.example.robin.papers.studentCircle.studentCircleActivity.PreviewImage;
-import com.example.robin.papers.studentCircle.model.ImageBDInfo;
-import com.example.robin.papers.studentCircle.model.ImageInfo;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
+import com.example.robin.papers.studentCircle.studentCircleActivity.DetailsActivity;
 import com.example.robin.papers.studentCircle.tools.ImageLoaders;
 import com.example.robin.papers.util.ConstantUtils;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-
-public class MixListAdapter extends BaseAdapter {
+public class DynamicListAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<Mixinfo> data;
-    private ImageBDInfo bdInfo;
-    private MixShowActivity activity;
-//    private CommentListAdapter commentListAdapter;
 
-    private int ImagaId[] = {R.id.img_0, R.id.img_1, R.id.img_2, R.id.img_3, R.id.img_4, R.id.img_5, R.id.img_6, R.id.img_7, R.id.img_8};
     int i=1;
-    public MixListAdapter(Context context, ArrayList<Mixinfo> data) {
+
+    public DynamicListAdapter(Context context, ArrayList<Mixinfo> data) {
         this.context = context;
-        this.data = data;
-        bdInfo = new ImageBDInfo();
-        activity = (MixShowActivity) context;
+        this.data=data;
+
     }
 
     @Override
@@ -96,10 +85,8 @@ public class MixListAdapter extends BaseAdapter {
             holder.comment_text= convertView.findViewById(R.id.comment_text);
             holder.evaluationLayout = (LinearLayout) convertView.findViewById(R.id.evaluationLayout);
             holder.popupmenu =convertView.findViewById(R.id.popupmenu);
-//            holder.commentList = (NoScrollListView) convertView.findViewById(R.id.commentList);
-            for (int i = 0; i < 9; i++) {
-                holder.imgview[i] = (ImageView) convertView.findViewById(ImagaId[i]);
-            }
+
+
             convertView.setTag(holder);
 
         } else {
@@ -121,10 +108,10 @@ public class MixListAdapter extends BaseAdapter {
         //请求该评论app使用者是否点赞
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,info.postInfo.getId()+"");
-        RetrofitUtils.postIsLike(context,postIsLikeRequest,holder.like,position,MixListAdapter.class);
+        RetrofitUtils.postIsLike(context,postIsLikeRequest,holder.like,position,DynamicListAdapter.class);
 
         //请求该评论app使用者是否收藏
-        RetrofitUtils.postIsCollect(context,postIsLikeRequest,position,MixListAdapter.class);
+        RetrofitUtils.postIsCollect(context,postIsLikeRequest,position,DynamicListAdapter.class);
 
         holder.comment_count.setText(info.postInfo.getCommentNum()+"");//评论数
 
@@ -165,7 +152,6 @@ public class MixListAdapter extends BaseAdapter {
         TextView usercontent, fullText;
         GridLayout gridview;
         ImageView showimage;
-        ImageView imgview[] = new ImageView[9];
         LinearLayout evaluationLayout, allLayout;
         ImageView like,comment;
         TextView like_text,comment_text;
@@ -231,52 +217,10 @@ public class MixListAdapter extends BaseAdapter {
     private void collectPost(int position){
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).postInfo.getId()+"");
-        RetrofitUtils.postCollectPost(null,false,postIsLikeRequest,data.get(position),position,MixListAdapter.class);
-    }
-    public class GridOnclick implements View.OnClickListener {
-
-        private int index;
-        private int row;
-        private ImageView imageView;
-        private GridLayout gridLayout;
-        private LinearLayout allLayout;
-
-        public GridOnclick(int index, ImageView imageView, int row, GridLayout gridLayout, LinearLayout allLayout) {
-            this.index = index;
-            this.imageView = imageView;
-            this.gridLayout = gridLayout;
-            this.row = row;
-            this.allLayout = allLayout;
-        }
-
-        @Override
-        public void onClick(View v) {
-            View c = activity.mixlist.getChildAt(0);
-            int top = c.getTop();
-            int firstVisiblePosition = activity.mixlist.getFirstVisiblePosition();
-            float height = 0.0f;
-            for (int i = 0; i < ((index + 1) - firstVisiblePosition); i++) {
-                View view = activity.mixlist.getChildAt(i);
-                height += view.getHeight();
-            }
-            bdInfo.x = imageView.getLeft() + gridLayout.getLeft() + allLayout.getLeft();
-            bdInfo.y = allLayout.getTop() + gridLayout.getTop() + imageView.getTop() + height + top + activity.mixlist.getTop();
-            bdInfo.width = imageView.getLayoutParams().width;
-            bdInfo.height = imageView.getLayoutParams().height;
-            Intent intent = new Intent(context, PreviewImage.class);
-            ArrayList<ImageInfo> info = data.get(index).data;
-            intent.putExtra("data", (Serializable) info);
-            intent.putExtra("bdinfo", bdInfo);
-            intent.putExtra("index", row);
-            intent.putExtra("type", 3);
-            context.startActivity(intent);
-        }
+        RetrofitUtils.postCollectPost(null,false,postIsLikeRequest,data.get(position),position,DynamicListAdapter.class);
     }
 
-    public int dip2px(float dpValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
-    }
+
 
     public class fullTextOnclick implements View.OnClickListener {
 
@@ -350,7 +294,7 @@ public class MixListAdapter extends BaseAdapter {
             Intent intent=new Intent(context, DetailsActivity.class);
             intent.putExtra("index", index);
             intent.putExtra("isComment",true);
-            intent.putExtra("sourceClass",MixListAdapter.class);
+            intent.putExtra("sourceClass",DynamicListAdapter.class);
             context.startActivity(intent);
 
         }
@@ -367,7 +311,7 @@ public class MixListAdapter extends BaseAdapter {
             Intent intent=new Intent(context, DetailsActivity.class);
             intent.putExtra("index", index);
             intent.putExtra("isComment",false);
-            intent.putExtra("sourceClass",MixListAdapter.class);
+            intent.putExtra("sourceClass",DynamicListAdapter.class);
             context.startActivity(intent);
         }
     }
@@ -399,7 +343,6 @@ public class MixListAdapter extends BaseAdapter {
             }
         });
     }
-
 
 
 
