@@ -94,9 +94,10 @@ import static com.example.robin.papers.util.ConstantUtils.DEFAULT_TIMEOUT;
 /**
  * A simple {@link Fragment} subclass.
  * 主页面四个tab之一: 资源页面
+ *
  */
 public class ResourceFragment extends Fragment
-        implements NavigationView.OnNavigationItemSelectedListener, AbsListView.OnScrollListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     final static String TAG = "ResourceFragment";
     private static String mPackageName = "com.example.robin.papers.ui.ResourceFragment";
@@ -335,7 +336,7 @@ public class ResourceFragment extends Fragment
             }
         }, 250);
 
-        lvFolder.setOnScrollListener(this);
+        //lvFolder.setOnScrollListener(this);
     }
 
     //初始化界面时对标题栏做的一些准备工作
@@ -381,38 +382,38 @@ public class ResourceFragment extends Fragment
 
     }
 
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-    }
+//    @Override
+//    public void onScrollStateChanged(AbsListView view, int scrollState) {
+//    }
 
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        //listview第一次载入时，两者都为-1
-        shouldAnimate = (mFirstVisibleItem != -1) && (mLastVisibleItem != -1);
-        //滚动时最后一个item的位置
-        int lastVisibleItem = firstVisibleItem + visibleItemCount - 1;
-        if (shouldAnimate) {//第一次不需要加载动画
-            int indexAfterFist = 0;
-            //如果出现这种情况，说明是在向上scroll，如果scroll比较快的话，一次可能出现多个新的view，我们需要用循环
-            //去获取所有这些view，然后执行动画效果
-            while (firstVisibleItem + indexAfterFist < mFirstVisibleItem) {
-                View animateView = view.getChildAt(indexAfterFist);//获取item对应的view
-                doAnimate(animateView);
-                indexAfterFist++;
-            }
-
-            int indexBeforeLast = 0;
-            //向下scroll, 情况类似，只是计算view的位置时不一样
-            while (lastVisibleItem - indexBeforeLast > mLastVisibleItem) {
-                View animateView = view.getChildAt(lastVisibleItem - indexBeforeLast - firstVisibleItem);
-                doAnimate(animateView);
-                indexBeforeLast++;
-            }
-        }
-
-        mFirstVisibleItem = firstVisibleItem;
-        mLastVisibleItem = lastVisibleItem;
-    }
+//    @Override
+//    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//        //listview第一次载入时，两者都为-1
+//        shouldAnimate = (mFirstVisibleItem != -1) && (mLastVisibleItem != -1);
+//        //滚动时最后一个item的位置
+//        int lastVisibleItem = firstVisibleItem + visibleItemCount - 1;
+//        if (shouldAnimate) {//第一次不需要加载动画
+//            int indexAfterFist = 0;
+//            //如果出现这种情况，说明是在向上scroll，如果scroll比较快的话，一次可能出现多个新的view，我们需要用循环
+//            //去获取所有这些view，然后执行动画效果
+//            while (firstVisibleItem + indexAfterFist < mFirstVisibleItem) {
+//                View animateView = view.getChildAt(indexAfterFist);//获取item对应的view
+//                doAnimate(animateView);
+//                indexAfterFist++;
+//            }
+//
+//            int indexBeforeLast = 0;
+//            //向下scroll, 情况类似，只是计算view的位置时不一样
+//            while (lastVisibleItem - indexBeforeLast > mLastVisibleItem) {
+//                View animateView = view.getChildAt(lastVisibleItem - indexBeforeLast - firstVisibleItem);
+//                doAnimate(animateView);
+//                indexBeforeLast++;
+//            }
+//        }
+//
+//        mFirstVisibleItem = firstVisibleItem;
+//        mLastVisibleItem = lastVisibleItem;
+//    }
 
     /**
      * 菜单栏
