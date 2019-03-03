@@ -1,5 +1,6 @@
 package com.example.robin.papers.studentCircle.studentCircleActivity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.PopupMenu;
@@ -9,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -31,7 +33,10 @@ import com.example.robin.papers.util.ConstantUtils;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -82,6 +87,8 @@ public class DetailsFromCommentActivity extends BaseActivity {
     Button sendBtn;
     @BindView(R.id.iv_back)
     ImageView backBtn;
+    @BindView(R.id.checkbox)
+    CheckBox checkBox;
 
     public static Mixinfo mixinfo;
     public static CommentListAdapter commentListAdapter;
@@ -114,7 +121,13 @@ public class DetailsFromCommentActivity extends BaseActivity {
         ImageLoaders.setsendimg(ConstantUtils.postUrl+postInfo.getUserId(),headerImg);//头像
         username.setText(postInfo.getNickName());
         dateTime.setText(postInfo.getCreateTime());
-        userContent.setText(postInfo.getContent());
+        String writeNote="";
+        try {
+            writeNote = URLDecoder.decode(postInfo.getContent(), "utf-8");//utf-8解码
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        userContent.setText(writeNote);
         likeCount.setText(postInfo.getLikeNum()+"");
         commentCount.setText(postInfo.getCommentNum()+"");
         if(isLike){
@@ -217,6 +230,9 @@ public class DetailsFromCommentActivity extends BaseActivity {
                     case R.id.del_collect:
                         collectPost();
                         break;
+                    case R.id.del_post:
+                        DelPost();
+                        break;
 
                 }
                 return true;
@@ -230,6 +246,14 @@ public class DetailsFromCommentActivity extends BaseActivity {
         });
     }
 
+    /**
+     * 删除帖子
+     */
+    private void DelPost() {
+        String token= SharedPreferencesUtils.getStoredMessage(this,"token");
+        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,mixinfo.postInfo.getId()+"");
+        RetrofitUtils.postDelPost(this,postIsLikeRequest,DetailsFromCommentActivity.this,MixShowActivity.class);
+    }
     /**
      * 收藏帖子
      */
@@ -280,9 +304,19 @@ public class DetailsFromCommentActivity extends BaseActivity {
         }
         @Override
         public void onClick(View v) {
-            if(editText.getText().toString()!=null && editText.getText().toString().trim()!=""){
+            if(editText.getText().toString()!=null && !editText.getText().toString().trim().equals("")){
+                String writeNote="";
+                if(checkBox.isChecked()){
+                    writeNote="仅楼主可见";
+                }
+                //进行编码
+                try {
+                    writeNote = writeNote+URLEncoder.encode(editText.getText().toString().trim(), "utf-8");//utf-8编码
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 String token= SharedPreferencesUtils.getStoredMessage(DetailsFromCommentActivity.this,"token");
-                CommentAddRequest commentAddRequest=new CommentAddRequest(token,editText.getText().toString().trim(),mixinfo.postInfo.getId()+"");
+                CommentAddRequest commentAddRequest=new CommentAddRequest(token,writeNote,mixinfo.postInfo.getId()+"");
                 RetrofitUtils.postAddComment(DetailsFromCommentActivity.this,commentAddRequest,commentCount);
                 hideEdit();
             }

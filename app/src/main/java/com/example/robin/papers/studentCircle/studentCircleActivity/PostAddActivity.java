@@ -17,6 +17,9 @@ import com.example.robin.papers.requestModel.PostAddRequest;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -42,8 +45,15 @@ public class PostAddActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.add_post:
                 if(!isNullContent()){
+                    String writeNote="";
+                    //进行编码
+                    try {
+                        writeNote = URLEncoder.encode(content.getText().toString().trim(), "utf-8");//utf-8编码
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                     String token= SharedPreferencesUtils.getStoredMessage(this,"token");
-                    PostAddRequest postAddRequest=new PostAddRequest(token,content.getText().toString().trim());
+                    PostAddRequest postAddRequest=new PostAddRequest(token,writeNote);
                     RetrofitUtils.postAddPost(this,postAddRequest,PostAddActivity.this);
                 }
 

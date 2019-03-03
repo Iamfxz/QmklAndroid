@@ -31,7 +31,6 @@ public class MixShowActivity extends BaseActivity  {
     public static MixListAdapter adapterData;
     public static ArrayList<Mixinfo> data;
     public static int page=1;
-    public static  RelativeLayout bottomView;
     private EditText editText;
     private ImageView backBtn;
     private TextView postAddBtn;
@@ -59,9 +58,7 @@ public class MixShowActivity extends BaseActivity  {
         mixlist = (PullToZoomListView) findViewById(R.id.mixlist);
         mixlist.getHeaderView().setImageResource(R.drawable.glide1);
         mixlist.getHeaderView().setScaleType(ImageView.ScaleType.CENTER_CROP);
-        bottomView = (RelativeLayout) findViewById(R.id.bottomView);
         editText = (EditText) findViewById(R.id.editText);
-        mixlist.addOnLayoutChangeListener(new LayoutChangeListener());
         backBtn = (ImageView) findViewById(R.id.id_toolbar).findViewById(R.id.iv_back);
         postAddBtn=findViewById(R.id.id_toolbar).findViewById(R.id.add_post);
     }
@@ -110,18 +107,6 @@ public class MixShowActivity extends BaseActivity  {
     }
 
 
-
-    private class LayoutChangeListener implements View.OnLayoutChangeListener {
-        @Override
-        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-            if (oldBottom != 0 && bottom != 0 && (oldBottom - bottom > keyHeight)) {
-                //软键盘弹起
-            } else if (oldBottom != 0 && bottom != 0 && (bottom - oldBottom > keyHeight)) {
-                //软键盘消失
-                bottomView.setVisibility(View.GONE);
-            }
-        }
-    }
 
     @Override
     protected void onResume() {

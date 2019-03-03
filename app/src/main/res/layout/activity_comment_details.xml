@@ -202,19 +202,22 @@
         android:id="@+id/bottomView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:background="@android:color/white">
+
+        <View
+            android:id="@+id/top_line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/content_bg_press" />
 
         <EditText
             android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
-            android:layout_marginTop="3dp"
             android:layout_toLeftOf="@+id/sendBtn"
-            android:hint="回复XXXX:"
+            android:hint="评论:"
             android:maxLines="4"
             android:textColor="@android:color/black"
             android:textColorHint="#b2b2b2" />
@@ -224,16 +227,26 @@
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
             android:layout_marginRight="5dp"
-            android:layout_marginTop="3dp"
             android:text="发送" />
 
         <View
+            android:id="@+id/mid_line"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/content_bg_press" />
+            android:background="@color/content_bg_press"
+            android:layout_below="@id/editText"
+            android:layout_marginTop="5dp"/>
 
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_below="@id/mid_line"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:text="仅楼主可见"/>
     </RelativeLayout>
 
 </RelativeLayout>

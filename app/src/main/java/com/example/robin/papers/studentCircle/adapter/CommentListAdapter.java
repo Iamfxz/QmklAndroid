@@ -19,6 +19,8 @@ import com.example.robin.papers.studentCircle.studentCircleActivity.MyDynamicAct
 import com.example.robin.papers.studentCircle.tools.ImageLoaders;
 import com.example.robin.papers.util.ConstantUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 
@@ -101,10 +103,21 @@ public class CommentListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         Log.d("commentListAdapter", commentListData.size()+"");
-            holder.commentUser.setText(commentListData.get(position).getNickName());
-            holder.commentText.setText(commentListData.get(position).getContent());
-            holder.commentTime.setText(commentListData.get(position).getCreateTime());
-            ImageLoaders.setsendimg(ConstantUtils.postUrl+commentListData.get(position).getUserId(),holder.commentImg);//头像
+        holder.commentUser.setText(commentListData.get(position).getNickName());
+        //评论转码
+        String writeNote="";
+        try {
+            writeNote = URLDecoder.decode(commentListData.get(position).getContent(), "utf-8");//utf-8解码
+            if(writeNote.length()>5) Log.d("进口猪", writeNote.substring(0,5));
+            if(writeNote.length()>5 && writeNote.substring(0,5).equals("仅楼主可见")){
+                holder.commentText.setTextColor(context.getResources().getColor(R.color.btn_blue));
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        holder.commentText.setText(writeNote);
+        holder.commentTime.setText(commentListData.get(position).getCreateTime());
+        ImageLoaders.setsendimg(ConstantUtils.postUrl+commentListData.get(position).getUserId(),holder.commentImg);//头像
 
         return convertView;
     }

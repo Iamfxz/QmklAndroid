@@ -37,9 +37,11 @@ import com.example.robin.papers.impl.PostGetCollectionList;
 import com.example.robin.papers.impl.PostGetCommentList;
 import com.example.robin.papers.impl.PostGetDynamicList;
 import com.example.robin.papers.impl.PostGetMyCommentList;
+import com.example.robin.papers.impl.PostIsLike;
 import com.example.robin.papers.impl.PostLogin;
 import com.example.robin.papers.impl.PostPerfectInfo;
 import com.example.robin.papers.impl.PostPostAdd;
+import com.example.robin.papers.impl.PostPostDelete;
 import com.example.robin.papers.impl.PostPostIsCollect;
 import com.example.robin.papers.impl.PostPostIsLike;
 import com.example.robin.papers.impl.PostPostLike;
@@ -2142,6 +2144,34 @@ public class RetrofitUtils {
 
             @Override
             public void onFailure(@NonNull Call<ResponseInfo<PostInfo>> call, @NonNull Throwable t) {
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    //删除帖子
+    public static void postDelPost(final Context context, PostIsLikeRequest postIsLikeRequest, final Activity startAct, final Class endClass) {
+        PostPostDelete request = retrofit.create(PostPostDelete.class);
+        Call<ResponseInfo> call = request.getCall(postIsLikeRequest);
+        call.enqueue(new Callback<ResponseInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+                if (response.body() != null) {
+                    int responseCode = Objects.requireNonNull(response.body()).getCode();
+                    if (responseCode == SUCCESS_CODE) {
+                        nextActivity(startAct,endClass);
+                        Toast.makeText(UMapplication.getContext(), "删除成功！", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
                 Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
             }

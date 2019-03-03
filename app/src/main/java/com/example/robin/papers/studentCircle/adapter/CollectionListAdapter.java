@@ -1,5 +1,6 @@
 package com.example.robin.papers.studentCircle.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.view.menu.MenuPopupHelper;
@@ -33,7 +34,9 @@ import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -105,7 +108,14 @@ public class CollectionListAdapter extends BaseAdapter {
         holder.username.setText(info.postInfo.getNickName());//昵称
         holder.dateTtime.setText(info.postInfo.getCreateTime());//留言时间
         i++;
-        holder.usercontent.setText(info.postInfo.getContent());//评论内容
+        //评论转码
+        String writeNote="";
+        try {
+            writeNote = URLDecoder.decode(info.postInfo.getContent(), "utf-8");//utf-8解码
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        holder.usercontent.setText(writeNote);//评论内容
         //没有图片，设置为GONE
         holder.showimage.setVisibility(View.GONE);
         holder.gridview.setVisibility(View.GONE);
@@ -206,6 +216,9 @@ public class CollectionListAdapter extends BaseAdapter {
                     case R.id.del_collect:
                         collectPost(position);
                         break;
+                    case R.id.del_post:
+                        DelPost(position);
+                        break;
 
                 }
                 return true;
@@ -219,6 +232,14 @@ public class CollectionListAdapter extends BaseAdapter {
         });
     }
 
+    /**
+     * 删除帖子
+     */
+    private void DelPost(int position) {
+        String token= SharedPreferencesUtils.getStoredMessage(context,"token");
+        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).postInfo.getId()+"");
+        RetrofitUtils.postDelPost(context,postIsLikeRequest,(Activity)context,MixShowActivity.class);
+    }
     /**
      * 收藏帖子
      */
