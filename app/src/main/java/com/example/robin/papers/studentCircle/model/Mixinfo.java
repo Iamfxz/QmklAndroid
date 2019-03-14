@@ -1,5 +1,6 @@
 package com.example.robin.papers.studentCircle.model;
 
+import com.example.robin.papers.model.CollectionListData;
 import com.example.robin.papers.model.CommentListData;
 import com.example.robin.papers.model.PostInfo;
 
@@ -13,8 +14,8 @@ public class Mixinfo implements Serializable {
     public boolean is_like = false;//是否点赞
     public boolean is_collect = false;//是否收藏
     public ArrayList<ImageInfo> data;
-    public ArrayList<CommentListData> commentListData=new ArrayList<>();
-
+    public CommentListData commentListData=new CommentListData();
+    public CollectionInfo collectionInfo;
     public Mixinfo(PostInfo postInfo) {
         this.postInfo = postInfo;
     }
@@ -22,5 +23,6 @@ public class Mixinfo implements Serializable {
 
     public Mixinfo(CollectionInfo collectionInfo) {
         this.postInfo = collectionInfo.collectionListData.getPostResult();
+        this.collectionInfo = collectionInfo;
     }
 }

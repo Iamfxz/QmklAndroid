@@ -31,9 +31,12 @@ public class GlideImageLoader extends ImageLoader {
 //        Picasso.with(context).load(path).into(imageView);
 //
         //用fresco加载图片简单用法，记得要写下面的createImageView方法
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-//        imageView.setImageResource((int)path);
-        imageView.setImageBitmap(readBitMap(context,(int)path));
+//        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//
+//        imageView.setImageBitmap(readBitMap(context,(int)path));
+        Glide.with(context.getApplicationContext())
+                .load((String) path)
+                .into(imageView);
     }
 
     //提供createImageView 方法，如果不用可以不重写这个方法，主要是方便自定义ImageView的创建

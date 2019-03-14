@@ -10,10 +10,14 @@ import android.widget.Toast;
 
 import com.example.robin.papers.R;
 import com.example.robin.papers.model.CommentListData;
+import com.example.robin.papers.model.MyCommentListData;
+import com.example.robin.papers.model.PostInfo;
 import com.example.robin.papers.requestModel.PostRequest;
 import com.example.robin.papers.studentCircle.adapter.CommentListAdapter;
+import com.example.robin.papers.studentCircle.adapter.MyCommentListAdapter;
 import com.example.robin.papers.studentCircle.view.CommentListView;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
+import com.example.robin.papers.util.DialogUtils;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
@@ -31,8 +35,8 @@ public class MyCommentActivity extends BaseActivity {
 
     public static CommentListView commentList;
     public static int page=1;
-    public static ArrayList<CommentListData> data;
-    public static CommentListAdapter adapterData;
+    public static ArrayList<MyCommentListData> data;//保存请求回的评论信息
+    public static MyCommentListAdapter adapterData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,29 +57,25 @@ public class MyCommentActivity extends BaseActivity {
                 finish();
             }
         });
-        commentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
-                RetrofitUtils.postQueryAPost(MyCommentActivity.this,data.get(position).getPostId()+"",token,MyCommentActivity.this);
-            }
-        });
+//        commentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
+//                RetrofitUtils.postQueryAPost(MyCommentActivity.this,data.get(position).getPostId()+"",token,MyCommentActivity.this);
+//            }
+//        });
     }
 
     private void InData() {
         commentList=findViewById(R.id.comment_list);
-        data=new ArrayList<CommentListData>();
-        adapterData=new CommentListAdapter(this,MyCommentActivity.class);
+        data= new ArrayList<>();
+        adapterData=new MyCommentListAdapter(this,data);
         commentList.setAdapter(adapterData);
 
         String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
         PostRequest postRequest=new PostRequest(token,String.valueOf(page));
-        ZLoadingDialog dialog = new ZLoadingDialog(this);
-        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                .setHintText("Loading")
-                .setCanceledOnTouchOutside(false)
-                .show();
+
+        ZLoadingDialog dialog= DialogUtils.getZLoadingDialog(this);
         RetrofitUtils.postGetMyComment(this,postRequest,data,dialog);
     }
     /**

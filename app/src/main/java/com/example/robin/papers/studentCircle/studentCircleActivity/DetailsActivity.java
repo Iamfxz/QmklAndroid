@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -28,13 +29,20 @@ import com.example.robin.papers.studentCircle.adapter.CollectionListAdapter;
 import com.example.robin.papers.studentCircle.adapter.CommentListAdapter;
 import com.example.robin.papers.studentCircle.adapter.DynamicListAdapter;
 import com.example.robin.papers.studentCircle.adapter.MixListAdapter;
+import com.example.robin.papers.studentCircle.listener.CollectionOnclick;
+import com.example.robin.papers.studentCircle.listener.CommentOnclick;
+import com.example.robin.papers.studentCircle.listener.LikeOnclick;
+import com.example.robin.papers.studentCircle.listener.PopupMenuOnclick;
 import com.example.robin.papers.studentCircle.model.CollectionInfo;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
+import com.example.robin.papers.studentCircle.tools.DataManagerUtils;
 import com.example.robin.papers.studentCircle.tools.ImageLoaders;
 import com.example.robin.papers.studentCircle.view.NoScrollListView;
 import com.example.robin.papers.util.ConstantUtils;
+import com.example.robin.papers.util.DialogUtils;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
+import com.example.robin.papers.util.URLEncodingUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -47,7 +55,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- *
+ * 帖子详情活动，此页可从趣聊主页点击帖子、我的收藏点击帖子、我的动态点击帖子、我的评论点击进入
  */
 public class DetailsActivity extends BaseActivity {
 
@@ -61,6 +69,8 @@ public class DetailsActivity extends BaseActivity {
     TextView username;
     @BindView(R.id.date_time)
     TextView dateTime;
+    @BindView(R.id.collection)
+    ImageView collection;
     @BindView(R.id.popupmenu)
     ImageView popupmenu;
     @BindView(R.id.belowLayout)
@@ -108,50 +118,28 @@ public class DetailsActivity extends BaseActivity {
 
         index= (int) getIntent().getSerializableExtra("index");
         sourceClass=(Class) getIntent().getSerializableExtra("sourceClass");
-        if(sourceClass == MixListAdapter.class) {
-            mixinfo= MixShowActivity.data.get(index);
-            InData(mixinfo.postInfo,mixinfo.is_like);
-            AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum(),MixShowActivity.data);
-            AddListener(mixinfo.postInfo.getId()+"");
-        }
-        else if(sourceClass == CollectionListAdapter.class){
-            mixinfo= MyCollectionActivity.data.get(index);
-            InData(mixinfo.postInfo,mixinfo.is_like);
-            AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum(),MyCollectionActivity.data);
-            AddListener(mixinfo.postInfo.getId()+"");
-        }
-        else if(sourceClass == DynamicListAdapter.class){
-            mixinfo= MyDynamicActivity.data.get(index);
-            InData(mixinfo.postInfo,mixinfo.is_like);
-            AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum(),MyDynamicActivity.data);
-            AddListener(mixinfo.postInfo.getId()+"");
-        }
-        else if(sourceClass== MyCommentActivity.class){
-            mixinfo=(Mixinfo) getIntent().getSerializableExtra("mixi");
-        }
+
+        mixinfo= DataManagerUtils.getMixinfo(sourceClass,index);
+
+        InData(mixinfo);
+        AddComment(String.valueOf(mixinfo.postInfo.getId()),mixinfo.postInfo.getCommentNum());
+        AddListener(mixinfo.postInfo.getId()+"");
+
         AddToolbar();
     }
 
     /**
      * 载入用户信息
      */
-    public void InData(PostInfo postInfo,boolean isLike) {
+    public void InData(Mixinfo mixinfo) {
 
-        ImageLoaders.setsendimg(ConstantUtils.postUrl+postInfo.getUserId(),headerImg);//头像
-        username.setText(postInfo.getNickName());
-        dateTime.setText(postInfo.getCreateTime());
-        String writeNote="";
-        try {
-            writeNote = URLDecoder.decode(postInfo.getContent(), "utf-8");//utf-8解码
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        userContent.setText(writeNote);
-        likeCount.setText(postInfo.getLikeNum()+"");
-        commentCount.setText(postInfo.getCommentNum()+"");
-        if(isLike){
+        ImageLoaders.setsendimg(ConstantUtils.postUrl+mixinfo.postInfo.getUserId(),headerImg);//头像
+        username.setText(mixinfo.postInfo.getNickName());
+        dateTime.setText(mixinfo.postInfo.getCreateTime());
+        userContent.setText(URLEncodingUtils.UTF8Decoder(mixinfo.postInfo.getContent()));
+        likeCount.setText(mixinfo.postInfo.getLikeNum()+"");
+        commentCount.setText(mixinfo.postInfo.getCommentNum()+"");
+        if(mixinfo.is_like){
             likeIcon.setImageResource(R.drawable.like2);
             likeIcon2.setImageResource(R.drawable.like2);
         }
@@ -159,30 +147,35 @@ public class DetailsActivity extends BaseActivity {
             likeIcon.setImageResource(R.drawable.like1);
             likeIcon2.setImageResource(R.drawable.like1);
         }
-
+        if(mixinfo.is_collect){
+            collection.setImageResource(R.drawable.collection);
+        }
+        else {
+            collection.setImageResource(R.drawable.uncollection);
+        }
         //是否显示软键盘以及下方评论区
         if((boolean)getIntent().getSerializableExtra("isComment")){
             bottomView.setVisibility(View.VISIBLE);
-            showSoftInputFromWindow(editText);
+            DialogUtils.showSoftInputFromWindow(editText);
         }
         else{
             bottomView.setVisibility(View.GONE);
         }
-
-
     }
-
 
     /**
      * 载入评论
      */
-    public void AddComment(String postId,int commentNum, ArrayList data){
+    public void AddComment(String postId,int commentNum){
+
         commentListAdapter=new CommentListAdapter(this,index,sourceClass);
+
         commentList.setAdapter(commentListAdapter);
+
         if(commentNum!=0){
             String token=SharedPreferencesUtils.getStoredMessage(this,"token");
             GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,postId,"1",String.valueOf(commentNum));
-            RetrofitUtils.postGetCommentList(this,getCommentListRequest,data,index);
+            RetrofitUtils.postGetCommentList(this,getCommentListRequest,sourceClass,index);
         }
     }
 
@@ -193,20 +186,17 @@ public class DetailsActivity extends BaseActivity {
         String token= SharedPreferencesUtils.getStoredMessage(this,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,postId);
         //添加点赞监听
-        likeIcon.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
-        likeIcon2.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
-        likeCount.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
-        likeText.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
-
+        likeIcon.setOnClickListener(new LikeOnclick(DetailsActivity.this,sourceClass,likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
+        likeIcon2.setOnClickListener(new LikeOnclick(DetailsActivity.this,sourceClass,likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
+        likeCount.setOnClickListener(new LikeOnclick(DetailsActivity.this,sourceClass,likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
+        likeText.setOnClickListener(new LikeOnclick(DetailsActivity.this,sourceClass,likeCount,likeIcon,likeIcon2,index,postIsLikeRequest));
         //发表留言监听，弹出下方输入框
-        commentIcon.setOnClickListener(new CommentOnclick(index));
-        commentIcon2.setOnClickListener(new CommentOnclick(index));
-        commentCount.setOnClickListener(new CommentOnclick(index));
-        commentText.setOnClickListener(new CommentOnclick(index));
-
+        commentIcon.setOnClickListener(new CommentOnclick(bottomView,editText));
+        commentIcon2.setOnClickListener(new CommentOnclick(bottomView,editText));
+        commentCount.setOnClickListener(new CommentOnclick(bottomView,editText));
+        commentText.setOnClickListener(new CommentOnclick(bottomView,editText));
         //发送留言监听
         sendBtn.setOnClickListener(new SendCommentOnclick(index));
-
         //返回按钮监听
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,68 +205,45 @@ public class DetailsActivity extends BaseActivity {
             }
         });
 
-        //弹出菜单监听
-        popupmenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopupMenu(v);
-            }
-        });
+        //收藏监听
+        collection.setOnClickListener(new CollectionOnclick(this,sourceClass, index, collection));
 
+        //弹出菜单监听
+        popupmenu.setOnClickListener(new PopupMenuOnclick(this,mixinfo.postInfo.getUserId(),mixinfo.postInfo.getId()+""));
+
+//        commentList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//                showReplyPopupMenu(view,mixinfo.commentListData.get(position).getNickName());
+//                return false;
+//            }
+//        });
     }
 
 
     /**
      * @param view popupMenu需要依附的view
      *             弹出菜单
+     * @param replyName 要回复用户的昵称
      */
-    private void showPopupMenu(View view) {
+    private void showReplyPopupMenu(View view, final String replyName) {
         // 这里的view代表popupMenu需要依附的view
         PopupMenu popupMenu = new PopupMenu(DetailsActivity.this, view);
         // 获取布局文件
-        popupMenu.getMenuInflater().inflate(R.menu.popupemu, popupMenu.getMenu());
-        //根据是否收藏显示不同菜单
-        boolean isCollect=false;
-        if(sourceClass == MixListAdapter.class){
-            isCollect=MixShowActivity.data.get(index).is_collect;
-        }
-        else if(sourceClass == CollectionListAdapter.class){
-            isCollect=MyCollectionActivity.data.get(index).is_collect;
-        }
-        else if(sourceClass == DynamicListAdapter.class){
-            isCollect=MyDynamicActivity.data.get(index).is_collect;
-        }
-        if(isCollect){
-            popupMenu.getMenu().findItem(R.id.collect).setVisible(false);
-        }
-        else {
-            popupMenu.getMenu().findItem(R.id.del_collect).setVisible(false);
-        }
-        //显示图标
-        try {
-            Field field = popupMenu.getClass().getDeclaredField("mPopup");
-            field.setAccessible(true);
-            MenuPopupHelper helper = (MenuPopupHelper) field.get(popupMenu);
-            helper.setForceShowIcon(true);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        popupMenu.getMenuInflater().inflate(R.menu.reply_popupemu, popupMenu.getMenu());
+
         popupMenu.show();
         // 通过上面这几行代码，就可以把控件显示出来了
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
-                    case R.id.collect:
-                    case R.id.del_collect:
-                        collectPost();
+                    case R.id.reply:
+                        editText.setText("@"+replyName+"：");
+                        editText.setSelection(editText.getText().toString().length());
+                        bottomView.setVisibility(View.VISIBLE);
+                        DialogUtils.showSoftInputFromWindow(editText);
                         break;
-                    case R.id.del_post:
-                        DelPost();
-                        break;
-
                 }
                 return true;
             }
@@ -290,82 +257,6 @@ public class DetailsActivity extends BaseActivity {
     }
 
 
-    /**
-     * 删除帖子
-     */
-    private void DelPost() {
-        String token= SharedPreferencesUtils.getStoredMessage(this,"token");
-        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,mixinfo.postInfo.getId()+"");
-        RetrofitUtils.postDelPost(this,postIsLikeRequest,DetailsActivity.this,MixShowActivity.class);
-    }
-    /**
-     * 收藏帖子
-     */
-    private void collectPost(){
-        String token= SharedPreferencesUtils.getStoredMessage(this,"token");
-        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,mixinfo.postInfo.getId()+"");
-        RetrofitUtils.postCollectPost(DetailsActivity.this,true,postIsLikeRequest,mixinfo,index,sourceClass);
-
-    }
-    public class LikeOnclick implements View.OnClickListener {
-        private TextView like_count;
-        private ImageView like,like2;
-        private int index;
-        private PostIsLikeRequest postIsLikeRequest;
-        private Mixinfo mixinfo;
-        LikeOnclick(TextView like_count, ImageView like, ImageView like2,int index,PostIsLikeRequest postIsLikeRequest) {
-            if(sourceClass==MixListAdapter.class){
-                mixinfo=MixShowActivity.data.get(index);
-            }
-            else if(sourceClass== CollectionListAdapter.class){
-                mixinfo=MyCollectionActivity.data.get(index);
-            }
-            else if(sourceClass==DynamicListAdapter.class){
-                mixinfo=MyDynamicActivity.data.get(index);
-            }
-            this.like_count = like_count;
-            this.like = like;
-            this.like2 = like2;
-            this.index = index;
-            this.postIsLikeRequest=postIsLikeRequest;
-        }
-
-        @Override
-        public void onClick(View v) {
-            RetrofitUtils.postLike(DetailsActivity.this,postIsLikeRequest,like,like2,like_count,mixinfo.is_like);
-            if(mixinfo.is_like){
-                mixinfo.postInfo.setLikeNum(mixinfo.postInfo.getLikeNum()-1);
-            }
-            else {
-                mixinfo.postInfo.setLikeNum(mixinfo.postInfo.getLikeNum()+1);
-            }
-            mixinfo.is_like=!mixinfo.is_like;
-            if(sourceClass==MixListAdapter.class){
-                MixShowActivity.data.set(index,mixinfo);
-                MixShowActivity.adapterData.notifyDataSetChanged();
-            }
-            else if(sourceClass== CollectionListAdapter.class){
-                MyCollectionActivity.data.set(index,mixinfo);
-                MyCollectionActivity.adapterData.notifyDataSetChanged();
-            }
-            else if(sourceClass == DynamicListAdapter.class){
-                MyDynamicActivity.data.set(index,mixinfo);
-                MyDynamicActivity.adapterData.notifyDataSetChanged();
-            }
-        }
-    }
-
-    public class CommentOnclick implements View.OnClickListener {
-        private int index;
-        CommentOnclick(int index) {
-            this.index = index;
-        }
-        @Override
-        public void onClick(View v) {
-            bottomView.setVisibility(View.VISIBLE);
-            showSoftInputFromWindow(editText);
-        }
-    }
 
     public class SendCommentOnclick implements View.OnClickListener {
         private int index;
@@ -374,7 +265,7 @@ public class DetailsActivity extends BaseActivity {
         }
         @Override
         public void onClick(View v) {
-            if(editText.getText().toString()!=null && !editText.getText().toString().trim().equals("")){
+            if(URLEncodingUtils.stringIsNull(editText.getText().toString())){
                 String writeNote="";
                 if(checkBox.isChecked()){
                     writeNote="仅楼主可见";
@@ -388,7 +279,7 @@ public class DetailsActivity extends BaseActivity {
                 String token= SharedPreferencesUtils.getStoredMessage(DetailsActivity.this,"token");
                 CommentAddRequest commentAddRequest=new CommentAddRequest(token,writeNote,mixinfo.postInfo.getId()+"");
                 RetrofitUtils.postAddComment(DetailsActivity.this,commentAddRequest,index,mixinfo,commentCount,sourceClass);
-                hideEdit();
+                DialogUtils.hideEdit(bottomView,editText);
             }
             else {
                 Toast.makeText(DetailsActivity.this,"评论内容不能为空！",Toast.LENGTH_SHORT).show();
@@ -397,23 +288,7 @@ public class DetailsActivity extends BaseActivity {
     }
 
 
-    public void showSoftInputFromWindow(EditText editText){
-        editText.setFocusable(true);
-        editText.setFocusableInTouchMode(true);
-        editText.requestFocus();
-        InputMethodManager inputManager =
-                (InputMethodManager) editText.getContext().getSystemService(this.INPUT_METHOD_SERVICE);
-        inputManager.showSoftInput(editText, 0);
-    }
 
-    public void hideEdit() {
-        if (bottomView.getVisibility() == View.VISIBLE) {
-            bottomView.setVisibility(View.GONE);
-            editText.setText("");
-            InputMethodManager inputManager = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(editText.getWindowToken(), 0); //强制隐藏键盘
-        }
-    }
 
     /**
      * 监听返回按键的事件处理
@@ -426,16 +301,14 @@ public class DetailsActivity extends BaseActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if(bottomView.getVisibility() == View.VISIBLE){
-                hideEdit();
+                DialogUtils.hideEdit(bottomView,editText);
             }
             else{
                 this.finish();
             }
         }
-
         return true;
     }
-
 
 
     @Override
@@ -443,7 +316,7 @@ public class DetailsActivity extends BaseActivity {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             View v = getCurrentFocus();
             if (isShouldHideInput(v, ev)) {
-                hideEdit();
+                DialogUtils.hideEdit(bottomView,editText);
             }
             return super.dispatchTouchEvent(ev);
         }
@@ -460,11 +333,7 @@ public class DetailsActivity extends BaseActivity {
             v.getLocationInWindow(leftTop);
             int left = leftTop[0];
             int top = leftTop[1];
-            int bottom = top + v.getHeight();
-            int right = left + v.getWidth();
-//            if (event.getX() > left && event.getX() < right && event.getY() > top && event.getY() < bottom) {
             if (event.getY() > top) {
-                // 点击的是输入框以下区域，保留点击EditText的事件
                 return false;
             } else {
                 return true;

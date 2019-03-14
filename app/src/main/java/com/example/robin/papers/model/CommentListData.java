@@ -1,67 +1,36 @@
 package com.example.robin.papers.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 //存储当前留言的评论信息
 public class CommentListData implements Serializable {
 
-    private int id,userId,postId;
-    private String content,createTime,nickName;
+    private ArrayList<CommentData> comment;
+    private ArrayList<PrivateCommentData> privateComment;
 
-    public CommentListData(int id, int userId, int postId, String content, String createTime, String nickName) {
-        this.id = id;
-        this.userId = userId;
-        this.postId = postId;
-        this.content = content;
-        this.createTime = createTime;
-        this.nickName = nickName;
+    public CommentListData(){
+        this.comment = new ArrayList<>();
+        this.privateComment = new ArrayList<>();
+    }
+    public CommentListData(ArrayList<CommentData> comment, ArrayList<PrivateCommentData> privateComment) {
+        this.comment = comment;
+        this.privateComment = privateComment;
     }
 
-    public int getId() {
-        return id;
+    public ArrayList<CommentData> getComment() {
+        return comment;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setComment(ArrayList<CommentData> comment) {
+        this.comment = comment;
     }
 
-    public int getUserId() {
-        return userId;
+    public ArrayList<PrivateCommentData> getPrivateComment() {
+        return privateComment;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public int getPostId() {
-        return postId;
-    }
-
-    public void setPostId(int postId) {
-        this.postId = postId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setPrivateComment(ArrayList<PrivateCommentData> privateComment) {
+        this.privateComment = privateComment;
     }
 }

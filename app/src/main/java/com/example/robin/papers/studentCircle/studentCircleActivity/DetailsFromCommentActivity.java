@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -26,12 +27,17 @@ import com.example.robin.papers.studentCircle.adapter.CollectionListAdapter;
 import com.example.robin.papers.studentCircle.adapter.CommentListAdapter;
 import com.example.robin.papers.studentCircle.adapter.DynamicListAdapter;
 import com.example.robin.papers.studentCircle.adapter.MixListAdapter;
+import com.example.robin.papers.studentCircle.listener.CommentOnclick;
+import com.example.robin.papers.studentCircle.listener.LikeOnclick;
+import com.example.robin.papers.studentCircle.listener.PopupMenuOnclick;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
 import com.example.robin.papers.studentCircle.tools.ImageLoaders;
 import com.example.robin.papers.studentCircle.view.NoScrollListView;
 import com.example.robin.papers.util.ConstantUtils;
+import com.example.robin.papers.util.DialogUtils;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
+import com.example.robin.papers.util.URLEncodingUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -43,6 +49,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * 帖子详情页，此页和DetailsActivity基本相同，从我的评论处点击进入
+ */
 public class DetailsFromCommentActivity extends BaseActivity {
 
     @BindView(R.id.rootLayout)
@@ -109,7 +118,7 @@ public class DetailsFromCommentActivity extends BaseActivity {
 
         InData(mixinfo.postInfo,mixinfo.is_like);
         AddListener(mixinfo.postInfo.getId()+"");
-        AddComment(mixinfo.postInfo.getId()+"",mixinfo.postInfo.getCommentNum());
+//        AddComment(mixinfo.postInfo.getId()+"",mixinfo.postInfo.getCommentNum());
         AddToolbar();
     }
 
@@ -121,13 +130,7 @@ public class DetailsFromCommentActivity extends BaseActivity {
         ImageLoaders.setsendimg(ConstantUtils.postUrl+postInfo.getUserId(),headerImg);//头像
         username.setText(postInfo.getNickName());
         dateTime.setText(postInfo.getCreateTime());
-        String writeNote="";
-        try {
-            writeNote = URLDecoder.decode(postInfo.getContent(), "utf-8");//utf-8解码
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        userContent.setText(writeNote);
+        userContent.setText(URLEncodingUtils.UTF8Decoder(postInfo.getContent()));
         likeCount.setText(postInfo.getLikeNum()+"");
         commentCount.setText(postInfo.getCommentNum()+"");
         if(isLike){
@@ -147,19 +150,19 @@ public class DetailsFromCommentActivity extends BaseActivity {
         String token= SharedPreferencesUtils.getStoredMessage(this,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,postId);
         //添加点赞监听
-        likeIcon.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,postIsLikeRequest));
-        likeIcon2.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,postIsLikeRequest));
-        likeCount.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,postIsLikeRequest));
-        likeText.setOnClickListener(new LikeOnclick(likeCount,likeIcon,likeIcon2,postIsLikeRequest));
+        likeIcon.setOnClickListener(new LikeOnclick(this,null,likeCount,likeIcon,likeIcon2,0,postIsLikeRequest));
+        likeIcon2.setOnClickListener(new LikeOnclick(this,null,likeCount,likeIcon,likeIcon2,0,postIsLikeRequest));
+        likeCount.setOnClickListener(new LikeOnclick(this,null,likeCount,likeIcon,likeIcon2,0,postIsLikeRequest));
+        likeText.setOnClickListener(new LikeOnclick(this,null,likeCount,likeIcon,likeIcon2,0,postIsLikeRequest));
 
         //发表留言监听，弹出下方输入框
-        commentIcon.setOnClickListener(new CommentOnclick());
-        commentIcon2.setOnClickListener(new CommentOnclick());
-        commentCount.setOnClickListener(new CommentOnclick());
-        commentText.setOnClickListener(new CommentOnclick());
+        commentIcon.setOnClickListener(new CommentOnclick(bottomView,editText));
+        commentIcon2.setOnClickListener(new CommentOnclick(bottomView,editText));
+        commentCount.setOnClickListener(new CommentOnclick(bottomView,editText));
+        commentText.setOnClickListener(new CommentOnclick(bottomView,editText));
 
-        //发送留言监听
-        sendBtn.setOnClickListener(new SendCommentOnclick());
+//        //发送留言监听
+//        sendBtn.setOnClickListener(new SendCommentOnclick());
 
         //返回按钮监听
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -170,70 +173,51 @@ public class DetailsFromCommentActivity extends BaseActivity {
         });
 
         //弹出菜单监听
-        popupmenu.setOnClickListener(new View.OnClickListener() {
+        popupmenu.setOnClickListener(new PopupMenuOnclick(this,mixinfo.postInfo.getUserId(),mixinfo.postInfo.getId()+""));
+
+
+        commentList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onClick(View v) {
-                showPopupMenu(v);
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                showReplyPopupMenu(view);
+                return false;
             }
         });
-
     }
 
-    /**
-     * 载入评论
-     */
-    public void AddComment(String postId,int commentNum){
-        commentListAdapter=new CommentListAdapter(this,DetailsFromCommentActivity.class);
-        commentList.setAdapter(commentListAdapter);
-        if(commentNum!=0){
-            String token=SharedPreferencesUtils.getStoredMessage(this,"token");
-            GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,postId,"1",String.valueOf(commentNum));
-            RetrofitUtils.postGetCommentList(this,getCommentListRequest);
-        }
-    }
+//    /**
+//     * 载入评论
+//     */
+//    public void AddComment(String postId,int commentNum){
+//        commentListAdapter=new CommentListAdapter(this,DetailsFromCommentActivity.class);
+//        commentList.setAdapter(commentListAdapter);
+//        if(commentNum!=0){
+//            String token=SharedPreferencesUtils.getStoredMessage(this,"token");
+//            GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,postId,"1",String.valueOf(commentNum));
+//            RetrofitUtils.postGetCommentList(this,getCommentListRequest);
+//        }
+//    }
 
     /**
      * @param view popupMenu需要依附的view
      *             弹出菜单
      */
-    private void showPopupMenu(View view) {
+    private void showReplyPopupMenu(View view) {
         // 这里的view代表popupMenu需要依附的view
         PopupMenu popupMenu = new PopupMenu(DetailsFromCommentActivity.this, view);
         // 获取布局文件
-        popupMenu.getMenuInflater().inflate(R.menu.popupemu, popupMenu.getMenu());
-        //根据是否收藏显示不同菜单
-        boolean isCollect=mixinfo.is_collect;
-        if(isCollect){
-            popupMenu.getMenu().findItem(R.id.collect).setVisible(false);
-        }
-        else {
-            popupMenu.getMenu().findItem(R.id.del_collect).setVisible(false);
-        }
-        //显示图标
-        try {
-            Field field = popupMenu.getClass().getDeclaredField("mPopup");
-            field.setAccessible(true);
-            MenuPopupHelper helper = (MenuPopupHelper) field.get(popupMenu);
-            helper.setForceShowIcon(true);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        popupMenu.getMenuInflater().inflate(R.menu.reply_popupemu, popupMenu.getMenu());
+
         popupMenu.show();
         // 通过上面这几行代码，就可以把控件显示出来了
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
-                    case R.id.collect:
-                    case R.id.del_collect:
-                        collectPost();
+                    case R.id.reply:
+                        bottomView.setVisibility(View.VISIBLE);
+                        DialogUtils.showSoftInputFromWindow(editText);
                         break;
-                    case R.id.del_post:
-                        DelPost();
-                        break;
-
                 }
                 return true;
             }
@@ -245,15 +229,6 @@ public class DetailsFromCommentActivity extends BaseActivity {
             }
         });
     }
-
-    /**
-     * 删除帖子
-     */
-    private void DelPost() {
-        String token= SharedPreferencesUtils.getStoredMessage(this,"token");
-        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,mixinfo.postInfo.getId()+"");
-        RetrofitUtils.postDelPost(this,postIsLikeRequest,DetailsFromCommentActivity.this,MixShowActivity.class);
-    }
     /**
      * 收藏帖子
      */
@@ -263,87 +238,36 @@ public class DetailsFromCommentActivity extends BaseActivity {
         RetrofitUtils.postCollectPost(postIsLikeRequest,mixinfo.is_collect);
 
     }
-    public class LikeOnclick implements View.OnClickListener {
-        private TextView like_count;
-        private ImageView like,like2;
-        private PostIsLikeRequest postIsLikeRequest;
-        LikeOnclick(TextView like_count, ImageView like, ImageView like2,PostIsLikeRequest postIsLikeRequest) {
-            this.like_count = like_count;
-            this.like = like;
-            this.like2 = like2;
-            this.postIsLikeRequest=postIsLikeRequest;
-        }
 
-        @Override
-        public void onClick(View v) {
-            RetrofitUtils.postLike(DetailsFromCommentActivity.this,postIsLikeRequest,like,like2,like_count,mixinfo.is_like);
-            if(mixinfo.is_like){
-                mixinfo.postInfo.setLikeNum(mixinfo.postInfo.getLikeNum()-1);
-            }
-            else {
-                mixinfo.postInfo.setLikeNum(mixinfo.postInfo.getLikeNum()+1);
-            }
-            mixinfo.is_like=!mixinfo.is_like;
-        }
-    }
+//    public class SendCommentOnclick implements View.OnClickListener {
+//
+//        SendCommentOnclick() {
+//
+//        }
+//        @Override
+//        public void onClick(View v) {
+//            if(editText.getText().toString()!=null && !editText.getText().toString().trim().equals("")){
+//                String writeNote="";
+//                if(checkBox.isChecked()){
+//                    writeNote="仅楼主可见";
+//                }
+//                //进行编码
+//                try {
+//                    writeNote = writeNote+URLEncoder.encode(editText.getText().toString().trim(), "utf-8");//utf-8编码
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
+//                String token= SharedPreferencesUtils.getStoredMessage(DetailsFromCommentActivity.this,"token");
+//                CommentAddRequest commentAddRequest=new CommentAddRequest(token,writeNote,mixinfo.postInfo.getId()+"");
+//                RetrofitUtils.postAddComment(DetailsFromCommentActivity.this,commentAddRequest,commentCount);
+//                DialogUtils.hideEdit(bottomView,editText);
+//            }
+//            else {
+//                Toast.makeText(DetailsFromCommentActivity.this,"评论内容不能为空！",Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
-    public class CommentOnclick implements View.OnClickListener {
-        CommentOnclick() {
-        }
-        @Override
-        public void onClick(View v) {
-            bottomView.setVisibility(View.VISIBLE);
-            showSoftInputFromWindow(editText);
-        }
-    }
-
-    public class SendCommentOnclick implements View.OnClickListener {
-
-        SendCommentOnclick() {
-
-        }
-        @Override
-        public void onClick(View v) {
-            if(editText.getText().toString()!=null && !editText.getText().toString().trim().equals("")){
-                String writeNote="";
-                if(checkBox.isChecked()){
-                    writeNote="仅楼主可见";
-                }
-                //进行编码
-                try {
-                    writeNote = writeNote+URLEncoder.encode(editText.getText().toString().trim(), "utf-8");//utf-8编码
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                String token= SharedPreferencesUtils.getStoredMessage(DetailsFromCommentActivity.this,"token");
-                CommentAddRequest commentAddRequest=new CommentAddRequest(token,writeNote,mixinfo.postInfo.getId()+"");
-                RetrofitUtils.postAddComment(DetailsFromCommentActivity.this,commentAddRequest,commentCount);
-                hideEdit();
-            }
-            else {
-                Toast.makeText(DetailsFromCommentActivity.this,"评论内容不能为空！",Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-
-    public void showSoftInputFromWindow(EditText editText){
-        editText.setFocusable(true);
-        editText.setFocusableInTouchMode(true);
-        editText.requestFocus();
-        InputMethodManager inputManager =
-                (InputMethodManager) editText.getContext().getSystemService(this.INPUT_METHOD_SERVICE);
-        inputManager.showSoftInput(editText, 0);
-    }
-
-    public void hideEdit() {
-        if (bottomView.getVisibility() == View.VISIBLE) {
-            bottomView.setVisibility(View.GONE);
-            editText.setText("");
-            InputMethodManager inputManager = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(editText.getWindowToken(), 0); //强制隐藏键盘
-        }
-    }
 
     /**
      * 监听返回按键的事件处理
@@ -356,7 +280,7 @@ public class DetailsFromCommentActivity extends BaseActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if(bottomView.getVisibility() == View.VISIBLE){
-                hideEdit();
+                DialogUtils.hideEdit(bottomView,editText);
             }
             else{
                 this.finish();
@@ -373,7 +297,7 @@ public class DetailsFromCommentActivity extends BaseActivity {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             View v = getCurrentFocus();
             if (isShouldHideInput(v, ev)) {
-                hideEdit();
+                DialogUtils.hideEdit(bottomView,editText);
             }
             return super.dispatchTouchEvent(ev);
         }
@@ -390,11 +314,7 @@ public class DetailsFromCommentActivity extends BaseActivity {
             v.getLocationInWindow(leftTop);
             int left = leftTop[0];
             int top = leftTop[1];
-            int bottom = top + v.getHeight();
-            int right = left + v.getWidth();
-//            if (event.getX() > left && event.getX() < right && event.getY() > top && event.getY() < bottom) {
-            if (event.getY() > top && event.getY() < bottom) {
-                // 点击的是输入框区域，保留点击EditText的事件
+            if (event.getY() > top) {
                 return false;
             } else {
                 return true;

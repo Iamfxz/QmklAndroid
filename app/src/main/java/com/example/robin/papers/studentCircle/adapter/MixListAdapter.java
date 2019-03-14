@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.PopupMenu;
 import android.text.Layout;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,11 @@ import android.widget.TextView;
 import com.example.robin.papers.R;
 import com.example.robin.papers.model.CollectionListData;
 import com.example.robin.papers.requestModel.PostIsLikeRequest;
+import com.example.robin.papers.studentCircle.listener.CollectionOnclick;
+import com.example.robin.papers.studentCircle.listener.CommentOnclick;
+import com.example.robin.papers.studentCircle.listener.LikeOnclick;
+import com.example.robin.papers.studentCircle.listener.PopupMenuOnclick;
+import com.example.robin.papers.studentCircle.listener.UserContentOnclick;
 import com.example.robin.papers.studentCircle.studentCircleActivity.DetailsActivity;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
 import com.example.robin.papers.studentCircle.studentCircleActivity.PreviewImage;
@@ -27,9 +33,12 @@ import com.example.robin.papers.studentCircle.model.ImageBDInfo;
 import com.example.robin.papers.studentCircle.model.ImageInfo;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
 import com.example.robin.papers.studentCircle.tools.ImageLoaders;
+import com.example.robin.papers.studentCircle.view.PullToZoomListView;
 import com.example.robin.papers.util.ConstantUtils;
+import com.example.robin.papers.util.DialogUtils;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
+import com.example.robin.papers.util.URLEncodingUtils;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -44,38 +53,29 @@ public class MixListAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<Mixinfo> data;
-    private ImageBDInfo bdInfo;
-    private MixShowActivity activity;
-//    private CommentListAdapter commentListAdapter;
 
-    private int ImagaId[] = {R.id.img_0, R.id.img_1, R.id.img_2, R.id.img_3, R.id.img_4, R.id.img_5, R.id.img_6, R.id.img_7, R.id.img_8};
-    int i=1;
     public MixListAdapter(Context context, ArrayList<Mixinfo> data) {
         this.context = context;
         this.data = data;
-        bdInfo = new ImageBDInfo();
-        activity = (MixShowActivity) context;
     }
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
         return data.size();
     }
 
     @Override
     public Object getItem(int arg0) {
-        // TODO Auto-generated method stub
         return arg0;
     }
 
     @Override
     public long getItemId(int arg0) {
-        // TODO Auto-generated method stub
         return arg0;
     }
     @Override
     public View getView(final int position, View convertView, ViewGroup arg2) {
+
         Mixinfo info = data.get(position);
         ViewHolder holder = null;
         if (convertView == null) {
@@ -83,26 +83,20 @@ public class MixListAdapter extends BaseAdapter {
             holder = new ViewHolder();
             convertView = View.inflate(context, R.layout.mix_view, null);
             holder.mixViewLayout=convertView.findViewById(R.id.mix_view);
-            holder.list_img = (CircleImageView) convertView.findViewById(R.id.listuserimg);
-            holder.username = (TextView) convertView.findViewById(R.id.username);
-            holder.dateTtime = (TextView) convertView.findViewById(R.id.date_time);
-            holder.fullText = (TextView) convertView.findViewById(R.id.fullText);
-            holder.usercontent = (TextView) convertView.findViewById(R.id.usercontent);
-            holder.gridview = (GridLayout) convertView.findViewById(R.id.gridview);
-            holder.showimage = (ImageView) convertView.findViewById(R.id.showimage);
-            holder.allLayout = (LinearLayout) convertView.findViewById(R.id.allLayout);
+            holder.list_img =  convertView.findViewById(R.id.listuserimg);
+            holder.username = convertView.findViewById(R.id.username);
+            holder.dateTtime = convertView.findViewById(R.id.date_time);
+            holder.fullText = convertView.findViewById(R.id.fullText);
+            holder.usercontent = convertView.findViewById(R.id.usercontent);
             holder.like=convertView.findViewById(R.id.like);
             holder.like_count= convertView.findViewById(R.id.like_count);
             holder.like_text= convertView.findViewById(R.id.like_text);
             holder.comment=convertView.findViewById(R.id.comment);
             holder.comment_count=convertView.findViewById(R.id.comment_count);
             holder.comment_text= convertView.findViewById(R.id.comment_text);
-            holder.evaluationLayout = (LinearLayout) convertView.findViewById(R.id.evaluationLayout);
+            holder.collection= convertView.findViewById(R.id.collection);
             holder.popupmenu =convertView.findViewById(R.id.popupmenu);
-//            holder.commentList = (NoScrollListView) convertView.findViewById(R.id.commentList);
-            for (int i = 0; i < 9; i++) {
-                holder.imgview[i] = (ImageView) convertView.findViewById(ImagaId[i]);
-            }
+
             convertView.setTag(holder);
 
         } else {
@@ -112,60 +106,39 @@ public class MixListAdapter extends BaseAdapter {
         ImageLoaders.setsendimg(ConstantUtils.postUrl+info.postInfo.getUserId(), holder.list_img);//头像
         holder.username.setText(info.postInfo.getNickName());//昵称
         holder.dateTtime.setText(info.postInfo.getCreateTime());//留言时间
-        i++;
-        String writeNote="";
-        try {
-            writeNote = URLDecoder.decode(info.postInfo.getContent(), "utf-8");//utf-8解码
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        holder.usercontent.setText(writeNote);//评论内容
-
-        //没有图片，设置为GONE
-        holder.showimage.setVisibility(View.GONE);
-        holder.gridview.setVisibility(View.GONE);
-
+        holder.usercontent.setText(URLEncodingUtils.UTF8Decoder(info.postInfo.getContent()));//评论内容
         holder.like_count.setText(info.postInfo.getLikeNum()+"");//点赞数
         holder.like.setImageResource(R.drawable.like1);//点赞图片
-
         //请求该评论app使用者是否点赞
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,info.postInfo.getId()+"");
         RetrofitUtils.postIsLike(context,postIsLikeRequest,holder.like,position,MixListAdapter.class);
 
         //请求该评论app使用者是否收藏
-        RetrofitUtils.postIsCollect(context,postIsLikeRequest,position,MixListAdapter.class);
+        RetrofitUtils.postIsCollect(context,postIsLikeRequest,position,MixListAdapter.class,holder.collection);
 
         holder.comment_count.setText(info.postInfo.getCommentNum()+"");//评论数
-
-
         //添加点赞监听
-        holder.like.setOnClickListener(new LikeOnclick(holder.like_count,holder.like,position,postIsLikeRequest));
-        holder.like_count.setOnClickListener(new LikeOnclick(holder.like_count,holder.like,position,postIsLikeRequest));
-        holder.like_text.setOnClickListener(new LikeOnclick(holder.like_count,holder.like,position,postIsLikeRequest));
-
+        holder.like.setOnClickListener(new LikeOnclick(context,MixListAdapter.class,holder.like_count,holder.like,null,position,postIsLikeRequest));
+        holder.like_count.setOnClickListener(new LikeOnclick(context,MixListAdapter.class,holder.like_count,holder.like,null,position,postIsLikeRequest));
+        holder.like_text.setOnClickListener(new LikeOnclick(context,MixListAdapter.class,holder.like_count,holder.like,null,position,postIsLikeRequest));
         //点击进入详情页监听
-        holder.mixViewLayout.setOnClickListener(new UserContentOnclick(position));
-        holder.usercontent.setOnClickListener(new UserContentOnclick(position));
+        holder.mixViewLayout.setOnClickListener(new UserContentOnclick(context,position,MixListAdapter.class));
+        holder.usercontent.setOnClickListener(new UserContentOnclick(context,position,MixListAdapter.class));
         //添加发表回复监听
-        holder.comment.setOnClickListener(new CommentOnclick(position));
-        holder.comment_count.setOnClickListener(new CommentOnclick(position));
-        holder.comment_text.setOnClickListener(new CommentOnclick(position));
-
+        holder.comment.setOnClickListener(new CommentOnclick(context,position,MixListAdapter.class));
+        holder.comment_count.setOnClickListener(new CommentOnclick(context,position,MixListAdapter.class));
+        holder.comment_text.setOnClickListener(new CommentOnclick(context,position,MixListAdapter.class));
+        //是否添加“全文”
         setContentLayout(holder.usercontent, holder.fullText);
-
-
         //点开全文监听
         holder.fullText.setOnClickListener(new fullTextOnclick(holder.usercontent, holder.fullText, position));
+        //收藏监听
+        holder.collection.setOnClickListener(new CollectionOnclick(context, MixListAdapter.class, position, holder.collection));
 
-        //右上角弹出菜单监听
-        holder.popupmenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopupMenu(v,position);
-            }
-        });
+        //右下角弹出菜单监听
+        holder.popupmenu.setOnClickListener(new PopupMenuOnclick(context,data.get(position).postInfo.getUserId(),data.get(position).postInfo.getId()+""));
+
         return convertView;
     }
 
@@ -174,137 +147,21 @@ public class MixListAdapter extends BaseAdapter {
         CircleImageView list_img;
         TextView username,dateTtime;
         TextView usercontent, fullText;
-        GridLayout gridview;
-        ImageView showimage;
-        ImageView imgview[] = new ImageView[9];
-        LinearLayout evaluationLayout, allLayout;
         ImageView like,comment;
         TextView like_text,comment_text;
         TextView like_count,comment_count;
+        ImageView collection;
         ImageView popupmenu;
     }
 
 
     /**
-     * @param view popupMenu需要依附的view
-     * @param position 该帖子在列表中的位置
-     *             弹出菜单
-     */
-    private void showPopupMenu(View view, final int position) {
-        // 这里的view代表popupMenu需要依附的view
-        PopupMenu popupMenu = new PopupMenu(context, view);
-        // 获取布局文件
-        popupMenu.getMenuInflater().inflate(R.menu.popupemu, popupMenu.getMenu());
-        //根据是否收藏显示不同菜单
-        if(data.get(position).is_collect){
-            popupMenu.getMenu().findItem(R.id.collect).setVisible(false);
-        }
-        else {
-            popupMenu.getMenu().findItem(R.id.del_collect).setVisible(false);
-        }
-        if(data.get(position).postInfo.getUserId()==Integer.parseInt(SharedPreferencesUtils.getStoredMessage(context,"id"))){
-            popupMenu.getMenu().findItem(R.id.del_post).setVisible(true);
-        }
-        else {
-            popupMenu.getMenu().findItem(R.id.del_post).setVisible(false);
-        }
-        //显示图标
-        try {
-            Field field = popupMenu.getClass().getDeclaredField("mPopup");
-            field.setAccessible(true);
-            MenuPopupHelper helper = (MenuPopupHelper) field.get(popupMenu);
-            helper.setForceShowIcon(true);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        popupMenu.show();
-        // 通过上面这几行代码，就可以把控件显示出来了
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.collect:
-                    case R.id.del_collect:
-                        collectPost(position);
-                        break;
-                    case R.id.del_post:
-                        DelPost(position);
-                        break;
-
-                }
-                return true;
-            }
-        });
-        popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
-            @Override
-            public void onDismiss(PopupMenu menu) {
-                // 控件消失时的事件
-            }
-        });
-    }
-
-    /**
-     * 删除帖子
-     */
-    private void DelPost(int position) {
-        String token= SharedPreferencesUtils.getStoredMessage(context,"token");
-        PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).postInfo.getId()+"");
-        RetrofitUtils.postDelPost(context,postIsLikeRequest,(Activity)context,MixShowActivity.class);
-    }
-
-    /**
      * 收藏帖子
      */
-    private void collectPost(int position){
+    private void collectPost(int position,ImageView collection){
         String token= SharedPreferencesUtils.getStoredMessage(context,"token");
         PostIsLikeRequest postIsLikeRequest=new PostIsLikeRequest(token,data.get(position).postInfo.getId()+"");
-        RetrofitUtils.postCollectPost(null,false,postIsLikeRequest,data.get(position),position,MixListAdapter.class);
-    }
-    public class GridOnclick implements View.OnClickListener {
-
-        private int index;
-        private int row;
-        private ImageView imageView;
-        private GridLayout gridLayout;
-        private LinearLayout allLayout;
-
-        public GridOnclick(int index, ImageView imageView, int row, GridLayout gridLayout, LinearLayout allLayout) {
-            this.index = index;
-            this.imageView = imageView;
-            this.gridLayout = gridLayout;
-            this.row = row;
-            this.allLayout = allLayout;
-        }
-
-        @Override
-        public void onClick(View v) {
-            View c = activity.mixlist.getChildAt(0);
-            int top = c.getTop();
-            int firstVisiblePosition = activity.mixlist.getFirstVisiblePosition();
-            float height = 0.0f;
-            for (int i = 0; i < ((index + 1) - firstVisiblePosition); i++) {
-                View view = activity.mixlist.getChildAt(i);
-                height += view.getHeight();
-            }
-            bdInfo.x = imageView.getLeft() + gridLayout.getLeft() + allLayout.getLeft();
-            bdInfo.y = allLayout.getTop() + gridLayout.getTop() + imageView.getTop() + height + top + activity.mixlist.getTop();
-            bdInfo.width = imageView.getLayoutParams().width;
-            bdInfo.height = imageView.getLayoutParams().height;
-            Intent intent = new Intent(context, PreviewImage.class);
-            ArrayList<ImageInfo> info = data.get(index).data;
-            intent.putExtra("data", (Serializable) info);
-            intent.putExtra("bdinfo", bdInfo);
-            intent.putExtra("index", row);
-            intent.putExtra("type", 3);
-            context.startActivity(intent);
-        }
-    }
-
-    public int dip2px(float dpValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
+        RetrofitUtils.postCollectPost(null,postIsLikeRequest,data.get(position),position,MixListAdapter.class,collection);
     }
 
     public class fullTextOnclick implements View.OnClickListener {
@@ -337,69 +194,6 @@ public class MixListAdapter extends BaseAdapter {
     }
 
 
-    public class LikeOnclick implements View.OnClickListener {
-
-        private TextView like_count;
-        private ImageView like;
-        private int index;
-        private PostIsLikeRequest postIsLikeRequest;
-
-        LikeOnclick(TextView like_count, ImageView like, int index,PostIsLikeRequest postIsLikeRequest) {
-            this.like_count = like_count;
-            this.like = like;
-            this.index = index;
-            this.postIsLikeRequest=postIsLikeRequest;
-        }
-
-        @Override
-        public void onClick(View v) {
-            Mixinfo info = data.get(index);
-            RetrofitUtils.postLike(context,postIsLikeRequest,like,null,like_count,info.is_like);
-            if(info.is_like){
-                info.postInfo.setLikeNum(info.postInfo.getLikeNum()-1);
-            }
-            else {
-                info.postInfo.setLikeNum(info.postInfo.getLikeNum()+1);
-            }
-            info.is_like=!info.is_like;
-            data.set(index,info);
-        }
-    }
-
-    public class CommentOnclick implements View.OnClickListener {
-        private int index;
-
-        CommentOnclick(int index) {
-            this.index = index;
-
-        }
-
-        @Override
-        public void onClick(View v) {
-            Intent intent=new Intent(context, DetailsActivity.class);
-            intent.putExtra("index", index);
-            intent.putExtra("isComment",true);
-            intent.putExtra("sourceClass",MixListAdapter.class);
-            context.startActivity(intent);
-
-        }
-    }
-    public class UserContentOnclick implements View.OnClickListener {
-        private int index;
-
-        UserContentOnclick(int index) {
-            this.index = index;
-        }
-
-        @Override
-        public void onClick(View v) {
-            Intent intent=new Intent(context, DetailsActivity.class);
-            intent.putExtra("index", index);
-            intent.putExtra("isComment",false);
-            intent.putExtra("sourceClass",MixListAdapter.class);
-            context.startActivity(intent);
-        }
-    }
 
 
     private void setContentLayout(final TextView usercontent,
@@ -428,9 +222,5 @@ public class MixListAdapter extends BaseAdapter {
             }
         });
     }
-
-
-
-
 
 }

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:descendantFocusability="blocksDescendants">
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/listuserimg"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/avatar"
+        android:scaleType="centerCrop" />
+
+
+    <RelativeLayout
+        android:id="@+id/rightLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/listuserimg">
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="DavidWang"
+            android:textColor="@android:color/black"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/date_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/username"
+            android:text="2019-2-6 20:55:00" />
+
+        <TextView
+            android:id="@+id/usercontent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/date_time"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp"
+            android:text="这是一个单张的演示"
+            android:textIsSelectable="true"
+            android:maxLines="3"
+            android:textColor="@android:color/primary_text_light"
+            android:textSize="14dp" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rightLayout"
+        android:layout_marginLeft="60dp"
+        android:padding="5dp"
+        android:background="@color/gainsboro">
+
+        <TextView
+            android:id="@+id/postNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="发帖人" />
+
+        <TextView
+            android:id="@+id/colon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/postNickname"
+            android:text=":" />
+
+        <TextView
+            android:id="@+id/postContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/colon"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="我是原贴" />
+    </RelativeLayout>
+</RelativeLayout>

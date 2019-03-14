@@ -16,6 +16,7 @@ import com.example.robin.papers.studentCircle.adapter.MixListAdapter;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
 import com.example.robin.papers.studentCircle.view.PullToZoomListView;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
+import com.example.robin.papers.util.DialogUtils;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
@@ -31,23 +32,18 @@ public class MixShowActivity extends BaseActivity  {
     public static MixListAdapter adapterData;
     public static ArrayList<Mixinfo> data;
     public static int page=1;
-    private EditText editText;
     private ImageView backBtn;
     private TextView postAddBtn;
-    private int height_top = 0;
-    private int keyHeight = 0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-            Log.d(TAG, "page= "+page);
         setContentView(R.layout.activity_mix_show);
         findID();
         InData();
         AddToolbar();
         AddClickListener();
-        keyHeight = (int) Height / 3;
     }
 
 
@@ -55,26 +51,23 @@ public class MixShowActivity extends BaseActivity  {
     @Override
     protected void findID() {
         super.findID();
-        mixlist = (PullToZoomListView) findViewById(R.id.mixlist);
+        mixlist = findViewById(R.id.mixlist);
+        //首页顶部图片从服务器获取
+        //设置默认顶部图片
         mixlist.getHeaderView().setImageResource(R.drawable.glide1);
+        RetrofitUtils.postHomePage(this,mixlist.getHeaderView());
         mixlist.getHeaderView().setScaleType(ImageView.ScaleType.CENTER_CROP);
-        editText = (EditText) findViewById(R.id.editText);
-        backBtn = (ImageView) findViewById(R.id.id_toolbar).findViewById(R.id.iv_back);
+        backBtn = findViewById(R.id.id_toolbar).findViewById(R.id.iv_back);
         postAddBtn=findViewById(R.id.id_toolbar).findViewById(R.id.add_post);
     }
 
     public void InData() {
-        data = new ArrayList<Mixinfo>();
+        data = new ArrayList<>();
         String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
         adapterData = new MixListAdapter(this, data);
         MixShowActivity.mixlist.setAdapter(adapterData);
-        //使用com.zyao89:zloading:1.1.2引用別人的加载动画
-        ZLoadingDialog dialog = new ZLoadingDialog(this);
-        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                .setHintText("Loading")
-                .setCanceledOnTouchOutside(false)
-                .show();
+
+        ZLoadingDialog dialog=DialogUtils.getZLoadingDialog(this);
         PostRequest postRequest=new PostRequest(token,String.valueOf(page));
         RetrofitUtils.postAllPost(MixShowActivity.this,postRequest,data,dialog);
 
@@ -84,7 +77,6 @@ public class MixShowActivity extends BaseActivity  {
      * 添加点击监听器
      */
     private void AddClickListener(){
-
         //返回按钮监听
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +86,6 @@ public class MixShowActivity extends BaseActivity  {
                 finish();
             }
         });
-
         //写说说按钮监听
         postAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,11 +98,6 @@ public class MixShowActivity extends BaseActivity  {
     }
 
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
 
     /**
@@ -129,10 +115,7 @@ public class MixShowActivity extends BaseActivity  {
             adapterData=null;
             this.finish();
         }
-
         return true;
     }
-
-
 
 }

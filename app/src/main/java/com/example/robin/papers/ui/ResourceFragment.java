@@ -42,10 +42,7 @@ import com.example.robin.papers.activity.LoginActivity;
 import com.example.robin.papers.activity.UpLoadActivity;
 import com.example.robin.papers.activity.UserInfoActivity;
 import com.example.robin.papers.db.DownloadDB;
-import com.example.robin.papers.impl.PostAllColleges;
-import com.example.robin.papers.impl.PostFile;
-import com.example.robin.papers.impl.PostFileDetail;
-import com.example.robin.papers.impl.PostFileUrl;
+import com.example.robin.papers.impl.PostQmkl;
 import com.example.robin.papers.model.AcademiesOrCollegesRes;
 import com.example.robin.papers.model.FileDetailRes;
 import com.example.robin.papers.model.FileRes;
@@ -87,6 +84,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.POST;
 
 import static com.example.robin.papers.util.CommonUtils.isFastDoubleClick;
 import static com.example.robin.papers.util.ConstantUtils.DEFAULT_TIMEOUT;
@@ -609,11 +607,11 @@ public class ResourceFragment extends Fragment
                         .build();
 
                 //创建 网络请求接口 的实例
-                final PostFile request = retrofit.create(PostFile.class);
+                final PostQmkl request = retrofit.create(PostQmkl.class);
 
                 //对 发送请求 进行封装
                 FileRequest fileRequest = new FileRequest(path.toString(), collegeName, token);
-                Call<FileRes> call = request.getCall(fileRequest);
+                Call<FileRes> call = request.getFileList(fileRequest);
 
                 //发送网络请求(异步)
                 final String finalFolder = folder;
@@ -764,10 +762,10 @@ public class ResourceFragment extends Fragment
                     .build();
 
             //创建 网络请求接口 的实例
-            final PostFileDetail request = retrofit.create(PostFileDetail.class);
+            final PostQmkl request = retrofit.create(PostQmkl.class);
 
             //对 发送请求 进行封装(账号和密码)
-            Call<FileDetailRes> call = request.getCall(new FileRequest(path, collegeName, token));
+            Call<FileDetailRes> call = request.getFileListDetail(new FileRequest(path, collegeName, token));
             //发送网络请求(异步)
             call.enqueue(new Callback<FileDetailRes>() {
                 //请求成功时回调
@@ -836,10 +834,10 @@ public class ResourceFragment extends Fragment
                     .build();
 
             //创建 网络请求接口 的实例
-            final PostFileUrl request = retrofit.create(PostFileUrl.class);
+            final PostQmkl request = retrofit.create(PostQmkl.class);
 
             //对 发送请求 进行封装(账号和密码)
-            Call<FileUrlRes> call = request.getCall(new FileRequest(path, collegeName, token));
+            Call<FileUrlRes> call = request.getFileDownloadUrl(new FileRequest(path, collegeName, token));
 
             //发送网络请求(异步)
             call.enqueue(new Callback<FileUrlRes>() {
@@ -907,8 +905,8 @@ public class ResourceFragment extends Fragment
                 return false;
             }
         });
-        PostAllColleges request = retrofit.create(PostAllColleges.class);
-        Call<AcademiesOrCollegesRes> call = request.getCall();
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<AcademiesOrCollegesRes> call = request.getCollegeList();
         call.enqueue(new Callback<AcademiesOrCollegesRes>() {
 
             @Override

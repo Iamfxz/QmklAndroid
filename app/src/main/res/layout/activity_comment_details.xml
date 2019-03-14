@@ -75,15 +75,16 @@
                     android:layout_marginLeft="10dp"
                     android:layout_below="@+id/username"
                     android:text="2019-2-6 20:55:00" />
+
                 <ImageView
-                    android:id="@+id/popupmenu"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:id="@+id/collection"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:src="@drawable/popupmenu" />
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="14dp"
+                    android:src="@drawable/uncollection" />
+
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/belowLayout"
@@ -163,7 +164,7 @@
                     android:layout_height="20dp"
                     android:layout_alignParentEnd="true"
                     android:layout_below="@+id/like_icon"
-                    android:layout_marginEnd="50dp"
+                    android:layout_marginEnd="60dp"
                     android:src="@drawable/like1" />
 
                 <ImageView
@@ -172,8 +173,16 @@
                     android:layout_height="20dp"
                     android:layout_alignParentEnd="true"
                     android:layout_below="@+id/like_icon"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="30dp"
                     android:src="@drawable/comment" />
+
+                <ImageView
+                    android:id="@+id/popupmenu"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignBottom="@+id/like_icon2"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/popupmenu" />
 
             </RelativeLayout>
             <View

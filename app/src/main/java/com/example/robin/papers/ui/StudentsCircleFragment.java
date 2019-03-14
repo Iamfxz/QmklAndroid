@@ -22,6 +22,7 @@ import com.example.robin.papers.R;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MixShowActivity;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
 import com.example.robin.papers.util.GlideImageLoader;
+import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SDCardUtils;
 import com.umeng.analytics.MobclickAgent;
 import com.youth.banner.Banner;
@@ -50,7 +51,6 @@ public class StudentsCircleFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
@@ -97,9 +97,11 @@ public class StudentsCircleFragment extends Fragment {
         //设置图片加载器
         banner.setImageLoader(new GlideImageLoader());
         //设置图片集合
-        banner.setImages(images);
+//        banner.setImages(images);
+        RetrofitUtils.postBannerPic(getActivity(),banner);
+//        banner.setImages(new ArrayList<String>(Arrays.asList("http://www.pptok.com/wp-content/uploads/2012/08/xunguang-9.jpg","https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1552462000442&di=d28a286a287ea2d45447d1da685107c5&imgtype=0&src=http%3A%2F%2Fb.hiphotos.baidu.com%2Fimage%2Fpic%2Fitem%2F2e2eb9389b504fc27c224b2debdde71190ef6d9d.jpg")));
         //banner设置方法全部调用完毕时最后调用
-        banner.start();
+//        banner.start();
     }
 
     //长按公众号二维码出现保存照片

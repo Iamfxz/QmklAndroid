@@ -14,6 +14,7 @@ import com.example.robin.papers.studentCircle.model.CollectionInfo;
 import com.example.robin.papers.studentCircle.model.Mixinfo;
 import com.example.robin.papers.studentCircle.view.CollectionListView;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
+import com.example.robin.papers.util.DialogUtils;
 import com.example.robin.papers.util.RetrofitUtils;
 import com.example.robin.papers.util.SharedPreferencesUtils;
 import com.zyao89.view.zloading.ZLoadingDialog;
@@ -59,12 +60,8 @@ public class MyCollectionActivity extends BaseActivity {
         collectionList.setAdapter(adapterData);
         String token= SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(),"token");
         PostRequest postRequest=new PostRequest(token,String.valueOf(page));
-        ZLoadingDialog dialog = new ZLoadingDialog(this);
-        dialog.setLoadingBuilder(Z_TYPE.STAR_LOADING)//设置类型
-                .setLoadingColor(getResources().getColor(R.color.blue))//颜色
-                .setHintText("Loading")
-                .setCanceledOnTouchOutside(false)
-                .show();
+
+        ZLoadingDialog dialog= DialogUtils.getZLoadingDialog(this);
         RetrofitUtils.postGetCollection(this,postRequest,data,dialog);
     }
 

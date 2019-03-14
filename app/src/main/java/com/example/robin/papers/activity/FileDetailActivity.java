@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,10 +26,7 @@ import android.widget.Toast;
 
 import com.example.robin.papers.R;
 import com.example.robin.papers.db.DownloadDB;
-import com.example.robin.papers.impl.PostDislike;
-import com.example.robin.papers.impl.PostIsDislike;
-import com.example.robin.papers.impl.PostIsLike;
-import com.example.robin.papers.impl.PostLike;
+import com.example.robin.papers.impl.PostQmkl;
 import com.example.robin.papers.model.PaperFile;
 import com.example.robin.papers.model.ResponseInfo;
 import com.example.robin.papers.requestModel.LikeDisLikeRequest;
@@ -443,8 +439,8 @@ public class FileDetailActivity extends BaseActivity {
      *      发送点踩请求
      */
     private void postDislike(){
-        PostDislike request = retrofit.create(PostDislike.class);
-        Call<ResponseInfo> call = request.getCall(LDRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getDislikeAddOrDesc(LDRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
@@ -459,8 +455,8 @@ public class FileDetailActivity extends BaseActivity {
      *      获取是否已经点踩请求
      */
     private void postIsDislike(){
-        PostIsDislike request = retrofit.create(PostIsDislike.class);
-        Call<ResponseInfo> call = request.getCall(LDRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getDislikeIsDislike(LDRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
@@ -482,8 +478,8 @@ public class FileDetailActivity extends BaseActivity {
      *      发送点赞请求
      */
     private void postLike(){
-        PostLike request = retrofit.create(PostLike.class);
-        Call<ResponseInfo> call = request.getCall(LDRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getLikeAddOrDesc(LDRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
@@ -498,8 +494,8 @@ public class FileDetailActivity extends BaseActivity {
      *      获取是否已经点赞
      */
     private void postIsLike(){
-        PostIsLike request = retrofit.create(PostIsLike.class);
-        Call<ResponseInfo> call = request.getCall(LDRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getLikeIsLike(LDRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {

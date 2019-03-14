@@ -23,39 +23,13 @@ import com.example.robin.papers.activity.LoginActivity;
 import com.example.robin.papers.activity.MainActivity;
 import com.example.robin.papers.activity.PerfectInfoActivity;
 import com.example.robin.papers.activity.UserInfoActivity;
-import com.example.robin.papers.impl.PostAds;
-import com.example.robin.papers.impl.PostAllAcademies;
-import com.example.robin.papers.impl.PostAllColleges;
-import com.example.robin.papers.impl.PostAllPost;
-import com.example.robin.papers.impl.PostAuthLogin;
-import com.example.robin.papers.impl.PostAuthPerInfo;
-import com.example.robin.papers.impl.PostCollectPost;
-import com.example.robin.papers.impl.PostCommentAdd;
-import com.example.robin.papers.impl.PostExitLogin;
-import com.example.robin.papers.impl.PostGetCode;
-import com.example.robin.papers.impl.PostGetCollectionList;
-import com.example.robin.papers.impl.PostGetCommentList;
-import com.example.robin.papers.impl.PostGetDynamicList;
-import com.example.robin.papers.impl.PostGetMyCommentList;
-import com.example.robin.papers.impl.PostIsLike;
-import com.example.robin.papers.impl.PostLogin;
-import com.example.robin.papers.impl.PostPerfectInfo;
-import com.example.robin.papers.impl.PostPostAdd;
-import com.example.robin.papers.impl.PostPostDelete;
-import com.example.robin.papers.impl.PostPostIsCollect;
-import com.example.robin.papers.impl.PostPostIsLike;
-import com.example.robin.papers.impl.PostPostLike;
-import com.example.robin.papers.impl.PostQueryPost;
-import com.example.robin.papers.impl.PostRegister;
-import com.example.robin.papers.impl.PostSetNewPsw;
-import com.example.robin.papers.impl.PostUpLoadFiles;
-import com.example.robin.papers.impl.PostUpdateUserInfo;
-import com.example.robin.papers.impl.PostUserAvatar;
-import com.example.robin.papers.impl.PostUserInfo;
+import com.example.robin.papers.impl.PostPicture;
+import com.example.robin.papers.impl.PostQmkl;
 import com.example.robin.papers.model.AcademiesOrCollegesRes;
 import com.example.robin.papers.model.AdData;
 import com.example.robin.papers.model.CollectionListData;
 import com.example.robin.papers.model.CommentListData;
+import com.example.robin.papers.model.MyCommentListData;
 import com.example.robin.papers.model.PostInfo;
 import com.example.robin.papers.model.ResponseInfo;
 import com.example.robin.papers.model.UserInfoRes;
@@ -87,11 +61,14 @@ import com.example.robin.papers.studentCircle.model.Mixinfo;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyCollectionActivity;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyCommentActivity;
 import com.example.robin.papers.studentCircle.studentCircleActivity.MyDynamicActivity;
+import com.example.robin.papers.studentCircle.tools.DataManagerUtils;
+import com.example.robin.papers.studentCircle.tools.ImageLoaders;
 import com.example.robin.papers.studentCircle.view.CollectionListView;
 import com.example.robin.papers.studentCircle.view.CommentListView;
 import com.example.robin.papers.studentCircle.view.DynamicListView;
 import com.example.robin.papers.studentCircle.view.PullToZoomListView;
 import com.example.robin.papers.umengUtil.umengApplication.UMapplication;
+import com.youth.banner.Banner;
 import com.zyao89.view.zloading.ZLoadingDialog;
 import com.zyao89.view.zloading.Z_TYPE;
 
@@ -151,8 +128,8 @@ public class RetrofitUtils {
 
     //获取广告
     public static void postAd(final Activity startAct) {
-        PostAds request = retrofit.create(PostAds.class);
-        request.getCall().enqueue(new Callback<ResponseInfo<AdData>>() {
+        PostPicture request = retrofit.create(PostPicture.class);
+        request.getAdPage().enqueue(new Callback<ResponseInfo<AdData>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<AdData>> call, @NonNull Response<ResponseInfo<AdData>> response) {
                 if (response.body() != null) {
@@ -294,8 +271,8 @@ public class RetrofitUtils {
     //登录调用API发送登录数据给服务器
     public static void postLogin(final Activity startActivity, final Context context, LoginRequest r, final ZLoadingDialog dialog) {
         //创建 网络请求接口 的实例
-        PostLogin request = retrofit.create(PostLogin.class);
-        Call<ResponseInfo> call = request.getCall(r);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getUserLogin(r);
         call.enqueue(new Callback<ResponseInfo>() {
             //请求成功时回调
             @Override
@@ -339,8 +316,8 @@ public class RetrofitUtils {
     //判断当前token是否可以登录
     public static void postLogin(final Context context, String token) {
         if (token != null) {
-            PostLogin request = retrofit.create(PostLogin.class);
-            Call<ResponseInfo> call = request.getTokenCall(new TokenRequest(token));
+            PostQmkl request = retrofit.create(PostQmkl.class);
+            Call<ResponseInfo> call = request.getUserLogin2(new TokenRequest(token));
             call.enqueue(new Callback<ResponseInfo>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
@@ -372,8 +349,8 @@ public class RetrofitUtils {
     private static void postUserInfo(final Context context, final Activity startActivity, String token, final ZLoadingDialog dialog) {
 
         if (token != null) {
-            final PostUserInfo request = retrofit.create(PostUserInfo.class);
-            Call<UserInfoRes> call = request.getCall(new TokenRequest(token));
+            final PostQmkl request = retrofit.create(PostQmkl.class);
+            Call<UserInfoRes> call = request.getUserInfo(new TokenRequest(token));
             call.enqueue(new Callback<UserInfoRes>() {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
@@ -443,8 +420,8 @@ public class RetrofitUtils {
     //通过token值返回当前登录用户的信息
     public static void postUserInfo(String token) {
         if (token != null) {
-            PostUserInfo request = retrofit.create(PostUserInfo.class);
-            Call<UserInfoRes> call = request.getCall(new TokenRequest(token));
+            PostQmkl request = retrofit.create(PostQmkl.class);
+            Call<UserInfoRes> call = request.getUserInfo(new TokenRequest(token));
             call.enqueue(new Callback<UserInfoRes>() {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoRes> call, @NonNull final Response<UserInfoRes> response) {
@@ -501,8 +478,8 @@ public class RetrofitUtils {
     //传入token值和用户信息并更新
     public static void postUpdateUser(final int flag, final UpdateUserRequest userInfo, final AlertDialog alertDialog, final TextView textView, final ZLoadingDialog dialog, final boolean isBackSchool) {
 
-        PostUpdateUserInfo request = retrofit.create(PostUpdateUserInfo.class);
-        Call<ResponseInfo> call = request.getCall(userInfo);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getUserUpdateInfo(userInfo);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
@@ -597,8 +574,8 @@ public class RetrofitUtils {
             });
         }
         if (academies == null) {
-            PostAllAcademies request = retrofit.create(PostAllAcademies.class);
-            Call<AcademiesOrCollegesRes> call = request.getCall(academiesRequest);
+            PostQmkl request = retrofit.create(PostQmkl.class);
+            Call<AcademiesOrCollegesRes> call = request.getAcademyListCollege(academiesRequest);
             call.enqueue(new Callback<AcademiesOrCollegesRes>() {
                 @Override
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
@@ -665,8 +642,8 @@ public class RetrofitUtils {
             }
         });
         if (colleges == null) {
-            PostAllColleges request = retrofit.create(PostAllColleges.class);
-            Call<AcademiesOrCollegesRes> call = request.getCall();
+            PostQmkl request = retrofit.create(PostQmkl.class);
+            Call<AcademiesOrCollegesRes> call = request.getCollegeList();
             call.enqueue(new Callback<AcademiesOrCollegesRes>() {
                 @Override
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
@@ -766,8 +743,8 @@ public class RetrofitUtils {
             }
         });
         if (colleges == null) {
-            PostAllColleges request = retrofit.create(PostAllColleges.class);
-            Call<AcademiesOrCollegesRes> call = request.getCall();
+            PostQmkl request = retrofit.create(PostQmkl.class);
+            Call<AcademiesOrCollegesRes> call = request.getCollegeList();
             call.enqueue(new Callback<AcademiesOrCollegesRes>() {
                 @Override
                 public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
@@ -842,8 +819,8 @@ public class RetrofitUtils {
     //传入用户token值该学校所有专业
     public static void postAllAcademies(String collegeName, final AlertDialog.Builder builder, final EditText academy, final ZLoadingDialog dialog) {
 
-        PostAllAcademies request = retrofit.create(PostAllAcademies.class);
-        Call<AcademiesOrCollegesRes> call = request.getCall(new QueryAcademiesRequest(collegeName));
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<AcademiesOrCollegesRes> call = request.getAcademyListCollege(new QueryAcademiesRequest(collegeName));
         call.enqueue(new Callback<AcademiesOrCollegesRes>() {
             @Override
             public void onResponse(@NonNull Call<AcademiesOrCollegesRes> call, @NonNull final Response<AcademiesOrCollegesRes> response) {
@@ -891,9 +868,9 @@ public class RetrofitUtils {
     //此函数一直进入onFailure，具体原因未知
     public static void postExitLogin(String username, final Activity startAct, final ZLoadingDialog dialog) {
 
-        PostExitLogin request = retrofit.create(PostExitLogin.class);
+        PostQmkl request = retrofit.create(PostQmkl.class);
         ExitLoginRequest exitLoginRequest = new ExitLoginRequest(username);
-        Call<String> call = request.getCall(exitLoginRequest);
+        Call<String> call = request.getUserOut(exitLoginRequest);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -921,7 +898,7 @@ public class RetrofitUtils {
 
     //传入用户token和图片，上传用户头像
     public static void postUserAvatar(String imagePath, final ImageView avatarView, final Bitmap bitmap, final ZLoadingDialog dialog) {
-        PostUserAvatar request = retrofit.create(PostUserAvatar.class);
+        PostQmkl request = retrofit.create(PostQmkl.class);
         final File avatar = new File(imagePath);
         String token = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "token");
 
@@ -931,7 +908,7 @@ public class RetrofitUtils {
         MultipartBody.Part avatarRequest = MultipartBody.Part.createFormData("avatar", avatar.getName(), photoRequestBody);
 
         RequestBody tokenRequest = RequestBody.create(MediaType.parse("multipart/form-data"), token);
-        Call<ResponseInfo<String>> call = request.getCall(avatarRequest, tokenRequest);
+        Call<ResponseInfo<String>> call = request.getUserUpdateAvatar(avatarRequest, tokenRequest);
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull final Response<ResponseInfo<String>> response) {
@@ -992,7 +969,7 @@ public class RetrofitUtils {
     //用户注册之后上传用户头像
     //传入用户token和图片，上传用户头像
     private static void postUserAvatar(String imagePath, final ZLoadingDialog dialog) {
-        PostUserAvatar request = retrofit.create(PostUserAvatar.class);
+        PostQmkl request = retrofit.create(PostQmkl.class);
         final File avatar = new File(imagePath);
         String token = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "token");
 
@@ -1002,7 +979,7 @@ public class RetrofitUtils {
         MultipartBody.Part avatarRequest = MultipartBody.Part.createFormData("avatar", avatar.getName(), photoRequestBody);
 
         RequestBody tokenRequest = RequestBody.create(MediaType.parse("multipart/form-data"), token);
-        Call<ResponseInfo<String>> call = request.getCall(avatarRequest, tokenRequest);
+        Call<ResponseInfo<String>> call = request.getUserUpdateAvatar(avatarRequest, tokenRequest);
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull final Response<ResponseInfo<String>> response) {
@@ -1042,10 +1019,10 @@ public class RetrofitUtils {
     //发送手机号并向该手机发送短信验证码，在CountDownTimer中更新按钮状态
     public static void postGetCode(String phone, final TextView sendCodeBtn, final String msg) {
 
-        PostGetCode request = retrofit.create(PostGetCode.class);
+        PostQmkl request = retrofit.create(PostQmkl.class);
         GetCodeRequest codeRequest = new GetCodeRequest(phone, msg);
 
-        Call<ResponseInfo<String>> call = request.getCall(codeRequest);
+        Call<ResponseInfo<String>> call = request.getSmsSend(codeRequest);
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
@@ -1079,12 +1056,12 @@ public class RetrofitUtils {
     //找回密码接口二
     //找回密码，传入手机号、验证码和新密码，找回后返回登录界面
     public static void postSetNewPsw(final Activity startAct, String phone, String verCode, String newPsw) {
-        PostSetNewPsw request = retrofit.create(PostSetNewPsw.class);
+        PostQmkl request = retrofit.create(PostQmkl.class);
         String setPswToken = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "setPswToken");
         String SHApassword = SHAArithmetic.encode(newPsw);//密码加密
         SetNewPswRequest pswRequest = new SetNewPswRequest(setPswToken, verCode, phone, SHApassword);
 
-        Call<ResponseInfo> call = request.getCall(pswRequest);
+        Call<ResponseInfo> call = request.getUserUpdatePassword(pswRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
@@ -1112,12 +1089,12 @@ public class RetrofitUtils {
     //用户注册接口二
     //发送该请求后进入完善资料界面，本接口为测试手机与验证码的正确性
     public static void postRegister(final Activity startAct, final String phone, String verCode) {
-        PostRegister request = retrofit.create(PostRegister.class);
+        PostQmkl request = retrofit.create(PostQmkl.class);
         String registerToken = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "registerToken");
 
         RegisterRequest registerRequest = new RegisterRequest(registerToken, verCode, phone);
 
-        Call<ResponseInfo> call = request.getCall(registerRequest);
+        Call<ResponseInfo> call = request.getUserVerCode(registerRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull Response<ResponseInfo> response) {
@@ -1146,9 +1123,9 @@ public class RetrofitUtils {
     //用户注册接口三
     //传入用户信息，完成注册
     public static void postPerfectInfo(final Context context, PerfectInfoRequest perfectInfoRequest, final Activity startAct) {
-        PostPerfectInfo request = retrofit.create(PostPerfectInfo.class);
+        PostQmkl request = retrofit.create(PostQmkl.class);
 
-        Call<ResponseInfo<String>> call = request.getCall(perfectInfoRequest);
+        Call<ResponseInfo<String>> call = request.getUserAllInfo(perfectInfoRequest);
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
@@ -1192,9 +1169,9 @@ public class RetrofitUtils {
 
     //用户第三方登录接口，传入uid，判断用户信息是否完整以及登录
     public static void postAuthLogin(final Context context, final UMengLoginRequest uMengLoginRequest, final Activity startAct) {
-        PostAuthLogin request = retrofit.create(PostAuthLogin.class);
+        PostQmkl request = retrofit.create(PostQmkl.class);
 
-        Call<ResponseInfo<String>> call = request.getCall(uMengLoginRequest);
+        Call<ResponseInfo<String>> call = request.getUserAuthLogin(uMengLoginRequest);
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
@@ -1232,9 +1209,9 @@ public class RetrofitUtils {
 
     //用户第三方登录接口，完善用户信息
     public static void postAuthPerInfo(final Context context, AuthPerInfoRequest authPerInfoRequest, final Activity startAct) {
-        PostAuthPerInfo request = retrofit.create(PostAuthPerInfo.class);
+        PostQmkl request = retrofit.create(PostQmkl.class);
 
-        Call<ResponseInfo<String>> call = request.getCall(authPerInfoRequest);
+        Call<ResponseInfo<String>> call = request.getUserAuthUpdateInfo(authPerInfoRequest);
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull Response<ResponseInfo<String>> response) {
@@ -1273,7 +1250,7 @@ public class RetrofitUtils {
 
     //用户上传文件
     public static void PostUpLoadFiles(String filePath, String spath, String note, String anonymous, final ZLoadingDialog dialog, final Activity startAct) {
-        PostUpLoadFiles request = retrofit.create(PostUpLoadFiles.class);
+        PostQmkl request = retrofit.create(PostQmkl.class);
         final File file = new File(filePath);
         String userId = SharedPreferencesUtils.getStoredMessage(UMapplication.getContext(), "id");
 
@@ -1293,7 +1270,7 @@ public class RetrofitUtils {
 
         RequestBody anonymousRequest = RequestBody.create(MediaType.parse("multipart/form-data"), anonymous);
 
-        Call<ResponseInfo<String>> call = request.getCall(userIdRequest, avatarRequest, noteRequest, spathRequest, anonymousRequest);
+        Call<ResponseInfo<String>> call = request.finalexamAppUpfile(userIdRequest, avatarRequest, noteRequest, spathRequest, anonymousRequest);
         call.enqueue(new Callback<ResponseInfo<String>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<String>> call, @NonNull final Response<ResponseInfo<String>> response) {
@@ -1329,8 +1306,8 @@ public class RetrofitUtils {
 
     //查询所有帖子
     public static void postAllPost(final Context context, PostRequest postRequest, final ArrayList<Mixinfo> data) {
-        PostAllPost request = retrofit.create(PostAllPost.class);
-        Call<ResponseInfo<PostInfo[]>> call = request.getCall(postRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<PostInfo[]>> call = request.getPostList(postRequest);
         call.enqueue(new Callback<ResponseInfo<PostInfo[]>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<PostInfo[]>> call, @NonNull Response<ResponseInfo<PostInfo[]>> response) {
@@ -1368,8 +1345,8 @@ public class RetrofitUtils {
     }
     //查询所有帖子
     public static void postAllPost(final Context context, PostRequest postRequest, final ArrayList<Mixinfo> data, final ZLoadingDialog dialog) {
-        PostAllPost request = retrofit.create(PostAllPost.class);
-        Call<ResponseInfo<PostInfo[]>> call = request.getCall(postRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<PostInfo[]>> call = request.getPostList(postRequest);
         call.enqueue(new Callback<ResponseInfo<PostInfo[]>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<PostInfo[]>> call, @NonNull Response<ResponseInfo<PostInfo[]>> response) {
@@ -1421,8 +1398,8 @@ public class RetrofitUtils {
      */
     //判断是否点赞
     public static void postIsLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final int position,final Class sourceClass) {
-        PostPostIsLike request = retrofit.create(PostPostIsLike.class);
-        Call<ResponseInfo<Boolean>> call = request.getCall(postIsLikeRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<Boolean>> call = request.getPostLikeIsLike(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<Boolean>> call, @NonNull final Response<ResponseInfo<Boolean>> response) {
@@ -1466,8 +1443,8 @@ public class RetrofitUtils {
      */
     //从我的评论进入详情页中判断是否点赞
     public static void postIsLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final ImageView like2) {
-        PostPostIsLike request = retrofit.create(PostPostIsLike.class);
-        Call<ResponseInfo<Boolean>> call = request.getCall(postIsLikeRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<Boolean>> call = request.getPostLikeIsLike(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<Boolean>> call, @NonNull final Response<ResponseInfo<Boolean>> response) {
@@ -1514,8 +1491,8 @@ public class RetrofitUtils {
      * @param islike 本人是否点赞
      */
     public static void postLike(Context context, PostIsLikeRequest postIsLikeRequest, final ImageView like, final ImageView like2, final TextView like_count, final boolean islike) {
-        PostPostLike request = retrofit.create(PostPostLike.class);
-        Call<ResponseInfo> call = request.getCall(postIsLikeRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getPostLikeAdd(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
@@ -1577,106 +1554,64 @@ public class RetrofitUtils {
     }
 
 
-    //获取所有评论列表
+//    //获取所有评论列表
+//    /**
+//     * @param context 上下文
+//     * @param getCommentListRequest 请求参数
+//     * @param data 数据源
+//     * @param dataPosition 点击帖子在列表中的位置
+//     */
+//    public static void postGetCommentList(final Context context, GetCommentListRequest getCommentListRequest, final ArrayList data, final int dataPosition) {
+//        final Mixinfo newInfo=(Mixinfo)data.get(dataPosition);
+//        if(newInfo.commentListData.size()!=newInfo.postInfo.getCommentNum()){
+//            PostGetCommentList request = retrofit.create(PostGetCommentList.class);
+//            Call<ResponseInfo<CommentListData>> call = request.getCall(getCommentListRequest);
+//            call.enqueue(new Callback<ResponseInfo<CommentListData>>() {
+//                @Override
+//                public void onResponse(@NonNull Call<ResponseInfo<CommentListData>> call, @NonNull final Response<ResponseInfo<CommentListData>> response) {
+//                    if(response.body()!=null){
+//                        newInfo.commentListData.clear();
+//                        if(Objects.requireNonNull(response.body()).getData()!=null){
+//                            for(int i=0;i<Objects.requireNonNull(response.body()).getData().length;i++){
+//                                newInfo.commentListData.add((response.body().getData())[i]);
+//                            }
+//                            data.set(dataPosition,newInfo);
+//                            DetailsActivity.commentListAdapter.notifyDataSetChanged();
+//                        }
+//                    }
+//                    else {
+//                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//                @Override
+//                public void onFailure(@NonNull Call<ResponseInfo<CommentListData>> call, @NonNull Throwable t) {
+//                    Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+//                    Log.d(TAG, "请求失败");
+//                }
+//            });
+//        }
+//    }
+
+
+    //获取对应帖子的评论列表
     /**
      * @param context 上下文
      * @param getCommentListRequest 请求参数
-     * @param data 数据源
-     * @param dataPosition 点击帖子在列表中的位置
+     * @param sourceClass
+     * @param position
      */
-    public static void postGetCommentList(final Context context, GetCommentListRequest getCommentListRequest, final ArrayList data, final int dataPosition) {
-        final Mixinfo newInfo=(Mixinfo)data.get(dataPosition);
-        if(newInfo.commentListData.size()!=newInfo.postInfo.getCommentNum()){
-            PostGetCommentList request = retrofit.create(PostGetCommentList.class);
-            Call<ResponseInfo<CommentListData[]>> call = request.getCall(getCommentListRequest);
-            call.enqueue(new Callback<ResponseInfo<CommentListData[]>>() {
-                @Override
-                public void onResponse(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull final Response<ResponseInfo<CommentListData[]>> response) {
-                    if(response.body()!=null){
-                        newInfo.commentListData.clear();
-                        if(Objects.requireNonNull(response.body()).getData()!=null){
-                            for(int i=0;i<Objects.requireNonNull(response.body()).getData().length;i++){
-                                newInfo.commentListData.add((response.body().getData())[i]);
-                            }
-                            data.set(dataPosition,newInfo);
-                            DetailsActivity.commentListAdapter.notifyDataSetChanged();
-                        }
-                    }
-                    else {
-                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
-                    }
-                }
-                @Override
-                public void onFailure(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Throwable t) {
-                    Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "请求失败");
-                }
-            });
-        }
-    }
-
-    //我的评论进入详情页获取所有评论列表
-    /**
-     * @param context 上下文
-     * @param getCommentListRequest 请求参数
-     */
-    public static void postGetCommentList(final Context context, GetCommentListRequest getCommentListRequest) {
-        if(DetailsFromCommentActivity.mixinfo.commentListData.size()!=DetailsFromCommentActivity.mixinfo.postInfo.getCommentNum()){
-            PostGetCommentList request = retrofit.create(PostGetCommentList.class);
-            Call<ResponseInfo<CommentListData[]>> call = request.getCall(getCommentListRequest);
-            call.enqueue(new Callback<ResponseInfo<CommentListData[]>>() {
-                @Override
-                public void onResponse(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull final Response<ResponseInfo<CommentListData[]>> response) {
-                    if(response.body()!=null){
-                        DetailsFromCommentActivity.mixinfo.commentListData.clear();
-                        if(Objects.requireNonNull(response.body()).getData()!=null){
-                            for(int i=0;i<Objects.requireNonNull(response.body()).getData().length;i++){
-                                DetailsFromCommentActivity.mixinfo.commentListData.add((response.body().getData())[i]);
-                            }
-                            DetailsFromCommentActivity.commentListAdapter.notifyDataSetChanged();
-                        }
-                    }
-                    else {
-                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
-                    }
-                }
-                @Override
-                public void onFailure(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Throwable t) {
-                    Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "请求失败");
-                }
-            });
-        }
-
-    }
-
-    //我的评论进入详情页添加评论
-    /**
-     * @param context 上下文
-     * @param commentAddRequest
-     * @param commentCount 评论数
-     */
-    public static void postAddComment(final Context context, CommentAddRequest commentAddRequest, final TextView commentCount) {
-        PostCommentAdd request = retrofit.create(PostCommentAdd.class);
-        Call<ResponseInfo> call = request.getCall(commentAddRequest);
-        call.enqueue(new Callback<ResponseInfo>() {
+    public static void postGetCommentList(final Context context, GetCommentListRequest getCommentListRequest, final Class sourceClass, final int position) {
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<CommentListData>> call = request.getCommentList(getCommentListRequest);
+        call.enqueue(new Callback<ResponseInfo<CommentListData>>() {
             @Override
-            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+            public void onResponse(@NonNull Call<ResponseInfo<CommentListData>> call, @NonNull final Response<ResponseInfo<CommentListData>> response) {
                 if(response.body()!=null){
-                    if(Objects.requireNonNull(response.body()).getCode()==ConstantUtils.SUCCESS_CODE){
-                        String token=SharedPreferencesUtils.getStoredMessage(context,"token");
-
-                        DetailsFromCommentActivity.mixinfo.postInfo.setCommentNum(DetailsFromCommentActivity.mixinfo.postInfo.getCommentNum()+1);
-                        commentCount.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                commentCount.setText(DetailsFromCommentActivity.mixinfo.postInfo.getCommentNum()+"");
-                            }
-                        });
-
-                        GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,String.valueOf(DetailsFromCommentActivity.mixinfo.postInfo.getId()),"1",String.valueOf(DetailsFromCommentActivity.mixinfo.postInfo.getCommentNum()));
-                        RetrofitUtils.postGetCommentList(context,getCommentListRequest);
-                        Toast.makeText(context,"评论成功！",Toast.LENGTH_SHORT).show();
+                    if(Objects.requireNonNull(response.body()).getData()!=null){
+                        Mixinfo mixinfo= DataManagerUtils.getData(sourceClass).get(position);
+                        mixinfo.commentListData=Objects.requireNonNull(response.body()).getData();
+                        DataManagerUtils.setMixinfo(sourceClass,position,mixinfo);
+                        DetailsActivity.commentListAdapter.notifyDataSetChanged();
                     }
                 }
                 else {
@@ -1684,12 +1619,88 @@ public class RetrofitUtils {
                 }
             }
             @Override
-            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ResponseInfo<CommentListData>> call, @NonNull Throwable t) {
                 Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
             }
         });
+
     }
+//
+//    //我的评论进入详情页获取所有评论列表
+//    /**
+//     * @param context 上下文
+//     * @param getCommentListRequest 请求参数
+//     */
+//    public static void postGetCommentList(final Context context, GetCommentListRequest getCommentListRequest) {
+//        if(DetailsFromCommentActivity.mixinfo.commentListData.size()!=DetailsFromCommentActivity.mixinfo.postInfo.getCommentNum()){
+//            PostGetCommentList request = retrofit.create(PostGetCommentList.class);
+//            Call<ResponseInfo<CommentListData[]>> call = request.getCall(getCommentListRequest);
+//            call.enqueue(new Callback<ResponseInfo<CommentListData[]>>() {
+//                @Override
+//                public void onResponse(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull final Response<ResponseInfo<CommentListData[]>> response) {
+//                    if(response.body()!=null){
+//                        DetailsFromCommentActivity.mixinfo.commentListData.clear();
+//                        if(Objects.requireNonNull(response.body()).getData()!=null){
+//                            for(int i=0;i<Objects.requireNonNull(response.body()).getData().length;i++){
+//                                DetailsFromCommentActivity.mixinfo.commentListData.add((response.body().getData())[i]);
+//                            }
+//                            DetailsFromCommentActivity.commentListAdapter.notifyDataSetChanged();
+//                        }
+//                    }
+//                    else {
+//                        Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//                @Override
+//                public void onFailure(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Throwable t) {
+//                    Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+//                    Log.d(TAG, "请求失败");
+//                }
+//            });
+//        }
+//    }
+//
+//    //我的评论进入详情页添加评论
+//    /**
+//     * @param context 上下文
+//     * @param commentAddRequest
+//     * @param commentCount 评论数
+//     */
+//    public static void postAddComment(final Context context, CommentAddRequest commentAddRequest, final TextView commentCount) {
+//        PostCommentAdd request = retrofit.create(PostCommentAdd.class);
+//        Call<ResponseInfo> call = request.getCall(commentAddRequest);
+//        call.enqueue(new Callback<ResponseInfo>() {
+//            @Override
+//            public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
+//                if(response.body()!=null){
+//                    if(Objects.requireNonNull(response.body()).getCode()==ConstantUtils.SUCCESS_CODE){
+//                        String token=SharedPreferencesUtils.getStoredMessage(context,"token");
+//
+//                        DetailsFromCommentActivity.mixinfo.postInfo.setCommentNum(DetailsFromCommentActivity.mixinfo.postInfo.getCommentNum()+1);
+//                        commentCount.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                commentCount.setText(DetailsFromCommentActivity.mixinfo.postInfo.getCommentNum()+"");
+//                            }
+//                        });
+//
+//                        GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,String.valueOf(DetailsFromCommentActivity.mixinfo.postInfo.getId()),"1",String.valueOf(DetailsFromCommentActivity.mixinfo.postInfo.getCommentNum()));
+//                        RetrofitUtils.postGetCommentList(context,getCommentListRequest);
+//                        Toast.makeText(context,"评论成功！",Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//                else {
+//                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+//                }
+//            }
+//            @Override
+//            public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+//                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+//                Log.d(TAG, "请求失败");
+//            }
+//        });
+//    }
 
 
     //添加评论
@@ -1701,39 +1712,23 @@ public class RetrofitUtils {
      * @param commentCount 评论数
      */
     public static void postAddComment(final Context context, CommentAddRequest commentAddRequest, final int index, final Mixinfo mixinfo, final TextView commentCount,final Class sourceClass) {
-        PostCommentAdd request = retrofit.create(PostCommentAdd.class);
-        Call<ResponseInfo> call = request.getCall(commentAddRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getCommentAdd(commentAddRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
                 if(response.body()!=null){
                     if(Objects.requireNonNull(response.body()).getCode()==ConstantUtils.SUCCESS_CODE){
                         String token=SharedPreferencesUtils.getStoredMessage(context,"token");
-                        Mixinfo mixinfo1=null;
-                        if(sourceClass == MixListAdapter.class){
-                            mixinfo1=MixShowActivity.data.get(index);
-                            mixinfo1.postInfo.setCommentNum(MixShowActivity.data.get(index).postInfo.getCommentNum()+1);
-                            MixShowActivity.data.set(index,mixinfo1);
-                            MixShowActivity.adapterData.notifyDataSetChanged();
-                            GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,String.valueOf(mixinfo.postInfo.getId()),"1",String.valueOf(mixinfo1.postInfo.getCommentNum()));
-                            RetrofitUtils.postGetCommentList(context,getCommentListRequest,MixShowActivity.data,index);
-                        }
-                        else if(sourceClass == CollectionListAdapter.class){
-                            mixinfo1=MyCollectionActivity.data.get(index);
-                            mixinfo1.postInfo.setCommentNum(MyCollectionActivity.data.get(index).postInfo.getCommentNum()+1);
-                            MyCollectionActivity.data.set(index,mixinfo1);
-                            MyCollectionActivity.adapterData.notifyDataSetChanged();
-                            GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,String.valueOf(mixinfo.postInfo.getId()),"1",String.valueOf(mixinfo1.postInfo.getCommentNum()));
-                            RetrofitUtils.postGetCommentList(context,getCommentListRequest,MyCollectionActivity.data,index);
-                        }
-                        else if(sourceClass == DynamicListAdapter.class){
-                            mixinfo1=MyDynamicActivity.data.get(index);
-                            mixinfo1.postInfo.setCommentNum(MyDynamicActivity.data.get(index).postInfo.getCommentNum()+1);
-                            MyDynamicActivity.data.set(index,mixinfo1);
-                            MyDynamicActivity.adapterData.notifyDataSetChanged();
-                            GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,String.valueOf(mixinfo.postInfo.getId()),"1",String.valueOf(mixinfo1.postInfo.getCommentNum()));
-                            RetrofitUtils.postGetCommentList(context,getCommentListRequest,MyDynamicActivity.data,index);
-                        }
+
+                        Mixinfo mixinfo1=DataManagerUtils.getMixinfo(sourceClass,index);
+                        mixinfo1.postInfo.setCommentNum(mixinfo1.postInfo.getCommentNum()+1);
+                        DataManagerUtils.setMixinfo(sourceClass,index,mixinfo1);
+                        DataManagerUtils.notifyDataSetChanged(sourceClass);
+
+                        GetCommentListRequest getCommentListRequest=new GetCommentListRequest(token,String.valueOf(mixinfo.postInfo.getId()),"1",String.valueOf(mixinfo1.postInfo.getCommentNum()));
+                        RetrofitUtils.postGetCommentList(context,getCommentListRequest,sourceClass,index);
+
                         final Mixinfo finalMixinfo = mixinfo1;
                         commentCount.post(new Runnable() {
                             @Override
@@ -1762,8 +1757,8 @@ public class RetrofitUtils {
      * @param startAct 启动活动
      */
     public static void postAddPost(final Context context, PostAddRequest postAddRequest, final Activity startAct) {
-        PostPostAdd request = retrofit.create(PostPostAdd.class);
-        Call<ResponseInfo> call = request.getCall(postAddRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getPostAdd(postAddRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
@@ -1791,34 +1786,39 @@ public class RetrofitUtils {
      * @param sourceClass 来源类
      */
     //判断是否收藏
-    public static void postIsCollect(Context context, PostIsLikeRequest postIsLikeRequest, final int position, final Class sourceClass) {
-        PostPostIsCollect request = retrofit.create(PostPostIsCollect.class);
-        Call<ResponseInfo<Boolean>> call = request.getCall(postIsLikeRequest);
+    public static void postIsCollect(Context context, PostIsLikeRequest postIsLikeRequest, final int position, final Class sourceClass,final ImageView collection) {
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<Boolean>> call = request.getCollectIsCollect(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<Boolean>> call, @NonNull final Response<ResponseInfo<Boolean>> response) {
                 if(response.body()!=null){
                     if(response.body().getData()){
-                        if(sourceClass== MixListAdapter.class) {
-                            MixShowActivity.data.get(position).is_collect=true;
-                        }
-                        else if(sourceClass== CollectionListAdapter.class){
-                            MyCollectionActivity.data.get(position).is_collect=true;
-                        }
-                        else if (sourceClass == DynamicListAdapter.class){
-                            MyDynamicActivity.data.get(position).is_collect=true;
-                        }
+                        DataManagerUtils.getData(sourceClass).get(position).is_collect=true;
+                        collection.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                collection.setImageResource(R.drawable.collection);
+                            }
+                        });
                     }
                     else {
-                        if(sourceClass== MixListAdapter.class) {
-                            MixShowActivity.data.get(position).is_collect=false;
-                        }
-                        else if(sourceClass== CollectionListAdapter.class){
-                            MyCollectionActivity.data.get(position).is_collect=false;
-                        }
-                        else if (sourceClass == DynamicListAdapter.class){
-                            MyDynamicActivity.data.get(position).is_collect=false;
-                        }
+                        DataManagerUtils.getData(sourceClass).get(position).is_collect=false;
+                        collection.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                collection.setImageResource(R.drawable.uncollection);
+                            }
+                        });
+//                        if(sourceClass== MixListAdapter.class) {
+//                            MixShowActivity.data.get(position).is_collect=false;
+//                        }
+//                        else if(sourceClass== CollectionListAdapter.class){
+//                            MyCollectionActivity.data.get(position).is_collect=false;
+//                        }
+//                        else if (sourceClass == DynamicListAdapter.class){
+//                            MyDynamicActivity.data.get(position).is_collect=false;
+//                        }
                     }
                 }
                 else {
@@ -1839,8 +1839,8 @@ public class RetrofitUtils {
      */
     //我的评论进入详情页中判断是否收藏
     public static void postIsCollect(Context context, PostIsLikeRequest postIsLikeRequest) {
-        PostPostIsCollect request = retrofit.create(PostPostIsCollect.class);
-        Call<ResponseInfo<Boolean>> call = request.getCall(postIsLikeRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<Boolean>> call = request.getCollectIsCollect(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<Boolean>> call, @NonNull final Response<ResponseInfo<Boolean>> response) {
@@ -1867,16 +1867,15 @@ public class RetrofitUtils {
 
     /**
      * @param activity 启动活动，当时DetailsActivity时不为空
-     * @param isDetailActivity 是否是DetailsActivity
      * @param postIsLikeRequest
      * @param mixinfo 主要使用mixinfo.is_collect来判断使用者是收藏或取消收藏
      * @param position 帖子在列表中的位置
      * @param sourceClass 来源类
      */
     //用户收藏或取消收藏
-    public static void postCollectPost(final Activity activity, final boolean isDetailActivity, PostIsLikeRequest postIsLikeRequest, final Mixinfo mixinfo, final int position, final Class sourceClass) {
-        PostCollectPost request = retrofit.create(PostCollectPost.class);
-        Call<ResponseInfo> call = request.getCall(postIsLikeRequest);
+    public static void postCollectPost(final Activity activity, PostIsLikeRequest postIsLikeRequest, final Mixinfo mixinfo, final int position, final Class sourceClass, final ImageView collection) {
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getCollectAoc(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
@@ -1885,15 +1884,16 @@ public class RetrofitUtils {
                         //趣聊主页列表和详情页点击取消收藏
                         if(sourceClass == MixListAdapter.class) {
                             MixShowActivity.data.get(position).is_collect=false;
+                            MixShowActivity.adapterData.notifyDataSetChanged();
                         }
                         //我的收藏页面列表点击取消收藏
-                        else if(!isDetailActivity && sourceClass == CollectionListAdapter.class) {
+                        else if(activity==null && sourceClass == CollectionListAdapter.class) {
                             MyCollectionActivity.data.remove(position);
                             MyCollectionActivity.adapterData.notifyDataSetChanged();
                         }
 
                         //我的收藏页面的详情页点击取消收藏
-                        else if(isDetailActivity && sourceClass == CollectionListAdapter.class){
+                        else if(activity!=null && sourceClass == CollectionListAdapter.class){
                             MyCollectionActivity.data.remove(position);
                             MyCollectionActivity.adapterData.notifyDataSetChanged();
                             activity.runOnUiThread(new Runnable() {
@@ -1906,17 +1906,32 @@ public class RetrofitUtils {
                         //我的动态页面和详情页点击取消收藏
                         else if(sourceClass == DynamicListAdapter.class){
                             MyDynamicActivity.data.get(position).is_collect=false;
+                            MyDynamicActivity.adapterData.notifyDataSetChanged();
                         }
+                        collection.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                collection.setImageResource(R.drawable.uncollection);
+                            }
+                        });
                         Toast.makeText(UMapplication.getContext(), "已取消收藏！", Toast.LENGTH_SHORT).show();
                     }
                     else {
                         //趣聊主页列表和详情页点击收藏
                         if(sourceClass == MixListAdapter.class) {
                             MixShowActivity.data.get(position).is_collect=true;
+                            MixShowActivity.adapterData.notifyDataSetChanged();
                         }
                         else if(sourceClass == DynamicListAdapter.class){
                             MyDynamicActivity.data.get(position).is_collect=true;
+                            MyDynamicActivity.adapterData.notifyDataSetChanged();
                         }
+                        collection.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                collection.setImageResource(R.drawable.collection);
+                            }
+                        });
                         Toast.makeText(UMapplication.getContext(), "收藏成功，您可以在 我的收藏 中找到该贴！", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -1940,8 +1955,8 @@ public class RetrofitUtils {
      */
     //我的评论进入详情页中用户收藏或取消收藏
     public static void postCollectPost(PostIsLikeRequest postIsLikeRequest, final boolean is_collect) {
-        PostCollectPost request = retrofit.create(PostCollectPost.class);
-        Call<ResponseInfo> call = request.getCall(postIsLikeRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getCollectAoc(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
@@ -1975,8 +1990,8 @@ public class RetrofitUtils {
      */
     //查询我收藏的帖子
     public static void postGetCollection(final Context context, PostRequest postRequest, final ArrayList<Mixinfo> data, final ZLoadingDialog dialog) {
-        PostGetCollectionList request = retrofit.create(PostGetCollectionList.class);
-        Call<ResponseInfo<CollectionListData[]>> call = request.getCall(postRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<CollectionListData[]>> call = request.getCollectList(postRequest);
         call.enqueue(new Callback<ResponseInfo<CollectionListData[]>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<CollectionListData[]>> call, @NonNull Response<ResponseInfo<CollectionListData[]>> response) {
@@ -2023,8 +2038,8 @@ public class RetrofitUtils {
      */
     //查询我发出的帖子
     public static void postGetMyDynamic(final Context context, PostRequest postRequest, final ArrayList<Mixinfo> data, final ZLoadingDialog dialog) {
-        PostGetDynamicList request = retrofit.create(PostGetDynamicList.class);
-        Call<ResponseInfo<PostInfo[]>> call = request.getCall(postRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<PostInfo[]>> call = request.getPostUserList(postRequest);
         call.enqueue(new Callback<ResponseInfo<PostInfo[]>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<PostInfo[]>> call, @NonNull Response<ResponseInfo<PostInfo[]>> response) {
@@ -2072,12 +2087,12 @@ public class RetrofitUtils {
      * @param dialog 等待图标
      */
     //查询我的评论
-    public static void postGetMyComment(final Context context, PostRequest postRequest, final ArrayList<CommentListData> data, final ZLoadingDialog dialog) {
-        PostGetMyCommentList request = retrofit.create(PostGetMyCommentList.class);
-        Call<ResponseInfo<CommentListData[]>> call = request.getCall(postRequest);
-        call.enqueue(new Callback<ResponseInfo<CommentListData[]>>() {
+    public static void postGetMyComment(final Context context, PostRequest postRequest, final ArrayList<MyCommentListData> data, final ZLoadingDialog dialog) {
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<MyCommentListData[]>> call = request.getCommentUserList(postRequest);
+        call.enqueue(new Callback<ResponseInfo<MyCommentListData[]>>() {
             @Override
-            public void onResponse(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Response<ResponseInfo<CommentListData[]>> response) {
+            public void onResponse(@NonNull Call<ResponseInfo<MyCommentListData[]>> call, @NonNull Response<ResponseInfo<MyCommentListData[]>> response) {
                 if(dialog!=null) dialog.dismiss();
                 if (response.body() != null) {
                     int responseCode = Objects.requireNonNull(response.body()).getCode();
@@ -2091,7 +2106,6 @@ public class RetrofitUtils {
                             //将请求回的数据加入到data数据集中
                             data.addAll(Arrays.asList(response.body().getData()));
                             MyCommentActivity.adapterData.notifyDataSetChanged();
-
                         }
                     } else {
                         MyCommentActivity.commentList.removeFooterView(CommentListView.mFooterView);
@@ -2104,7 +2118,7 @@ public class RetrofitUtils {
             }
 
             @Override
-            public void onFailure(@NonNull Call<ResponseInfo<CommentListData[]>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ResponseInfo<MyCommentListData[]>> call, @NonNull Throwable t) {
                 if(dialog!=null) dialog.dismiss();
                 MyCommentActivity.commentList.removeFooterView(CommentListView.mFooterView);
                 Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
@@ -2116,8 +2130,8 @@ public class RetrofitUtils {
 
     //查询某一个贴子
     public static void postQueryAPost(final Context context, String postId, String token, final Activity startAct) {
-        PostQueryPost request = retrofit.create(PostQueryPost.class);
-        Call<ResponseInfo<PostInfo>> call = request.getCall(postId,new Token(token));
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo<PostInfo>> call = request.getPostGetPost(postId,new Token(token));
         call.enqueue(new Callback<ResponseInfo<PostInfo>>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo<PostInfo>> call, @NonNull final Response<ResponseInfo<PostInfo>> response) {
@@ -2152,8 +2166,8 @@ public class RetrofitUtils {
 
     //删除帖子
     public static void postDelPost(final Context context, PostIsLikeRequest postIsLikeRequest, final Activity startAct, final Class endClass) {
-        PostPostDelete request = retrofit.create(PostPostDelete.class);
-        Call<ResponseInfo> call = request.getCall(postIsLikeRequest);
+        PostQmkl request = retrofit.create(PostQmkl.class);
+        Call<ResponseInfo> call = request.getPostDel(postIsLikeRequest);
         call.enqueue(new Callback<ResponseInfo>() {
             @Override
             public void onResponse(@NonNull Call<ResponseInfo> call, @NonNull final Response<ResponseInfo> response) {
@@ -2172,6 +2186,65 @@ public class RetrofitUtils {
 
             @Override
             public void onFailure(@NonNull Call<ResponseInfo> call, @NonNull Throwable t) {
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    //获取服务器图片
+    public static void postHomePage(final Context context , final ImageView headerView) {
+        PostPicture request = retrofit.create(PostPicture.class);
+        Call<ResponseInfo<AdData[]>> call = request.getHomePage();
+        call.enqueue(new Callback<ResponseInfo<AdData[]>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<AdData[]>> call, @NonNull final Response<ResponseInfo<AdData[]>> response) {
+                if (response.body() != null) {
+                    int responseCode = Objects.requireNonNull(response.body()).getCode();
+                    if (responseCode == SUCCESS_CODE) {
+                        ImageLoaders.setsendimg(response.body().getData()[0].getUrl(),headerView);
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<AdData[]>> call, @NonNull Throwable t) {
+                Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "请求失败");
+            }
+        });
+    }
+
+    //获取服务器图片
+    public static void postBannerPic(final Context context , final Banner banner) {
+        PostPicture request = retrofit.create(PostPicture.class);
+        Call<ResponseInfo<AdData[]>> call = request.getBannerPic();
+        call.enqueue(new Callback<ResponseInfo<AdData[]>>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseInfo<AdData[]>> call, @NonNull final Response<ResponseInfo<AdData[]>> response) {
+                if (response.body() != null) {
+                    int responseCode = Objects.requireNonNull(response.body()).getCode();
+                    if (responseCode == SUCCESS_CODE) {
+                        ArrayList<String> path_list=new ArrayList<>();
+                        for(AdData adData:response.body().getData()){
+                            path_list.add(adData.getUrl());
+                            Log.d("各个", response.body().getData()[0].getId()+"");
+                        }
+                        banner.setImages(path_list).start();
+                    } else {
+                        Toast.makeText(UMapplication.getContext(), Objects.requireNonNull(response.body()).getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(UMapplication.getContext(), CONNECT_WITH_ME, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseInfo<AdData[]>> call, @NonNull Throwable t) {
                 Toast.makeText(UMapplication.getContext(), SERVER_REQUEST_FAILURE, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "请求失败");
             }
